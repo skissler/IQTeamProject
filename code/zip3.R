@@ -3,7 +3,6 @@ library(tidyverse)
 library(sf)
 library(tigris)
 library(tidycensus)
-library(ggforce)  # for geom_circle()
 options(tigris_use_cache = TRUE)
 
 # Set your Census API key (register at https://api.census.gov/data/key_signup.html)
@@ -89,8 +88,6 @@ zip3_circles <- zip3_points_filtered %>%
 
 # Plot using geom_sf with real circular geometries
 fig_centroids <- ggplot() +
-  # geom_sf(data = st_union(zcta_sf), fill = "grey95", color = "white") +
-  # geom_sf(data = zip3_points, aes(size=population), color = "black", alpha = 0.6) +
   geom_sf(data=lower48_sf, fill=NA) + 
   geom_sf(data = zip3_circles, color = "black", alpha = 0.6) +
   scale_fill_viridis_c(option = "plasma", trans = "log10") +
