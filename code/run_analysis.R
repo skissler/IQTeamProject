@@ -25,5 +25,3 @@ fig_centroids <- ggplot() +
   coord_sf(crs = 5070) +
   theme_void() 
 
-distmat <- set_units(st_distance(zip3_centroids),"km")
-

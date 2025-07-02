@@ -99,8 +99,37 @@ get_foi <- function(infvec, popvec, distmat, b0=0, bd=0.77, mu=0.23, rho=96){
 }
 
 
+simulate_outbreak <- function(seed, geodf, b0=0, bd=0.77, mu=0.23, rho=96){
 
+	distmat <- drop_units(set_units(st_distance(geodf),"km"))
+	popvec <- geodf$population / mean(geodf$population)
+	denominator <- colSums(exp(-distmat/rho)) - 1
 
+	infvec <- c(seed)
+	tvec <- c(0)
+
+	for(t in 1:100){
+
+		if(length(infvec)>1){
+			numerator <- colSums(exp(-distmat[infvec,]/rho))
+		} else {
+			numerator <- exp(-distmat[infvec,]/rho)
+		}
+
+		foi <- b0 + bd*(popvec^mu)*numerator/denominator
+		pinf <- 1 - exp(-foi)
+		draw <- runif(length(pinf))
+
+		newinf <- setdiff(which(draw < pinf), infvec)
+		infvec <- c(infvec, newinf)
+		tvec <- c(tvec, rep(t, length(newinf)))
+
+	}
+
+	out_df <- tibble(t=tvec, loc=infvec)
+	return(out_df)
+
+}
 
 
 
