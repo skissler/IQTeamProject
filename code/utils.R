@@ -68,7 +68,7 @@ get_zip3_centroids <- function(){
 	    lat = weighted.mean(lat, estimate, na.rm = TRUE)
 	  ) %>%
 	  ungroup()
-	  
+
 	# Convert lon/lat to sf POINT geometries
 	zip3_points <- zip3_df %>%
 	  filter(!is.na(lon)) %>% 
@@ -87,3 +87,25 @@ get_zip3_centroids <- function(){
 
 	return(zip3_points_filtered)
 }
+
+
+get_foi <- function(infvec, popvec, distmat, b0=0, bd=0.77, mu=0.23, rho=96){
+
+	distmat <- drop_units(distmat)
+	expvec <- colSums(exp(-distmat/rho))
+	foi <- b0 + bd*(popvec^mu)*(sum(expvec[infvec]))/(sum(expvec)-1)
+	return(foi)
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
