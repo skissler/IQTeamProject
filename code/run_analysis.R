@@ -37,8 +37,9 @@ zip3_circles_sim <- zip3_circles %>%
 # Map the outbreak: 
 fig_sim <- ggplot() +
 	geom_sf(data = state_boundaries, fill=NA) + 
-	geom_sf(data = zip3_circles_sim, aes(fill=t), alpha = 0.6) + 
+	geom_sf(data = zip3_circles_sim, aes(fill=t/2), alpha = 0.6) + 
 	scale_fill_viridis() + 
 	coord_sf(crs = 5070) +
+	labs(fill="Weeks since\nintroduction") + 
 	theme_void() 
 
