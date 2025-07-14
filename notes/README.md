@@ -7,3 +7,10 @@ Some updates on the project:
 
 I want to try to code up the beta parameterization independently to see if we get the same thing, and to make sure I understand exactly what's happening. We should also look at how variable R0 is across locations using this method. 
 
+# 18 July 2025 
+
+I think an interesting approach here might be to try to impute the household crowding and proportion-under-18 in ag workers at the county level using ACS and NAWS data using a sort of pooled Bayesian approach. That might be more credible than a simple weighting scheme, or simply using the regional NAWS to reflect the county-level ones. 
+
+Before embarking on this, though, I need to make sure the county-level analysis is really how I want to do it. It seems like the right thing to do -- since food production is also measured at the county scale (see FoodTwin). It's a common scale for geospatial epi analysis, too. 
+
+It looks like I can use [data from FoodTwin directly](https://github.com/earthrise-media/food-system-digital-twin/tree/main/input-data) to grab county-level food production, so that part shouldn't be too challenging. 
