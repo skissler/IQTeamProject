@@ -41,8 +41,7 @@ We'll also probably want to include a list of recommendations for data to collec
 
 It might make sense to use a variant of [House & Keeling's 2009 household-structured transmission model](https://pubmed.ncbi.nlm.nih.gov/18840319/)
 
-Also see [this](https://tah-sci.com/house.pdf) for more detail
-
+Also see [this](https://tah-sci.com/house.pdf) for more detail on the model. 
 
 Odin functions: https://cran.r-project.org/web//packages/odin/vignettes/functions.html
 
@@ -54,6 +53,16 @@ For this, I want to use [strawberries](https://coststudyfiles.ucdavis.edu/2024/0
 * Lettuce is also pretty work-intensive and has potentially two harvesting periods, one in April and one in July (planting in late Dec/early Jan, harvests are separated by about 100 days) 
 * Oranges have three winter-time harvests for three different types of orange. They're probably less labor-intensive but still require some hand-picking. 
 
+So, I think this is getting somewhere: next steps include: 
+
+* Testing the household model to make sure it's giving me sensitlbe things
+* Testing that we can get different types of epidemics out when we stratify by household size 
+* Put in the estimated household sizes by county, for the general community and for agricultural workers, and simulate some outbreaks (this will require estimating some parameter values -- tuning them to get the right reproduction number and secondary attack rates, as House and Keeling do in their paper) 
+* Run some analysis: look at extent of spread in the agricultural community upon detection in the general community and quantify the detection/surveillance gap 
+* Estimate production losses by county and overall for an epidemic 
+* Do a deeper dive into productivity losses for strawberries, lettuce, and oranges, highlighting how time of year modulates the impact of a pandemic. 
+
+I think that's enough for the analysis. 
 
 
 
