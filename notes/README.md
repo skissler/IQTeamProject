@@ -48,7 +48,7 @@ Odin functions: https://cran.r-project.org/web//packages/odin/vignettes/function
 
 Also: UC Davis has some really nice files estimating the cost of producing various crops: https://coststudies.ucdavis.edu/current/commodities
 
-For this, I want to use [strawberries](https://coststudyfiles.ucdavis.edu/2024/04/04/2024Strawberry-FULL-FINAL-March2024.pdf), [lettuce](https://coststudyfiles.ucdavis.edu/2024/04/04/2024Strawberry-FULL-FINAL-March2024.pdf), and [oranges](https://coststudyfiles.ucdavis.edu/uploads/pub/2021/08/12/2021orangessjvsouth.pdf). For strawberries, there's a table shownig percent harvested by time; for the others, there are verbal descriptions, and there's an estimate of expenditure by month broken down by activity (including harvesting) so we can triangulate harvesting periods for those, too. I think these are interesting because: 
+For this, I want to use [strawberries](https://coststudyfiles.ucdavis.edu/2024/04/04/2024Strawberry-FULL-FINAL-March2024.pdf), [lettuce](https://coststudyfiles.ucdavis.edu/uploads/pub/2023/08/04/2023-iceberglettuce-full-final.pdf), and [oranges](https://coststudyfiles.ucdavis.edu/uploads/pub/2021/08/12/2021orangessjvsouth.pdf). For strawberries, there's a table shownig percent harvested by time; for the others, there are verbal descriptions, and there's an estimate of expenditure by month broken down by activity (including harvesting) so we can triangulate harvesting periods for those, too. I think these are interesting because: 
 
 * Strawberies are super labor-intensive and have a relatively long summer harvest season
 * Lettuce is also pretty work-intensive and has potentially two harvesting periods, one in April and one in July (planting in late Dec/early Jan, harvests are separated by about 100 days) 
