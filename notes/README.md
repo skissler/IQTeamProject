@@ -55,7 +55,7 @@ For this, I want to use [strawberries](https://coststudyfiles.ucdavis.edu/2024/0
 
 So, I think this is getting somewhere: next steps include: 
 
-* Testing the household model to make sure it's giving me sensitlbe things
+* Testing the household model to make sure it's giving me sensible things
 * Testing that we can get different types of epidemics out when we stratify by household size 
 * Put in the estimated household sizes by county, for the general community and for agricultural workers, and simulate some outbreaks (this will require estimating some parameter values -- tuning them to get the right reproduction number and secondary attack rates, as House and Keeling do in their paper) 
 * Run some analysis: look at extent of spread in the agricultural community upon detection in the general community and quantify the detection/surveillance gap 
