@@ -70,7 +70,7 @@ Ok -- there's some difference between high-occupancy households and low-occupanc
 
 First thing: I'm going to tie up the code into a better set of packages. 
 
-
+Ok -- I just coded up a basic SIR model, and when my household sizes are 1 and tau is 0, they end up with identical outputs, as expected. Still some testing to do to make sure the household-specific stuff is working as it should be, but I think this is nearly there. 
 
 
 

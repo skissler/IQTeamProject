@@ -2,6 +2,24 @@ library(tidyverse)
 library(odin)
 source('code/utils.R')
 
+basic_model <- odin::odin({
+
+  beta <- user(6/5)
+  gamma <- user(1/5)
+  init_S <- user()
+  init_I <- user() 
+  init_R <- user() 
+
+  initial(S) <- init_S
+  initial(I) <- init_I
+  initial(R) <- init_R
+
+  deriv(S) <- -beta*S*I
+  deriv(I) <- beta*S*I - gamma*I
+  deriv(R) <- gamma*I
+
+  })
+
 household_model <- odin::odin({
 
   # Parameters
@@ -50,14 +68,15 @@ household_model <- odin::odin({
   }, debug_enable=TRUE)
 
 # Load household state definitions
-household_states <- generate_household_state_table(n_min=4, n_max=4)
+household_states <- generate_household_state_table(n_min=1, n_max=1)
 n_states <- nrow(household_states)
 
 # Start with 1% households in the "4 w/ 1 infected state", the rest fully susceptible
 init_vec <- household_states %>% 
   mutate(init=case_when(y==0 & z==0 ~ 1, TRUE~0)) %>% 
   mutate(init=init*(1 - 0.01)/sum(init)) %>% 
-  mutate(init=case_when(x==3 & y==1 & z==0 ~ 0.01, TRUE~init)) %>% 
+  # mutate(init=case_when(x==3 & y==1 & z==0 ~ 0.01, TRUE~init)) %>% 
+  mutate(init=case_when(x==0 & y==1 & z==0 ~ 0.01, TRUE~init)) %>% 
   pull(init)
 
 # Initialize model
@@ -71,13 +90,19 @@ mod <- household_model$new(
   inf_index = household_states$inf_index,
   init_vec = init_vec,
   gamma = 1/5,
-  tau = (2/3)*(1/5), # 3*(6/5)*(1/5), 
-  beta = (6/5)*(1/5)
+  tau = 0, #(2/3)*(1/5), # 3*(6/5)*(1/5), 
+  beta = 6/5 #(6/5)*(1/5)
 )
+
+mod_basic <- basic_model$new(
+  init_S = 0.99,
+  init_I = 0.01, 
+  init_R = 0)
 
 # Simulate
 times <- seq(0, 100, by = 1)
 out <- as_tibble(data.frame(mod$run(times)))
+out_basic <- as_tibble(data.frame(mod_basic$run(times)))
 
 epidf_hh <- out %>% 
   pivot_longer(-t, names_to="state_index", values_to="prop_hh") %>% 
@@ -94,9 +119,15 @@ epidf_indiv <- epidf_hh %>%
 
 fig_indiv <- epidf_indiv %>% 
   pivot_longer(-t) %>% 
+  mutate(name=substr(name,1,1)) %>% 
   ggplot(aes(x=t, y=value, col=name)) + 
     geom_line() + 
     expand_limits(y=0)
+
+fig_basic <- out_basic %>% 
+  pivot_longer(-t) %>% 
+  ggplot(aes(x=t, y=value, col=name)) + 
+    geom_line() 
 
 # temp %>% 
 #   mutate(small=case_when(hh_size<=3~1, TRUE~0)) %>% 
