@@ -131,7 +131,7 @@ simulate_outbreak <- function(seed, geodf, b0=0, bd=0.77, mu=0.23, rho=96){
 
 }
 
-generate_household_state_table <- function(n_max = 8) {
+generate_household_state_table <- function(n_min=1, n_max = 8) {
   # Create all possible (x, y, z) combinations where x + y + z <= n_max
   states <- expand.grid(
     x = 0:n_max,
@@ -142,7 +142,7 @@ generate_household_state_table <- function(n_max = 8) {
       hh_size = x + y + z
     ) %>%
     dplyr::filter(hh_size <= n_max) %>%
-    dplyr::filter(hh_size>0) %>% 
+    dplyr::filter(hh_size >= n_min) %>% 
     dplyr::arrange(hh_size, x, y, z) %>%
     dplyr::mutate(
       state_index = dplyr::row_number()

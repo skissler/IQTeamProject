@@ -6,15 +6,6 @@ household_model <- odin::odin({
 
   # Parameters
   n_states <- user()
-
-  dim(x) <- n_states
-  dim(y) <- n_states
-  dim(z) <- n_states
-  dim(hh_size) <- n_states
-  dim(rec_index) <- n_states
-  dim(inf_index) <- n_states
-  dim(init_vec) <- n_states
-
   x[] <- user()
   y[] <- user()
   z[] <- user()
@@ -26,6 +17,14 @@ household_model <- odin::odin({
   gamma <- user() 
   tau <- user() 
   beta <- user() 
+
+  dim(x) <- n_states
+  dim(y) <- n_states
+  dim(z) <- n_states
+  dim(hh_size) <- n_states
+  dim(rec_index) <- n_states
+  dim(inf_index) <- n_states
+  dim(init_vec) <- n_states
 
   dim(H) <- n_states
 
@@ -46,13 +45,12 @@ household_model <- odin::odin({
     beta*I*(
       -x[i]*H[i] + 
       if(inf_index[i]>0) (x[i]+1)*H[inf_index[i]] else 0)
-  print("I: {I}")
-    
+  # print("I: {I}")
+
   }, debug_enable=TRUE)
 
-
 # Load household state definitions
-household_states <- generate_household_state_table(8)
+household_states <- generate_household_state_table(n_min=4, n_max=4)
 n_states <- nrow(household_states)
 
 # Start with 1% households in the "4 w/ 1 infected state", the rest fully susceptible
