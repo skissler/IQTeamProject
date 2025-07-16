@@ -134,13 +134,17 @@ mod <- household_model$new(
   inf_index = household_states$inf_index,
   init_vec = init_vec,
   gamma = 1/5,
-  tau = 0.05,
-  beta = 0.3
+  tau = (2/3)*(1/5), # 3*(6/5)*(1/5), 
+  beta = (6/5)*(1/5)
 )
 
 # Simulate
 times <- seq(0, 100, by = 1)
 out <- mod$run(times)
+
+small <- household_states %>% 
+  mutate(small=case_when(hh_size<=3~1, TRUE~0)) %>% 
+  pull(small)
 
 # Summarize expected infections over time
 I_by_time <- sapply(1:length(times), function(t) {
@@ -151,9 +155,22 @@ I_prop_by_time <- sapply(1:length(times), function(t) {
   sum(out[t, 2:(n_states + 1)] * household_states$y) / sum(out[t, 2:(n_states + 1)] * (household_states$x + household_states$y + household_states$z))
 })
 
+I_prop_by_time_small <- sapply(1:length(times), function(t) {
+  sum(out[t, 2:(n_states + 1)] * household_states$y * small) / sum(out[t, 2:(n_states + 1)] * (household_states$x + household_states$y + household_states$z))
+})
+
+I_prop_by_time_big <- sapply(1:length(times), function(t) {
+  sum(out[t, 2:(n_states + 1)] * household_states$y * (-small+1)) / sum(out[t, 2:(n_states + 1)] * (household_states$x + household_states$y + household_states$z))
+})
+
 # Summarize expected infections over time
 N_by_time <- sapply(1:length(times), function(t) {
   sum(out[t, 2:(n_states + 1)])
 })
 
 plot(times, I_prop_by_time, type = "l", ylab = "Expected Infected Individuals", xlab = "Time")
+lines(times, I_prop_by_time_big)
+lines(times, I_prop_by_time_small)
+
+plot(times, I_prop_by_time_big, type="l")
+lines(times, 7*I_prop_by_time_small)
