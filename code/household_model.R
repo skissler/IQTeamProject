@@ -1,4 +1,5 @@
 library(tidyverse)
+library(odin)
 source('code/utils.R')
 
 household_model <- odin::odin({
@@ -28,36 +29,26 @@ household_model <- odin::odin({
 
   dim(H) <- n_states
 
-  # Total prevalence across all households
-  # dim(S_num) <- n_states
   dim(I_num) <- n_states
-  # dim(R_num) <- n_states
   dim(I_den) <- n_states
-
-  # S_num[] <- H[i] * x[i]
   I_num[] <- H[i] * y[i]
-  # R_num[] <- H[i] * z[i]
   I_den[] <- H[i] * hh_size[i]
-
-  # S <- sum(S_num)/sum(den)
   I <- sum(I_num)/sum(I_den)
-  # R <- sum(R_num)/sum(den)
 
   initial(H[]) <- init_vec[i]
-  # initial(H[]) <- 1/n_states
 
   deriv(H[]) <- gamma*(
       -y[i]*H[i] + 
-      if(rec_index[i]>0) (y[i]+1)*H[rec_index[i]] else 0
-      ) + 
+      if(rec_index[i]>0) (y[i]+1)*H[rec_index[i]] else 0) + 
     tau*(
       -x[i]*y[i]*H[i] + 
-      if(inf_index[i]>0) (x[i]+1)*(y[i]-1)*H[inf_index[i]] else 0
-      ) + 
-    beta*I*(-x[i]*H[i] + 
-      if(inf_index[i]>0) (x[i]+1)*H[inf_index[i]] else 0
-      )
-  })
+      if(inf_index[i]>0) (x[i]+1)*(y[i]-1)*H[inf_index[i]] else 0) + 
+    beta*I*(
+      -x[i]*H[i] + 
+      if(inf_index[i]>0) (x[i]+1)*H[inf_index[i]] else 0)
+  print("I: {I}")
+    
+  }, debug_enable=TRUE)
 
 
 # Load household state definitions
@@ -90,52 +81,69 @@ mod <- household_model$new(
 times <- seq(0, 100, by = 1)
 out <- as_tibble(data.frame(mod$run(times)))
 
-temp <- out %>% 
-  pivot_longer(-t, names_to="state_index", values_to="I_hh") %>% 
+epidf_hh <- out %>% 
+  pivot_longer(-t, names_to="state_index", values_to="prop_hh") %>% 
   mutate(state_index=substr(state_index,3,nchar(state_index)-1)) %>% 
   mutate(state_index=as.numeric(state_index)) %>% 
-  left_join(select(household_states, x, y, z, hh_size, state_index), by="state_index") %>% 
-  mutate(I_indiv = I_hh*y/hh_size) 
+  left_join(select(household_states, x, y, z, hh_size, state_index), by="state_index") 
 
-fig_temp <- temp %>% 
+epidf_indiv <- epidf_hh %>% 
+  mutate(S_num=prop_hh*x, I_num = prop_hh*y, R_num=prop_hh*z, den=prop_hh*hh_size) %>% 
   group_by(t) %>% 
-  summarise(I_indiv = sum(I_indiv)) %>% 
-  ggplot(aes(x=t, y=I_indiv)) + 
-    geom_line() 
+  summarise(S_num=sum(S_num), I_num=sum(I_num), R_num=sum(R_num), den=sum(den)) %>% 
+  mutate(S_indiv=S_num/den, I_indiv=I_num/den, R_indiv=R_num/den) %>% 
+  select(t, S_indiv, I_indiv, R_indiv)
 
+fig_indiv <- epidf_indiv %>% 
+  pivot_longer(-t) %>% 
+  ggplot(aes(x=t, y=value, col=name)) + 
+    geom_line() + 
+    expand_limits(y=0)
 
+# temp %>% 
+#   mutate(small=case_when(hh_size<=3~1, TRUE~0)) %>% 
+#   group_by(t, small) %>% 
+#   summarise(I_indiv = sum(I_indiv)) %>% 
+#   ggplot(aes(x=t, y=I_indiv, group=small)) + 
+#     geom_line()
 
+# small <- household_states %>% 
+#   mutate(small=case_when(hh_size<=3~1, TRUE~0)) %>% 
+#   pull(small)
 
+# # Summarize expected infections over time
+# I_by_time <- sapply(1:length(times), function(t) {
+#   sum(out[t, 2:(n_states + 1)] * household_states$y)
+# })
 
-small <- household_states %>% 
-  mutate(small=case_when(hh_size<=3~1, TRUE~0)) %>% 
-  pull(small)
+# S_prop_by_time <- sapply(1:length(times), function(t) {
+#   sum(out[t, 2:(n_states + 1)] * household_states$x) / sum(out[t, 2:(n_states + 1)] * (household_states$x + household_states$y + household_states$z))
+# })
 
-# Summarize expected infections over time
-I_by_time <- sapply(1:length(times), function(t) {
-  sum(out[t, 2:(n_states + 1)] * household_states$y)
-})
+# I_prop_by_time <- sapply(1:length(times), function(t) {
+#   sum(out[t, 2:(n_states + 1)] * household_states$y) / sum(out[t, 2:(n_states + 1)] * (household_states$x + household_states$y + household_states$z))
+# })
 
-I_prop_by_time <- sapply(1:length(times), function(t) {
-  sum(out[t, 2:(n_states + 1)] * household_states$y) / sum(out[t, 2:(n_states + 1)] * (household_states$x + household_states$y + household_states$z))
-})
+# R_prop_by_time <- sapply(1:length(times), function(t) {
+#   sum(out[t, 2:(n_states + 1)] * household_states$z) / sum(out[t, 2:(n_states + 1)] * (household_states$x + household_states$y + household_states$z))
+# })
 
-I_prop_by_time_small <- sapply(1:length(times), function(t) {
-  sum(out[t, 2:(n_states + 1)] * household_states$y * small) / sum(out[t, 2:(n_states + 1)] * (household_states$x + household_states$y + household_states$z))
-})
+# I_prop_by_time_small <- sapply(1:length(times), function(t) {
+#   sum(out[t, 2:(n_states + 1)] * household_states$y * small) / sum(out[t, 2:(n_states + 1)] * (household_states$x + household_states$y + household_states$z))
+# })
 
-I_prop_by_time_big <- sapply(1:length(times), function(t) {
-  sum(out[t, 2:(n_states + 1)] * household_states$y * (-small+1)) / sum(out[t, 2:(n_states + 1)] * (household_states$x + household_states$y + household_states$z))
-})
+# I_prop_by_time_big <- sapply(1:length(times), function(t) {
+#   sum(out[t, 2:(n_states + 1)] * household_states$y * (-small+1)) / sum(out[t, 2:(n_states + 1)] * (household_states$x + household_states$y + household_states$z))
+# })
 
-# Summarize expected infections over time
-N_by_time <- sapply(1:length(times), function(t) {
-  sum(out[t, 2:(n_states + 1)])
-})
+# # Summarize expected infections over time
+# N_by_time <- sapply(1:length(times), function(t) {
+#   sum(out[t, 2:(n_states + 1)])
+# })
 
-plot(times, I_prop_by_time, type = "l", ylab = "Expected Infected Individuals", xlab = "Time")
-lines(times, I_prop_by_time_big)
-lines(times, I_prop_by_time_small)
+# plot(times, I_prop_by_time, type = "l", ylab = "Expected Infected Individuals", xlab = "Time")
+# lines(times, I_prop_by_time_big)
+# lines(times, I_prop_by_time_small)
 
-plot(times, I_prop_by_time_big, type="l")
-lines(times, 7*I_prop_by_time_small)
+# plot(times, I_prop_by_time_big, type="l")
+# lines(times, I_prop_by_time_small)
