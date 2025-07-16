@@ -1,43 +1,5 @@
 library(tidyverse)
-
-generate_household_state_table <- function(n_max = 8) {
-  # Create all possible (x, y, z) combinations where x + y + z <= n_max
-  states <- expand.grid(
-    x = 0:n_max,
-    y = 0:n_max,
-    z = 0:n_max
-  ) %>%
-    dplyr::mutate(
-      hh_size = x + y + z
-    ) %>%
-    dplyr::filter(hh_size <= n_max) %>%
-    dplyr::filter(hh_size>0) %>% 
-    dplyr::arrange(hh_size, x, y, z) %>%
-    dplyr::mutate(
-      state_index = dplyr::row_number()
-    )
-
-  # Helper function to get state index
-  find_index <- function(x_, y_, z_) {
-    idx <- states %>%
-      dplyr::filter(x == x_, y == y_, z == z_) %>%
-      dplyr::pull(state_index)
-    if (length(idx) == 0) return(0) else return(idx)
-  }
-
-  # Compute transitions
-  states <- states %>%
-    dplyr::rowwise() %>%
-    dplyr::mutate(
-      rec_index = if (z > 0 && y < n_max) find_index(x, y + 1, z - 1) else 0,
-      inf_index  = if (y > 0 && x < n_max) find_index(x + 1, y - 1, z) else 0
-    ) %>%
-    dplyr::ungroup()
-
-  return(states)
-}
-
-household_states <- generate_household_state_table(8)
+source('code/utils.R')
 
 household_model <- odin::odin({
 
@@ -67,19 +29,19 @@ household_model <- odin::odin({
   dim(H) <- n_states
 
   # Total prevalence across all households
-  dim(S_num) <- n_states
+  # dim(S_num) <- n_states
   dim(I_num) <- n_states
-  dim(R_num) <- n_states
-  dim(den) <- n_states
+  # dim(R_num) <- n_states
+  dim(I_den) <- n_states
 
-  S_num[] <- H[i] * x[i]
+  # S_num[] <- H[i] * x[i]
   I_num[] <- H[i] * y[i]
-  R_num[] <- H[i] * z[i]
-  den[] <- H[i] * hh_size[i]
+  # R_num[] <- H[i] * z[i]
+  I_den[] <- H[i] * hh_size[i]
 
-  S <- sum(S_num)/sum(den)
-  I <- sum(I_num)/sum(den)
-  R <- sum(R_num)/sum(den)
+  # S <- sum(S_num)/sum(den)
+  I <- sum(I_num)/sum(I_den)
+  # R <- sum(R_num)/sum(den)
 
   initial(H[]) <- init_vec[i]
   # initial(H[]) <- 1/n_states
@@ -95,25 +57,11 @@ household_model <- odin::odin({
     beta*I*(-x[i]*H[i] + 
       if(inf_index[i]>0) (x[i]+1)*H[inf_index[i]] else 0
       )
-
-  # deriv(H[]) <- gamma*(
-  #     -y[i]*H[i] + 
-  #     if(rec_index[i]>0, (y[i]+1)*H[rec_index[i]], 0)
-  #     ) + 
-  #   tau*(
-  #     -x[i]*y[i]*H[i] + 
-  #     if(inf_index[i]>0, (x[i]+1)*(y[i]-1)*H[inf_index[i]], 0)
-  #     ) + 
-  #   beta*I*(-x[i]*H[i] + 
-  #     if(inf_index[i]>0, (x[i]+1)*H[inf_index[i]], 0)
-  #     )
-
-
   })
 
 
 # Load household state definitions
-# household_states <- read.csv("household_states.csv")
+household_states <- generate_household_state_table(8)
 n_states <- nrow(household_states)
 
 # Start with 1% households in the "4 w/ 1 infected state", the rest fully susceptible
@@ -140,7 +88,24 @@ mod <- household_model$new(
 
 # Simulate
 times <- seq(0, 100, by = 1)
-out <- mod$run(times)
+out <- as_tibble(data.frame(mod$run(times)))
+
+temp <- out %>% 
+  pivot_longer(-t, names_to="state_index", values_to="I_hh") %>% 
+  mutate(state_index=substr(state_index,3,nchar(state_index)-1)) %>% 
+  mutate(state_index=as.numeric(state_index)) %>% 
+  left_join(select(household_states, x, y, z, hh_size, state_index), by="state_index") %>% 
+  mutate(I_indiv = I_hh*y/hh_size) 
+
+fig_temp <- temp %>% 
+  group_by(t) %>% 
+  summarise(I_indiv = sum(I_indiv)) %>% 
+  ggplot(aes(x=t, y=I_indiv)) + 
+    geom_line() 
+
+
+
+
 
 small <- household_states %>% 
   mutate(small=case_when(hh_size<=3~1, TRUE~0)) %>% 

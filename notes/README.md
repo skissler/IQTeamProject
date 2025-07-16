@@ -64,6 +64,13 @@ So, I think this is getting somewhere: next steps include:
 
 I think that's enough for the analysis. 
 
+# 16 July 2025 
+
+Ok -- there's some difference between high-occupancy households and low-occupancy households, which scales with the degree of within- vs. between-household transmission. The difference isn't huge, though; that said, I think that assortativity could also play a big role here. If two populations are fully assortative (and if they're similarly sized, etc) we expect their epidemiological dynamics to be fairly similar. I expect that even a little assortativity will substantially separate out the curves, though, if we have one population with higher crowding on average than the other. So, my next step (after maybe doing a bit more validation of the household model) is to incorporate assortativity into a two-population household-structured model. 
+
+First thing: I'm going to tie up the code into a better set of packages. 
+
+
 
 
 
