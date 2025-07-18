@@ -34,7 +34,6 @@ For example, we might want to first describe detection lags: when we notice a ma
 
 What's the total impact (in terms of food production and GDP) of an influenza outbreak? Which locations contribute most to losses? How does this depend on time of year? How might mitigation help? 
 
-
 # 15 July 2025 
 
 We'll also probably want to include a list of recommendations for data to collect/things to pay attention to/things that would modulate the impact during a pandemic. For example, the seasonality of the virus might also be important (a winter-time outbreak might be more severe epidemiologically, though maybe less disruptive agriculturally) 
@@ -71,6 +70,49 @@ Ok -- there's some difference between high-occupancy households and low-occupanc
 First thing: I'm going to tie up the code into a better set of packages. 
 
 Ok -- I just coded up a basic SIR model, and when my household sizes are 1 and tau is 0, they end up with identical outputs, as expected. Still some testing to do to make sure the household-specific stuff is working as it should be, but I think this is nearly there. 
+
+Alright -- got the two-population model working, and it's looking pretty good. With 75% assortativity, and with a household size of 4 in the community and 8 among agricultural workers, we see a clear higher and earlier peak in the ag workers. This remains true even when assortativity is proportional to population sizes, though of course the effect attenuates some. I've just added in an option to vary tau and beta between the populations. We might be able to parameterize those useing secondary household infection rates (tau) and, possibly, by making some basic assumptions about elevated transmissibility/susceptibility based on systematic differences in age structure, though that'd be a lot more conjectural. 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
