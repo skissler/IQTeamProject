@@ -18,6 +18,16 @@ naws <- read_sas("data/naws_all.sas7bdat")  # or read_sav()
 # REGION6 (NAWS region) 
 # PWTYCRD (weight) 
 
+region_map <- tibble(REGION6=1:6, 
+  REGION_NAME=c(
+    "East",
+    "Southeast",
+    "Midwest",
+    "Southwest",
+    "Northwest",
+    "California"), 
+  REGION_ABBREV=c("EA","SE","MW","SW","NW","CA"))
+
 # //////////////////////////////////////////////////////////////////////////////
 # Household sizes
 # //////////////////////////////////////////////////////////////////////////////
