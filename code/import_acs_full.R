@@ -107,9 +107,8 @@ acs_crowding <- acs_crowding %>%
     crowded = crowded_owner_1E + crowded_owner_2E + crowded_owner_3E +
               crowded_renter_1E + crowded_renter_2E + crowded_renter_3E,
     total = totalE,
-    prop_crowded = crowded / total
-  ) %>%
-  select(GEOID, NAME, total, crowded, prop_crowded)
+    prop_crowded = crowded / total) %>%
+  select(GEOID, NAME, prop_crowded)
 
 # //////////////////////////////////////////////////////////////////////////////
 # Agricultural workers
@@ -142,12 +141,30 @@ acs_ag <- acs_ag %>%
 # //////////////////////////////////////////////////////////////////////////////
 
 # Get total population (B01003) for all counties
-pop_data <- get_acs(
+acs_pop <- get_acs(
   geography = "county",
   variables = "B01003_001",  # total population
   year = 2022,
   survey = "acs5")
 
 # Clean up the result
-pop_data_clean <- pop_data %>%
+acs_pop <- acs_pop %>%
   select(GEOID, NAME, population = estimate)
+
+# //////////////////////////////////////////////////////////////////////////////
+# Combine
+# //////////////////////////////////////////////////////////////////////////////
+
+# The following data frame contains: 
+# GEOID: numeric county identifier
+# NAME: name of the county
+# hhSize: the household size reflected in the 'prop' column
+# prop: proportion of households in county of size "hhSize" 
+# prop_crowded: proportion of households in county that have >1 occupant/room
+# prop_ag_workers: proportion of employed adults employed in agriculture
+# population: county population size
+
+acs_data <- acs_hhsize %>% 
+  left_join(acs_crowding, by=c("GEOID","NAME")) %>% 
+  left_join(acs_ag, by=c("GEOID","NAME")) %>% 
+  left_join(acs_pop, by=c("GEOID","NAME")) 
