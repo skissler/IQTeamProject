@@ -166,9 +166,6 @@ household_model_twopop <- odin::odin({
 }, debug_enable = TRUE)
 
 
-
-
-
 household_model_twopop_crowding <- odin::odin({
 
   # Parameters

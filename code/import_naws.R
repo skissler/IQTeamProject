@@ -37,14 +37,35 @@ naws_hh <- naws %>%
   select(Region=REGION6, HHSize=HHFAMGRD, Prop=HHFAMGRD_PROP) %>% 
   left_join(region_map, by=c("Region"="REGION6"))
 
-naws_hh %>% 
+# Aggregate households 7+ to align with census data: 
+naws_hh <- naws_hh %>% 
+  mutate(HHSize_agg = case_when(HHSize<=6 ~ HHSize, TRUE~7)) %>% 
+  group_by(Region, REGION_NAME, REGION_ABBREV, HHSize_agg) %>% 
+  summarise(Prop=sum(Prop)) %>% 
+  rename(HHSize=HHSize_agg)
+
+naws_crowding <- naws %>% 
+  select(FY, REGION6, CROWDED1, PWTYCRD) %>% 
+  filter(FY >= 2018) %>% 
+  group_by(CROWDED1, REGION6) %>% 
+  summarise(PWTYCRD=sum(PWTYCRD)) %>% 
+  group_by(REGION6) %>% 
+  mutate(PWTYCRD_TOT=sum(PWTYCRD)) %>% 
+  mutate(CROWDED1_PROP=PWTYCRD/PWTYCRD_TOT) %>% 
+  arrange(REGION6, CROWDED1) %>% 
+  filter(CROWDED1==1) %>% 
+  select(Region=REGION6, Crowded=CROWDED1, Prop=CROWDED1_PROP) %>% 
+  left_join(region_map, by=c("Region"="REGION6")) %>% 
+  select(Region, REGION_NAME, REGION_ABBREV, Crowded, Prop)
+
+fig_naws <- naws_hh %>% 
   ggplot(aes(x=HHSize, y=Prop, col=factor(REGION_ABBREV))) + 
     geom_point() + 
     geom_line() + 
     theme(legend.position="none")
 
-naws_hh %>% 
-  group_by(HHSize) %>% 
-  summarise(Prop=mean(Prop))
+# naws_hh %>% 
+#   group_by(HHSize) %>% 
+#   summarise(Prop=mean(Prop))
 
 

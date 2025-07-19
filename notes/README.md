@@ -122,6 +122,14 @@ Ok -- seems like the two-population crowding model is working reasonably well, t
 
 I might start here by cleaning up the code. I'm in a good spot with the models, I think; I want it to be relatively streamlined when I incorporate the data and work on fitting. 
 
+Ok -- got the crowding variables imported now, too, and confirmed that it looks like crowding is a lot higher among agricultural workers than the general population. Some figures to make on this still; but for now, I think next steps are to try to incorporate this information into a transmission model. 
+
+Maybe an important thing to do next is to extract the number of agricultural workers by county. 
+
+That's done now too. 
+
+I think the next thing is to start with a national average: using the national average for household sizes and crowding (and secondary infection rate), figure out some sensible beta, tau, and tau_boost values. Then, apply these at the county level for some projections. 
+
 
 
 

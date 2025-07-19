@@ -50,31 +50,17 @@ hhsize_dist <- acs_hhsize %>%
   mutate(fraction = count / total) %>%
   arrange(geo, GEOID, size)
 
-# Wide format: fraction for each household size 1..7plus
-hhsize_wide <- hhsize_dist %>%
-  select(geo, GEOID, NAME, size, fraction) %>%
-  pivot_wider(names_from = size, values_from = fraction, names_prefix = "hhsize_")
-
-# Example output
-head(hhsize_wide)
-
-hhsize_dist %>% 
-  group_by(size) %>% 
-  summarise(fraction=mean(fraction)) %>% 
-  filter(!is.na(size)) %>% 
-  mutate(fraction=fraction/sum(fraction)) %>% 
-  ggplot(aes(x=size, y=fraction)) + 
-    geom_point() 
-
-hhsize_dist %>% 
-  filter(!is.na(size)) %>% 
-  ggplot() + 
-    geom_point(aes(x=size, y=fraction, group=NAME), alpha=0.1) + 
-    geom_line(data=naws_hh, aes(x=HHSize, y=Prop, col=factor(REGION_ABBREV))) + 
-    theme(legend.position="none")
+# Clean up a bit to align with naws dataset: 
+acs_hh <- hhsize_dist %>% 
+  filter(geo=="county") %>% 
+  select(GEOID, NAME, HHSize=size, Prop=fraction)
 
 
-
+fig_acs_hh <- acs_hh %>% 
+  ggplot(aes(x=HHSize, y=Prop)) + 
+    geom_jitter(width=0.05, alpha=0.02) + 
+    expand_limits(y=0) +
+    theme_classic() 
 
 
 
