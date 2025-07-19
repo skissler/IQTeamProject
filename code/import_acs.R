@@ -59,7 +59,7 @@ acs_hhsize <- acs_hhsize %>%
     prop7 = hh7/totalE) %>% 
   select(GEOID, NAME, prop1, prop2, prop3, prop4, prop5, prop6, prop7) %>% 
   pivot_longer(-c("GEOID","NAME")) %>% 
-  mutate(hhSize=substr(name, 5, 5)) %>% 
+  mutate(hhSize=as.numeric(substr(name, 5, 5))) %>% 
   select(GEOID, NAME, hhSize, prop=value)
 
 # //////////////////////////////////////////////////////////////////////////////

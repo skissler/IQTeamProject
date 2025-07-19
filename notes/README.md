@@ -136,12 +136,19 @@ To prepare, I'm going to:
 - Clean up the naws imports 
 - Create a data frame with county-level data including percent crowding, household size distribution, split between ag and non-ag workers, with raw and adjusted values... I think? 
 
-Now, something to consider: do I need to somehow adjust the acs data to reflect the proportion of agricultural workers/households when I'm doing the calibration? Probably -- since there are some ocunties with well over 20% of the population involved in agriculture. 
+Now, something to consider: do I need to somehow adjust the acs data to reflect the proportion of agricultural workers/households when I'm doing the calibration? Probably -- since there are some counties with well over 20% of the population involved in agriculture. 
 
+So, a strategy: 
 
+Using the ACS data, we can compute a national population-weighted average distribution of household sizes and level of crowding. Maybe start there. Then, given this national average, find a reasonable beta, tau, and tau_boost. 
 
+Once I have those values in hand, the task will be to simulate epidemics at the county level. This is where I'll have to carefully separate out agricultural and non-agricultural workers/households. For the agricultural workers, I should just be able to use the NAWS data (possibly adjusted to reflect differences in county-level household sizes and crowding levels; but this will be a follow-on analysis). For the "community" data, I'll need to somehow subtract out the effect of the agricultural workers. so, for whatever values I decide to use for the agricultural workers, I'll need to correct the ACS data so that we get the right overall ACS values by combining the "community" and the ag worker values. 
 
+Ok -- I now have a useful function, `adjust_crowding()`, which creates an adjusted proportion of crowded households across the different household sizes. It ensures that the proportion of crowded households of size 1 is zero (a household of size 1 can't be crowded by definition), and then distributes the remaining crowding among the households of other sizes. You can adjust the fold-difference between crowding in a 2-person household vs a 7+-person household, so that they're the same (i.e. all households sizes 2+ have the same fraction crowded) or, for example, maybe it's twice as likely for a 7+-person household to be crowded vs a 2-person household. The likelihood of crowding increases linearly across household sizes. I've confirmed that we can crank the fold-difference up to 5 and still get valid probabilities out (it'd probably be best to make it somehow nonlinear so that we always get out valid probabilities, but this should work for now). 
 
+With the data -- I think it's mostly going to change the initial conditions, i.e. the distribution of households across sizes and crowding levels. 
+
+Alright -- I've got a first pass working for a national model. I'm going to commit this, then will do some cleaning. 
 
 
 

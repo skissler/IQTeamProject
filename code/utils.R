@@ -169,7 +169,20 @@ generate_household_state_table <- function(n_min=1, n_max = 8) {
 }
 
 
+adjust_crowding <- function(df, fold_diff=1, indexcols=NULL){
 
+	out <- df %>% 
+		mutate(multiplier=(1+(fold_diff-1)*(hhSize-2)/5)) %>% 
+		mutate(multiplier=case_when(hhSize==1~0, TRUE~multiplier)) %>% 
+		mutate(denom=prop*multiplier) %>% 
+		group_by(across(all_of(indexcols))) %>% 
+		mutate(c = prop_crowded / sum(denom)) %>% 
+		mutate(prop_crowded_adj=c*multiplier) %>% 
+		select(-multiplier, -denom, -c)
+
+	return(out)
+
+}
 
 
 
