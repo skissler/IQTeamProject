@@ -130,10 +130,12 @@ That's done now too.
 
 I think the next thing is to start with a national average: using the national average for household sizes and crowding (and secondary infection rate), figure out some sensible beta, tau, and tau_boost values. Then, apply these at the county level for some projections. 
 
+To prepare, I'm going to: 
 
-
-
-
+- Clean up the acs imports 
+- Clean up the naws imports 
+- Create a data frame with county-level data including percent crowding, household size distribution, split between ag and non-ag workers, with raw and adjusted values... I think? 
+- 
 
 
 
