@@ -66,10 +66,10 @@ mod_twopop_crowding <- household_model_twopop_crowding$new(
   init_C = init_nat_C,
   init_A = init_nat_A,
   gamma = 1/5,
-  tau_C = (2/3)*(1/5), 
+  tau_C = (1/4)*(1/5), # 20% SAR
   tau_A = 0, 
-  tau_boost = 1/3,
-  beta_C = (6/5)*(1/5),
+  tau_boost = (2/3) - (1/4), # Boosts to a 40% SAR 
+  beta_C = 1.52*(1/5), 
   beta_A = 0,
   eps = 0,
   pop_C = 1000,
@@ -97,7 +97,6 @@ epidf_indiv_twopop_crowding <- epidf_hh_twopop_crowding %>%
 fig_indiv_twopop_crowding <- epidf_indiv_twopop_crowding %>% 
   pivot_longer(c("S_indiv", "I_indiv", "R_indiv")) %>% 
   mutate(name=substr(name,1,1)) %>% 
-  # filter(name=="I") %>% 
   ggplot(aes(x=t, y=value, col=name, lty=subpop)) + 
     geom_line() + 
     expand_limits(y=0)
@@ -112,31 +111,4 @@ fig_rel_inf_crowding <- epidf_indiv_twopop_crowding %>%
 # For R0 = 2, we're looking for a final size of 0.7968
 print(last(epidf_indiv_twopop_crowding$R_indiv))
 # that's pretty close 
-
-
-
-# # For community: have all households size 4. Start with 1% of households infected.
-# init_C <- household_states %>% 
-#   mutate(init=case_when(
-#     x==4 & y==0 & z==0 & crowded==0 ~ 0.99/2, 
-#     x==3 & y==1 & z==0 & crowded==0 ~ 0.01/2,
-#     x==4 & y==0 & z==0 & crowded==1 ~ 0.99/2, 
-#     x==3 & y==1 & z==0 & crowded==1 ~ 0.01/2,
-#     TRUE~0)) %>% 
-#   pull(init)
-
-# # For ag workers: have all households size 8. Start with 1% of households infected.
-# init_A <- household_states %>% 
-#   mutate(init=case_when(
-#     x==8 & y==0 & z==0 & crowded==0 ~ 0.99/2, 
-#     x==7 & y==1 & z==0 & crowded==0 ~ 0.01/2,
-#     x==8 & y==0 & z==0 & crowded==1 ~ 0.99/2, 
-#     x==7 & y==1 & z==0 & crowded==1 ~ 0.01/2,
-#     TRUE~0)) %>% 
-#   pull(init)
-
-
-
-
-
 

@@ -150,7 +150,34 @@ With the data -- I think it's mostly going to change the initial conditions, i.e
 
 Alright -- I've got a first pass working for a national model. I'm going to commit this, then will do some cleaning. 
 
+Here are some parameter values that give me a 20% SAR for non-crowded households, 40% SAR for crowded households, and a reproduction number of 2 (assuming everything's working like I think it is): 
 
+```
+
+# Initialize model
+mod_twopop_crowding <- household_model_twopop_crowding$new(
+  n_states = n_states,
+  x = household_states$x,
+  y = household_states$y,
+  z = household_states$z,
+  hh_size = household_states$hh_size,
+  crowded = household_states$crowded,
+  rec_index = household_states$rec_index,
+  inf_index = household_states$inf_index,
+  init_C = init_nat_C,
+  init_A = init_nat_A,
+  gamma = 1/5,
+  tau_C = (1/4)*(1/5), # 20% SAR
+  tau_A = 0, 
+  tau_boost = (2/3) - (1/4), # Boosts to a 40% SAR 
+  beta_C = 1.52*(1/5), 
+  beta_A = 0,
+  eps = 0,
+  pop_C = 1000,
+  pop_A = 0
+)
+
+```
 
 
 
