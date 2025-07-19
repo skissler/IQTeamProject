@@ -24,7 +24,7 @@ naws <- read_sas("data/naws_all.sas7bdat")  # or read_sav()
 
 naws_hh <- naws %>% 
   select(FY, REGION6, HHFAMGRD, PWTYCRD) %>% 
-  filter(FY >= 2018) %>% 
+  filter(FY >= 2018 & FY <= 2022) %>% 
   group_by(HHFAMGRD, REGION6) %>% 
   summarise(PWTYCRD=sum(PWTYCRD)) %>% 
   group_by(REGION6) %>% 
