@@ -3,7 +3,7 @@ library(dplyr)
 library(ggplot2)
 
 # Set year and load API key (if needed)
-year <- 2021
+year <- 2022
 readRenviron("~/.Renviron")
 
 # Table B25014 contains counts by occupancy and crowding level

@@ -9,7 +9,7 @@ readRenviron("~/.Renviron")
 pop_data <- get_acs(
   geography = "county",
   variables = "B01003_001",  # total population
-  year = 2021,
+  year = 2022,
   survey = "acs5"
 )
 

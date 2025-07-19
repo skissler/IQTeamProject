@@ -6,7 +6,7 @@ library(dplyr)
 readRenviron("~/.Renviron")
 
 # Year and table
-year <- 2021
+year <- 2022
 table <- "C24030"
 
 # Pull agricultural workers and total employment by county

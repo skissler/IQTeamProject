@@ -1,15 +1,11 @@
-# Install if needed
-# install.packages(c("tidycensus","dplyr","tidyr"))
-
+# Import packages
+library(tidyverse)
 library(tidycensus)
-library(dplyr)
-library(tidyr)
 
-# Load your Census key
-# census_api_key("YOUR_CENSUS_API_KEY", install = TRUE)
+# Load Census key
 readRenviron("~/.Renviron")
 
-year <- 2021
+year <- 2022
 geos <- c("county", "state")
 
 # Pull table B11016

@@ -20,6 +20,7 @@ names(naws)
 # HHFAMGRD (number of all relatives on the household grid) 
 # REGION6 (NAWS region) 
 # PWTYCRD (weight) 
+# Wait - should be using NHH (number of persons in HH at time of interview!) 
 
 region_map <- tibble(REGION6=1:6, 
   REGION_NAME=c("East","Southeast","Midwest","Southwest","Northwest","California"), 
