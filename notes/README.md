@@ -135,9 +135,8 @@ To prepare, I'm going to:
 - Clean up the acs imports 
 - Clean up the naws imports 
 - Create a data frame with county-level data including percent crowding, household size distribution, split between ag and non-ag workers, with raw and adjusted values... I think? 
-- 
 
-
+Now, something to consider: do I need to somehow adjust the acs data to reflect the proportion of agricultural workers/households when I'm doing the calibration? Probably -- since there are some ocunties with well over 20% of the population involved in agriculture. 
 
 
 
