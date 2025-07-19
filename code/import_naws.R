@@ -1,5 +1,13 @@
+# //////////////////////////////////////////////////////////////////////////////
+# Import packages
+# //////////////////////////////////////////////////////////////////////////////
+
 library(tidyverse) 
 library(haven)
+
+# //////////////////////////////////////////////////////////////////////////////
+# Load data
+# //////////////////////////////////////////////////////////////////////////////
 
 # Load data (change path as needed)
 naws <- read_sas("data/naws_all.sas7bdat")  # or read_sav()
@@ -9,6 +17,10 @@ naws <- read_sas("data/naws_all.sas7bdat")  # or read_sav()
 # HHFAMGRD (number of all relatives on the household grid) 
 # REGION6 (NAWS region) 
 # PWTYCRD (weight) 
+
+# //////////////////////////////////////////////////////////////////////////////
+# Household sizes
+# //////////////////////////////////////////////////////////////////////////////
 
 naws_hh <- naws %>% 
   select(FY, REGION6, HHFAMGRD, PWTYCRD) %>% 
@@ -26,6 +38,10 @@ naws_hh <- naws %>%
   summarise(prop=sum(prop)) %>% 
   rename(hhSize=hhSize_agg)
 
+# //////////////////////////////////////////////////////////////////////////////
+# Crowding
+# //////////////////////////////////////////////////////////////////////////////
+
 naws_crowding <- naws %>% 
   select(FY, REGION6, CROWDED1, PWTYCRD) %>% 
   filter(FY >= 2018) %>% 
@@ -39,6 +55,18 @@ naws_crowding <- naws %>%
   select(REGION=REGION6, Crowded=CROWDED1, prop=CROWDED1_PROP) %>% 
   left_join(region_map, by=c("REGION"="REGION6")) %>% 
   select(REGION, REGION_NAME, REGION_ABBREV, Crowded, prop_crowded=prop)
+
+# //////////////////////////////////////////////////////////////////////////////
+# Combine
+# //////////////////////////////////////////////////////////////////////////////
+
+# The following data frame contains: 
+# REGION: numeric NAWS region identifier (1-6)
+# REGION_NAME: name of the region
+# REGION_ABBREV: abbreviated name of the region
+# hhSize: the household size reflected in the 'prop' column
+# prop: proportion of households in region of size "hhSize" 
+# prop_crowded: proportion of households in region that have >1 occupant/room
 
 naws_data <- naws_hh %>% 
   left_join(select(naws_crowding, REGION, REGION_NAME, REGION_ABBREV, prop_crowded), by=c("REGION","REGION_NAME","REGION_ABBREV"))
