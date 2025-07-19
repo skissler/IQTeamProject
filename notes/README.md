@@ -73,10 +73,50 @@ Ok -- I just coded up a basic SIR model, and when my household sizes are 1 and t
 
 Alright -- got the two-population model working, and it's looking pretty good. With 75% assortativity, and with a household size of 4 in the community and 8 among agricultural workers, we see a clear higher and earlier peak in the ag workers. This remains true even when assortativity is proportional to population sizes, though of course the effect attenuates some. I've just added in an option to vary tau and beta between the populations. We might be able to parameterize those useing secondary household infection rates (tau) and, possibly, by making some basic assumptions about elevated transmissibility/susceptibility based on systematic differences in age structure, though that'd be a lot more conjectural. 
 
+# 18 July 2025 
+
+For today: incorporating the actual crowding information for ag workers vs. the general population. Start with a single county, or maybe with the overall national averages; then repeat by county. 
+
+Also, what should I be using for beta and tau? 
+
+I'm working on importing the household size data now -- it might end up being similar across the groups, in which case focusing on crowding could make more sense. there might be a way to incorporate a notion of crowding into a house/keeling-type model
+
+How does crowding impact transmission? 
+
+- 3x (1-10) odds of transmission (https://arc.net/l/quote/fifxwuqo)
+- Household crowding may be more important than number of people per household (https://arc.net/l/quote/aiafekoe)
+- Household crowding strongly associated with influenza incidence (https://arc.net/l/quote/oekioxjq)
+- 2-3x higher influenza hospitalization incidence in communities with high crowding vs low crowding (https://arc.net/l/quote/mqkvymfc)
+- 1.17x higher influenza incidence in crowded households here (https://arc.net/l/quote/swgtrdas)
+- here, crowding maybe 2x risk of influenza-related hospitalization (https://arc.net/l/quote/twfnjxis)
+- the relative rate in high-crowding vs low-crowding census tracts ranged from 1.9 in the 2008–2009 season to 8.6 in the 2006–2007 season. (https://arc.net/l/quote/onbezqtz)
+- Here they don't find a link with crowding, but sizes are small: https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0075339#pone-0075339-t002
+- maybe 50% SAR for SARS-CoV-2 in high-density settings, compared to 24% in non-high-density settings? (https://arc.net/l/quote/khvephkh) - or maybe a better comparison is 30% vs 50%. https://arc.net/l/quote/qngfvfuo
 
 
+Say 2x risk of influenza transmission in crowded households? Something like this? How to translate this into a revised tau that accounts for crowding? 
 
+House and Keeling use a 40% SAR (seems high?) and a reproduction number of 2 for their model. How exaclty does this work? 
 
+Approach: start with mean household size distribution of the US overall. Start with tau = 1/4 gamma (gives SAR of 20%). Find the beta that gives us the reproduction number we want by comparing with a simple SIR model (or getting out the right overall final size). 
+
+Then, this gives us the beta and tau values for going forward. We'll want to use the same beta values for everyone, I think. Then, we can consider using different tau values for crowded households. (We might want to include national-level household crowding in our original analysis, too). 
+
+A note on calculating tau from the SAR: the idea is simply that the SAR is equal to tau / (tau + gamma). If we express tau as a multiple of gamma (i.e. tau = k gamma) and simplify, then we find that k = SAR / (1-SAR). So, a 20% SAR gives tau = 1/4 gamma; a 40% SAR gives tau = 2/3 gamma; a 50% SAR gives tau  = gamma. I think we might want to range tau from 1/4 gamma to gamma, to range from a 20% to 50% SAR, with maybe tau = 2/3 gamma (40% SAR) as our baseline for crowded households. 
+
+A key issue is that we don't have the information on the relationship between household size and household crowding. We can probably start with the assumption that households are crowded uniform-randomly. Note that the census defines crowding as whne the number of people per room exceeds 1, so only households of size 2 and greater can be crowded. Then, we can maybe do a sensitivity analysis where larger households are more likely to be crowded. This will exacerbate the effect of crowding on the epi outcomes, I think; so the uniform random case will be a conservative lower bound. 
+
+Alright, so here's a calibration approach, in more detail: 
+
+- For each county, pull the household size distribution and the percent crowding. 
+- Assign crowding to households proportional to the frequency of household sizes 
+- Assign secondary attack rates for regular and crowded houses according to the household crowding index 
+- Simulate epidemics; vary beta to get the right reproduction number (final size) 
+- Then, repeat the analysis stratifying by agricultural workers and non-agricultural workers. 
+
+This might require further stratifying the transmission model into community/agricultural and crowded/not crowded... 
+
+Ok -- seems like the two-population crowding model is working reasonably well, too. Next: incorporating some data. 
 
 
 
