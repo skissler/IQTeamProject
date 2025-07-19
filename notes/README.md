@@ -118,6 +118,12 @@ This might require further stratifying the transmission model into community/agr
 
 Ok -- seems like the two-population crowding model is working reasonably well, too. Next: incorporating some data. 
 
+# 19 July 2025 
+
+I might start here by cleaning up the code. I'm in a good spot with the models, I think; I want it to be relatively streamlined when I incorporate the data and work on fitting. 
+
+
+
 
 
 
