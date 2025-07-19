@@ -62,22 +62,6 @@ acs_hhsize <- acs_hhsize %>%
   mutate(hhSize=substr(name, 5, 5)) %>% 
   select(GEOID, NAME, hhSize, prop=value)
 
-# Some testing
-# I should maybe be calculating proportion of agricultural workers as a fraction of total population, not as a fraction of total employed over age 16. 
-
-# temp_vars <- c(
-#   hhtotal = "B11016_001",
-#   crowdingtotal = "B25014_001")
-
-# temp <- get_acs(
-#     geography = "county",
-#     variables = temp_vars,
-#     year = year,
-#     survey = "acs5",
-#     output = "wide")
-
-# good, they match 
-
 # //////////////////////////////////////////////////////////////////////////////
 # Crowding
 # //////////////////////////////////////////////////////////////////////////////
