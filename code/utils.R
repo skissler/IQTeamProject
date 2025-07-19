@@ -131,7 +131,7 @@ simulate_outbreak <- function(seed, geodf, b0=0, bd=0.77, mu=0.23, rho=96){
 
 }
 
-generate_household_state_table <- function(n_min=1, n_max = 8) {
+generate_household_state_table <- function(n_min=1, n_max = 8, crowding=FALSE) {
   # Create all possible (x, y, z) combinations where x + y + z <= n_max
   states <- expand.grid(
     x = 0:n_max,
@@ -165,7 +165,25 @@ generate_household_state_table <- function(n_min=1, n_max = 8) {
     ) %>%
     dplyr::ungroup()
 
-  return(states)
+  # If we want a household state table with crowding: 
+  if(crowding){
+
+  	n_states <- nrow(states)
+		states_crowded <- states %>% 
+		  mutate(state_index=state_index + n_states) %>% 
+		  mutate(rec_index=case_when(rec_index>0 ~ rec_index + n_states, TRUE~0)) %>%
+		  mutate(inf_index=case_when(inf_index>0 ~ inf_index + n_states, TRUE~0))
+		states <- bind_rows(
+		  mutate(states, crowded=0),
+		  mutate(states_crowded, crowded=1))
+		return(states)
+
+	# Otherwise, just return the state table: 
+  } else {
+  	return(states)
+  }
+
+  
 }
 
 
@@ -185,4 +203,13 @@ adjust_crowding <- function(df, fold_diff=1, indexcols=NULL){
 }
 
 
+make_ic_joiner <- function(dat, fold_diff=1, indexcols=NULL){
 
+	dat <- adjust_crowding(dat, fold_diff=fold_diff, indexcols=indexcols)
+	dat_c0 <- mutate(dat, x=hhSize, y=0, z=0, crowded=0, frac=prop*(1-prop_crowded_adj))
+	dat_c1 <- mutate(dat, x=hhSize, y=0, z=0, crowded=1, frac=prop*prop_crowded_adj)
+	out <- bind_rows(dat_c0, dat_c1) %>% 
+		select(x, y, z, hh_size=hhSize, crowded, frac)
+	return(out)
+
+}

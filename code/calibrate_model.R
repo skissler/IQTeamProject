@@ -1,3 +1,7 @@
+# //////////////////////////////////////////////////////////////////////////////
+# Import
+# //////////////////////////////////////////////////////////////////////////////
+
 library(tidyverse)
 library(odin)
 source('code/utils.R')
@@ -6,41 +10,8 @@ source('code/epimodels.R')
 source('code/import_naws.R')
 source('code/import_acs.R')
 
-# Quick viz of relative household sizes: 
-fig_hhcomp <- ggplot() + 
-	geom_jitter(data=acs_hh, aes(x=HHSize, y=Prop), width=0.05, alpha=0.02) + 
-	geom_point(data=naws_hh, aes(x=HHSize, y=Prop, group=REGION_NAME), col="blue") + 
-	# geom_line(data=naws_hh, aes(x=HHSize, y=Prop, group=REGION_NAME), col="blue") + 
-	expand_limits(y=0) +
-	theme_classic() 
-
-fig_agprop <- acs_data %>% 
-	group_by(GEOID) %>% 
-	summarise(prop_ag_workers=first(prop_ag_workers)) %>% 
-	ggplot(aes(x=prop_ag_workers)) + 
-		geom_histogram() + 
-		theme_classic()
-
-fig_agprop_pretty <- acs_data %>% 
-  group_by(GEOID) %>% 
-  summarise(prop_ag_workers = first(prop_ag_workers)) %>% 
-  ggplot(aes(x = prop_ag_workers)) +
-  geom_histogram(fill = "#2C77B8", color = "white", binwidth = 0.01, alpha = 0.8) +
-  scale_x_continuous(labels = scales::percent_format(accuracy = 1)) +
-  labs(
-    title = "Distribution of Agricultural Workforce\nShare by County",
-    x = "Percent Employed in Agriculture",
-    y = "Number of Counties"
-  ) +
-  theme_classic(base_size = 14) +
-  theme(
-    plot.title = element_text(face = "bold", hjust = 0.5),
-    axis.title = element_text(face = "bold"),
-    axis.text = element_text(color = "black")
-  )
-
 # //////////////////////////////////////////////////////////////////////////////
-# Implement adjusted crowding 
+# Derive national dataset 
 # //////////////////////////////////////////////////////////////////////////////
 
 nat_data <- acs_data %>% 
@@ -48,44 +19,28 @@ nat_data <- acs_data %>%
 		prop=prop*population, 
 		prop_crowded=prop_crowded*population) %>%
 	group_by(hhSize) %>% 
-	summarise(prop=sum(prop), prop_crowded=sum(prop_crowded), population=sum(population)) %>% 
+	summarise(
+		prop=sum(prop), 
+		prop_crowded=sum(prop_crowded), 
+		population=sum(population)) %>% 
 	mutate(prop=prop/population, prop_crowded=prop_crowded/population)
-
-nat_data %>% 
-	adjust_crowding(fold_diff=5)
 
 # //////////////////////////////////////////////////////////////////////////////
 # Try a national calibration
 # //////////////////////////////////////////////////////////////////////////////
 
+# Define key variables
+max_hh_size <- 7
+crowding_fold_diff <- 1
+
 # Load household state definitions
-household_states <- generate_household_state_table(n_min=1, n_max=7)
+household_states <- generate_household_state_table(n_min=1, n_max=max_hh_size, crowding=TRUE)
 n_states <- nrow(household_states)
 
-# Make another df of household states for crowded households
-household_states_crowded <- household_states %>% 
-  mutate(state_index=state_index + n_states) %>% 
-  mutate(rec_index=case_when(rec_index>0 ~ rec_index + n_states, TRUE~0)) %>%
-  mutate(inf_index=case_when(inf_index>0 ~ inf_index + n_states, TRUE~0))
+# Create a data frame to help make initial conditions: 
+ic_joiner <- make_ic_joiner(nat_data, fold_diff=crowding_fold_diff)
 
-# Combine into a single household states data frame: 
-household_states <- bind_rows(
-  mutate(household_states, crowded=0),
-  mutate(household_states_crowded, crowded=1))
-n_states <- nrow(household_states)
-
-temp1 <- nat_data %>% 
-	adjust_crowding() %>% 
-	mutate(x=hhSize, y=0, z=0, crowded=0, frac=prop*(1-prop_crowded_adj)) %>% 
-	select(x, y, z, hh_size=hhSize, crowded, frac)
-
-temp2 <- nat_data %>% 
-	adjust_crowding() %>% 
-	mutate(x=hhSize, y=0, z=0, crowded=1, frac=prop*prop_crowded_adj) %>% 
-	select(x, y, z, hh_size=hhSize, crowded, frac)
-
-ic_joiner <- bind_rows(temp1, temp2)
-
+# Create IC vector for the community. For now, make it so that 1% of households start off infected. All these infected households will be 2-person households with a single infected member. 
 init_nat_C <- household_states %>% 
 	left_join(ic_joiner, by=c("x","y","z","hh_size","crowded")) %>% 
 	arrange(state_index) %>% 
@@ -94,6 +49,7 @@ init_nat_C <- household_states %>%
 	mutate(frac=case_when(x==1 & y==1 & z==0 & crowded==0 ~ 0.01, TRUE~frac)) %>% 
 	pull(frac)
 
+# Use a dummy IC for ag workers (everyone in 1-person households and recovered)
 init_nat_A <- rep(0, n_states)
 init_nat_A[1] <- 1
 
@@ -111,10 +67,10 @@ mod_twopop_crowding <- household_model_twopop_crowding$new(
   init_A = init_nat_A,
   gamma = 1/5,
   tau_C = (2/3)*(1/5), 
-  tau_A = (2/3)*(1/5), 
+  tau_A = 0, 
   tau_boost = 1/3,
-  beta_C = (6/5)*(1/5), #(6/5)*(1/5),
-  beta_A = (6/5)*(1/5), #(6/5)*(1/5),
+  beta_C = (6/5)*(1/5),
+  beta_A = 0,
   eps = 0,
   pop_C = 1000,
   pop_A = 0
