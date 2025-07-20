@@ -54,7 +54,7 @@ init_nat_A <- rep(0, n_states)
 init_nat_A[1] <- 1
 
 # Initialize model
-mod_twopop_crowding <- household_model_twopop_crowding$new(
+mod_national <- household_model_twopop_crowding$new(
   n_states = n_states,
   x = household_states$x,
   y = household_states$y,
@@ -78,30 +78,19 @@ mod_twopop_crowding <- household_model_twopop_crowding$new(
 
 # Simulate
 times <- seq(0, 100, by = 1)
-out_twopop_crowding <- as_tibble(data.frame(mod_twopop_crowding$run(times)))
+out_national <- as_tibble(data.frame(mod_national$run(times)))
 
-epidf_hh_twopop_crowding <- out_twopop_crowding %>% 
-  pivot_longer(-t, names_to="state_index", values_to="prop_hh") %>% 
-  mutate(subpop=substr(state_index,3,3)) %>% 
-  mutate(state_index=substr(state_index,5,nchar(state_index)-1)) %>% 
-  mutate(state_index=as.numeric(state_index)) %>% 
-  left_join(select(household_states, x, y, z, hh_size, state_index, crowded), by="state_index") 
+epidf_hh_national <- format_output_hh(out_national, household_states)
+epidf_indiv_national <- format_output_indiv(out_national, household_states)
 
-epidf_indiv_twopop_crowding <- epidf_hh_twopop_crowding %>% 
-  mutate(S_num=prop_hh*x, I_num = prop_hh*y, R_num=prop_hh*z, den=prop_hh*hh_size) %>% 
-  group_by(t, subpop) %>% 
-  summarise(S_num=sum(S_num), I_num=sum(I_num), R_num=sum(R_num), den=sum(den)) %>% 
-  mutate(S_indiv=S_num/den, I_indiv=I_num/den, R_indiv=R_num/den) %>% 
-  select(t, subpop, S_indiv, I_indiv, R_indiv)
-
-fig_indiv_twopop_crowding <- epidf_indiv_twopop_crowding %>% 
+fig_indiv_national <- epidf_indiv_national %>% 
   pivot_longer(c("S_indiv", "I_indiv", "R_indiv")) %>% 
   mutate(name=substr(name,1,1)) %>% 
   ggplot(aes(x=t, y=value, col=name, lty=subpop)) + 
     geom_line() + 
     expand_limits(y=0)
 
-fig_rel_inf_crowding <- epidf_indiv_twopop_crowding %>% 
+fig_rel_inf_national <- epidf_indiv_national %>% 
   select(t, subpop, I_indiv) %>% 
   pivot_wider(names_from="subpop", values_from="I_indiv") %>% 
   mutate(rel_inf=A/C) %>% 
@@ -109,6 +98,6 @@ fig_rel_inf_crowding <- epidf_indiv_twopop_crowding %>%
     geom_line() 
 
 # For R0 = 2, we're looking for a final size of 0.7968
-print(last(epidf_indiv_twopop_crowding$R_indiv))
+print(last(epidf_indiv_national$R_indiv))
 # that's pretty close 
 

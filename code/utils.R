@@ -213,3 +213,25 @@ make_ic_joiner <- function(dat, fold_diff=1, indexcols=NULL){
 	return(out)
 
 }
+
+# For formatting model output from household_model_twopop_crowding
+format_output_hh <- function(model_output, household_states){
+	out <- model_output %>% 
+		  pivot_longer(-t, names_to="state_index", values_to="prop_hh") %>% 
+		  mutate(subpop=substr(state_index,3,3)) %>% 
+		  mutate(state_index=substr(state_index,5,nchar(state_index)-1)) %>% 
+		  mutate(state_index=as.numeric(state_index)) %>% 
+		  left_join(select(household_states, x, y, z, hh_size, state_index, crowded), by="state_index") 
+	return(out)
+}
+
+format_output_indiv <- function(model_output, household_states){
+	out_hh <- format_output_hh(model_output, household_states)
+	out <- out_hh %>% 
+		  mutate(S_num=prop_hh*x, I_num = prop_hh*y, R_num=prop_hh*z, den=prop_hh*hh_size) %>% 
+		  group_by(t, subpop) %>% 
+		  summarise(S_num=sum(S_num), I_num=sum(I_num), R_num=sum(R_num), den=sum(den)) %>% 
+		  mutate(S_indiv=S_num/den, I_indiv=I_num/den, R_indiv=R_num/den) %>% 
+		  select(t, subpop, S_indiv, I_indiv, R_indiv)
+	return(out)
+}
