@@ -179,7 +179,7 @@ mod_twopop_crowding <- household_model_twopop_crowding$new(
 
 ```
 
-
+Now, I think, the next thing is to figure out how to run simulations at the county level. I still need to figure out how to extract the agricultural worker data to get separate non-ag and ag information on household sizes and crowding. 
 
 
 
