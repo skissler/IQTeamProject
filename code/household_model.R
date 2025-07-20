@@ -31,6 +31,8 @@ mod <- household_model$new(
 )
 
 mod_basic <- basic_model$new(
+  beta=2/5,
+  gamma=1/5,
   init_S = 0.99,
   init_I = 0.01, 
   init_R = 0)

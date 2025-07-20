@@ -181,6 +181,15 @@ mod_twopop_crowding <- household_model_twopop_crowding$new(
 
 Now, I think, the next thing is to figure out how to run simulations at the county level. I still need to figure out how to extract the agricultural worker data to get separate non-ag and ag information on household sizes and crowding. 
 
+# 20 July 2025 
+
+Extracting the agricultural worker data probably isn't a terrible idea -- but I realized last night that if we *don't* extract them, we'll end up with a more conservaive estimate of the difference between ag workers and the general community, since the community will be more similar to ag workers than it would be otherwise (if we did do the extraction). Because of this, I think it's not worth doing the extraction, at least for our initial analysis. We can always return to this; but for now it makes sense to focus on other things. 
+
+Like varying household sizes and crowding for ag workers by county -- that seems less than straightforward. Again, for the initial analysis, we should assume that ag workers just follow the regional average; but I'd like to also adjust the ag workers' data to reflect county-specific averages. How should we do this? 
+
+Ok - it seems like I have a basic simulation working comparing county-level ag workers and general community transmission. The difference isn't massive, but it's there. I need to figure out how to automate this; then, I can look at comparing the curves more rigorously. 
+
+
 
 
 

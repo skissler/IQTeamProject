@@ -79,4 +79,5 @@ naws_crowding <- naws %>%
 # prop_crowded: proportion of households in region that have >1 occupant/room
 
 naws_data <- naws_hh %>% 
-  left_join(select(naws_crowding, REGION, REGION_NAME, REGION_ABBREV, prop_crowded), by=c("REGION","REGION_NAME","REGION_ABBREV"))
+  left_join(select(naws_crowding, REGION, REGION_NAME, REGION_ABBREV, prop_crowded), by=c("REGION","REGION_NAME","REGION_ABBREV")) %>% 
+  rename(REGION6=REGION)
