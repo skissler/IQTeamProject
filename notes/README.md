@@ -222,6 +222,20 @@ Alright -- I think we're getting somewhere. I've fixed an issue with the househo
 I have some more cleaning to do; then, I think I'll be in a decent spot to start pulling down some summary statistics. 
 
 
+Having a weirdly hard time pinning down the initial conditions. 
+
+imagine 100 households all of size 8 
+i.e. 800 people
+
+.01 * 100 households with one person infected gives 1 initial household infected i.e. one initial person infected, yet that's just 1/800 which is too small. So we need to boost the proportion of households infected for larger households, I guess. We'd want something like 
+
+.08 * 100 = 8 initial households infected with a single person initially. That gives 8 initial infected 
+
+ok got it. 
+
+
+
+
 
 
 

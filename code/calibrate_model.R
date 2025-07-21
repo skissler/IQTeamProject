@@ -26,12 +26,12 @@ nat_data <- acs_data %>%
 	mutate(prop=prop/population, prop_crowded=prop_crowded/population)
 
 # //////////////////////////////////////////////////////////////////////////////
-# Try a national calibration
+# Calibrate the model at the national level 
 # //////////////////////////////////////////////////////////////////////////////
 
 # Define key variables
 max_hh_size <- 7
-crowding_fold_diff <- 1
+crowding_fold_diff <- 2
 
 # Load household state definitions
 household_states <- generate_household_state_table(n_min=1, n_max=max_hh_size, crowding=TRUE)

@@ -27,8 +27,8 @@ n_states <- nrow(household_states)
 
 epidf_indiv_full <- tibble()
 
-for(geoid in GEOID_vec){
-# for(geoid in GEOID_vec[1:500]){
+# for(geoid in GEOID_vec){
+for(geoid in GEOID_vec[1:500]){
 
 	# Which region is our county in? 
 	region <- county_lookup %>% 
@@ -69,22 +69,73 @@ for(geoid in GEOID_vec){
 	ic_joiner_A <- naws_data_processed %>% 
 		make_ic_joiner(fold_diff=crowding_fold_diff)
 
+	# Adjust the ic joiners to reflect initial infected: 
+	ic_joiner_A_inf <- ic_joiner_A %>% 
+  	mutate(frac=.01*frac*1*hh_size) %>% 
+  	mutate(y=y+1, x=x-1)
+  ic_joiner_A$frac = ic_joiner_A$frac - ic_joiner_A_inf$frac
+  ic_joiner_A <- bind_rows(ic_joiner_A, ic_joiner_A_inf)
+
+  ic_joiner_C_inf <- ic_joiner_C %>% 
+  	mutate(frac=.01*frac*1*hh_size) %>% 
+  	mutate(y=y+1, x=x-1)
+  ic_joiner_C$frac = ic_joiner_C$frac - ic_joiner_C_inf$frac
+  ic_joiner_C <- bind_rows(ic_joiner_C, ic_joiner_C_inf)
+
+#   ic_joiner_A %>% 
+#   	mutate(neff=frac*hh_size) %>% 
+#   	group_by(y) %>% 
+#   	summarise(neff=sum(neff))
+
+# ic_joiner_A %>% 
+# 	filter(y==1) %>% 
+# 	summarise(sum(frac))
+
+# ic_joiner_A %>% 
+# 	filter(y==0) %>% 
+# 	mutate(neff=frac*x) %>% 
+# 	summarise(neff=sum(frac))
+
 	# Create the initial conditions: 
 	init_C <- household_states %>% 
 		left_join(ic_joiner_C, by=c("x","y","z","hh_size","crowded")) %>% 
 		arrange(state_index) %>% 
 		replace_na(list(frac=0)) %>% 
-		mutate(frac=case_when(x==2 & y==0 & z==0 & crowded==0 ~ frac-0.01, TRUE~frac)) %>% 
-		mutate(frac=case_when(x==1 & y==1 & z==0 & crowded==0 ~ 0.01, TRUE~frac)) %>% 
 		pull(frac)
 
 	init_A <- household_states %>% 
 		left_join(ic_joiner_A, by=c("x","y","z","hh_size","crowded")) %>% 
 		arrange(state_index) %>% 
 		replace_na(list(frac=0)) %>% 
-		mutate(frac=case_when(x==2 & y==0 & z==0 & crowded==0 ~ frac-0.01, TRUE~frac)) %>% 
-		mutate(frac=case_when(x==1 & y==1 & z==0 & crowded==0 ~ 0.01, TRUE~frac)) %>% 
 		pull(frac)
+	# init_C <- household_states %>% 
+	# 	left_join(ic_joiner_C, by=c("x","y","z","hh_size","crowded")) %>% 
+	# 	arrange(state_index) %>% 
+	# 	replace_na(list(frac=0)) %>% 
+	# 	mutate(frac=case_when(x==2 & y==0 & z==0 & crowded==0 ~ frac-0.01, TRUE~frac)) %>% 
+	# 	mutate(frac=case_when(x==1 & y==1 & z==0 & crowded==0 ~ 0.01, TRUE~frac)) %>% 
+	# 	pull(frac)
+
+	# init_A <- household_states %>% 
+	# 	left_join(ic_joiner_A, by=c("x","y","z","hh_size","crowded")) %>% 
+	# 	arrange(state_index) %>% 
+	# 	replace_na(list(frac=0)) %>% 
+	# 	mutate(frac=case_when(x==2 & y==0 & z==0 & crowded==0 ~ frac-0.01, TRUE~frac)) %>% 
+	# 	mutate(frac=case_when(x==1 & y==1 & z==0 & crowded==0 ~ 0.01, TRUE~frac)) %>% 
+	# 	pull(frac)
+
+	pop_cty <- acs_data %>% 
+		filter(GEOID==geoid) %>% 
+		pull(population) %>% 
+		first()
+
+	prop_ag <- acs_data %>% 
+		filter(GEOID==geoid) %>% 
+		pull(prop_ag_workers) %>% 
+		first()
+
+	pop_C <- pop_cty*(1-prop_ag)
+	pop_A <- pop_cty*prop_ag
 
 	# Initialize model
 	mod <- household_model_twopop_crowding$new(
@@ -105,8 +156,8 @@ for(geoid in GEOID_vec){
 	  beta_C = 1.52*(1/5), 
 	  beta_A = 1.52*(1/5),
 	  eps = 0.4, # 0.52
-	  pop_C = 476877,
-	  pop_A = 11559
+	  pop_C = pop_C,
+	  pop_A = pop_A
 	)
 
 	# Simulate
@@ -165,12 +216,12 @@ fig_indiv_full_I_regioncolor <- epidf_indiv_full %>%
 	  theme_minimal() + 
 	  scale_color_manual(values=c("white","white","white","white","blue","white")) 
 
-# geoid_subset <- GEOID_vec
-geoid_subset <- acs_data %>% 
-	filter(prop_ag_workers > 0.05) %>% 
-	# filter(prop_rural > 0.5) %>% 
-	pull(GEOID) %>% 
-	unique()
+geoid_subset <- GEOID_vec
+# geoid_subset <- acs_data %>% 
+# 	filter(prop_ag_workers > 0.05) %>% 
+# 	filter(prop_rural > 0.5) %>% 
+# 	pull(GEOID) %>% 
+# 	unique()
 
 fig_indiv_full_I_regionfacet <- epidf_indiv_full %>% 
   filter(GEOID %in% geoid_subset) %>% 
@@ -203,18 +254,17 @@ epidf_indiv_regionalmean %>%
 	  labs(x = "Time", y = "Proportion", col = "Subpopulation") +
 	  theme_minimal()
 
-
   # ggplot(aes(x=t, y=value, col=name, lty=subpop, group=factor(GEOID))) + 
   #   geom_line() + 
   #   expand_limits(y=0)
-
 
 fig_rel_inf <- epidf_indiv_full %>% 
   select(t, subpop, I_indiv, GEOID) %>% 
   pivot_wider(names_from="subpop", values_from="I_indiv") %>% 
   mutate(rel_inf=A/C) %>% 
   ggplot(aes(x=t, y=rel_inf, group=GEOID)) + 
-    geom_line(alpha=0.2) 
+    geom_line(alpha=0.1) 
+
 
 
 # temp2 <- temp %>% 
