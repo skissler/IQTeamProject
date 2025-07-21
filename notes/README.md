@@ -209,7 +209,17 @@ So, a table:
 
 This all makes sense -- basically, since the agricultural population is small relative to the general community, epsilon gives roughly the number of contacts that an agricultural worker has with other agricultural workers. For the general community, even when epsilon is 1 (fully proportionate mixing), over 95% of contacts are still with the general community. So, changing epsilon won't really change the dynamics of the general community -- we're working with between 95% and 100% of contacts being among other general community members. It really just varies the number of contacts agricultural workers have with other agricultural workers, and if we think that most contacts are assortative - which I think is reasonable -- then we actually want epsilon to be relatively small; almost certainly something less than 0.5. 
 
+Here's that report on COVID infections in counties with siginficant employment in the meatpacking industry: 
 
+https://www.ers.usda.gov/covid-19/rural-america/meatpacking-industry
+
+Alright, this is getting somewhere I think -- it's looking like CA has much higher prevalence amongst ag workers than the general population, while other regions are more similar. 
+
+Getting there -- I'm running the full model now, on all the counties. It's definitely looking like higher transmission amongs agricultural workers. I wonder, though: how much of this elevation in ag workers is happening in rural areas? If we adjust the crowding and household size levels according to the county-level average, are we actually just seeing elevated transmission amongst "agricultural workers" in very urban areas, where there's lots of crowding? And the elevated county-level crowding causes us to push up the agricultural worker crowding even more. 
+
+Alright -- I think we're getting somewhere. I've fixed an issue with the household size/crowding adjustment (originally I was adjusting by deviation from the national mean, but it needs to be from the regional mean). I've also looked at what happens when we just look at places with >5% or >10% of the workforce in agriculture, or places where >50% of people are in rural areas. Not huge differences anywhere here. Clearly there's elevated transmission among ag workers early in the epidemic. 
+
+I have some more cleaning to do; then, I think I'll be in a decent spot to start pulling down some summary statistics. 
 
 
 

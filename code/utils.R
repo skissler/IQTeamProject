@@ -237,5 +237,43 @@ format_output_indiv <- function(model_output, household_states){
 }
 
 
+region_map <- tibble(REGION6=1:6, 
+  REGION_NAME=c(
+    "East",
+    "Southeast",
+    "Midwest",
+    "Southwest",
+    "Northwest",
+    "California"), 
+  REGION_ABBREV=c("EA","SE","MW","SW","NW","CA"))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 

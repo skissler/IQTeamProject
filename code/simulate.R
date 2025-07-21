@@ -10,20 +10,6 @@ source('code/epimodels.R')
 source('code/import_naws.R')
 source('code/import_acs.R')
 
-stateregion <- read_csv("data/stateregion.csv")
-stateabbrev <- read_csv("data/stateabbrev.csv")
-
-# Download county geometries (2023 by default)
-counties_sf <- counties(cb = TRUE, year = 2022)
-
-# Extract GEOID-to-state mapping
-county_lookup <- counties_sf %>%
-  select(GEOID, STATEFP, STUSPS, STATE_NAME)  %>% 
-  inner_join(stateregion, by="STATE_NAME") %>% 
-  inner_join(acs_data, by="GEOID")
-
-GEOID_vec <- sort(unique(county_lookup$GEOID))
-
 # //////////////////////////////////////////////////////////////////////////////
 # Derive dataset for ag and non-ag households 
 # //////////////////////////////////////////////////////////////////////////////
@@ -32,7 +18,8 @@ GEOID_vec <- sort(unique(county_lookup$GEOID))
 
 # Define key variables
 max_hh_size <- 7
-crowding_fold_diff <- 1
+crowding_fold_diff <- 2
+adjust_hhvars <- TRUE
 
 # Load household state definitions
 household_states <- generate_household_state_table(n_min=1, n_max=max_hh_size, crowding=TRUE)
@@ -40,23 +27,49 @@ n_states <- nrow(household_states)
 
 epidf_indiv_full <- tibble()
 
-for(geoid in GEOID_vec[1:100]){
+for(geoid in GEOID_vec){
+# for(geoid in GEOID_vec[1:500]){
 
+	# Which region is our county in? 
 	region <- county_lookup %>% 
 		filter(GEOID == geoid) %>% 
 		pull(REGION6) %>% 
 		first()
 
-	ic_joiner_C <- county_lookup %>% 
-		st_drop_geometry() %>% 
+	# Get the adjustments: 
+	hhSize_factor <- acs_data %>% 
+		filter(GEOID==geoid) %>% 
+		arrange(hhSize) %>% 
+		pull(hhSize_factor)
+
+	crowded_factor <- acs_data %>% 
+		filter(GEOID==geoid) %>% 
+		pull(crowded_factor) %>% 
+		first()
+
+	# Create the ic joiners: 
+	ic_joiner_C <- acs_data %>% 
 		filter(GEOID==geoid) %>% 
 		make_ic_joiner(fold_diff=crowding_fold_diff)
 
-	ic_joiner_A <- naws_data %>% 
-		filter(REGION6==region) %>% 
+	if(adjust_hhvars){
+		naws_data_processed <- naws_data %>% 
+			filter(REGION6==region) %>% 
+			mutate(hhSize_factor=hhSize_factor, crowded_factor=crowded_factor) %>% 
+			mutate(prop=prop*hhSize_factor) %>% 
+			mutate(prop=prop/sum(prop)) %>% 
+			mutate(prop_crowded=prop_crowded*crowded_factor) %>% 
+			mutate(prop_crowded=case_when(prop_crowded>1~1, TRUE~prop_crowded)) %>% 
+			select(-hhSize_factor, -crowded_factor)
+	} else {
+		naws_data_processed <- naws_data %>% 
+			filter(REGION6==region)
+	}
+
+	ic_joiner_A <- naws_data_processed %>% 
 		make_ic_joiner(fold_diff=crowding_fold_diff)
 
-
+	# Create the initial conditions: 
 	init_C <- household_states %>% 
 		left_join(ic_joiner_C, by=c("x","y","z","hh_size","crowded")) %>% 
 		arrange(state_index) %>% 
@@ -105,31 +118,103 @@ for(geoid in GEOID_vec[1:100]){
 
 	epidf_indiv_full <- bind_rows(epidf_indiv_full, mutate(epidf_indiv,GEOID=geoid))
 
-	print(which(GEOID_vec==geoid))
+	counter <- which(GEOID_vec==geoid)
+	if(counter %% 20 == 0){
+		print(counter)	
+	}
 
 }
+
+epidf_indiv_overallmean <- epidf_indiv_full %>% 
+	group_by(t, subpop) %>% 
+	summarise(S_indiv=mean(S_indiv), I_indiv=mean(I_indiv), R_indiv=mean(R_indiv))
+
+epidf_indiv_regionalmean <- epidf_indiv_full %>% 
+	left_join(st_drop_geometry(select(county_lookup, GEOID, REGION6)), by="GEOID") %>% 
+	group_by(t, subpop, REGION6) %>% 
+	summarise(S_indiv=mean(S_indiv), I_indiv=mean(I_indiv), R_indiv=mean(R_indiv))
+
+
 
 fig_indiv_full <- epidf_indiv_full %>% 
   pivot_longer(c("S_indiv", "I_indiv", "R_indiv")) %>% 
   mutate(name=substr(name,1,1)) %>% 
-  filter(name=="I") %>% 
+  # filter(name=="I") %>% 
 	ggplot(aes(x = t, y = value, color = name, linetype = subpop, group = interaction(GEOID, name, subpop))) +
 	  geom_line(alpha=0.1) +
 	  labs(x = "Time", y = "Proportion", color = "Compartment", linetype = "Subpopulation") +
 	  theme_minimal()
+
+fig_indiv_full_I <- epidf_indiv_full %>% 
+  pivot_longer(c("S_indiv", "I_indiv", "R_indiv")) %>% 
+  mutate(name=substr(name,1,1)) %>% 
+  filter(name=="I") %>% 
+	ggplot(aes(x = t, y = value, col = subpop, group = interaction(GEOID, name, subpop))) +
+	  geom_line(alpha=0.2) +
+	  labs(x = "Time", y = "Proportion", col = "Subpopulation") +
+	  theme_minimal()
+
+fig_indiv_full_I_regioncolor <- epidf_indiv_full %>% 
+  pivot_longer(c("S_indiv", "I_indiv", "R_indiv")) %>% 
+  left_join(st_drop_geometry(select(county_lookup, GEOID, REGION6)), by="GEOID") %>% 
+  mutate(name=substr(name,1,1)) %>% 
+  filter(name=="I") %>% 
+	ggplot(aes(x = t, y = value, lty = subpop, col=factor(REGION6), group = interaction(GEOID, name, subpop, REGION6))) +
+	  geom_line(alpha=0.2) +
+	  labs(x = "Time", y = "Proportion", col = "Subpopulation") +
+	  theme_minimal() + 
+	  scale_color_manual(values=c("white","white","white","white","blue","white")) 
+
+# geoid_subset <- GEOID_vec
+geoid_subset <- acs_data %>% 
+	filter(prop_ag_workers > 0.05) %>% 
+	# filter(prop_rural > 0.5) %>% 
+	pull(GEOID) %>% 
+	unique()
+
+fig_indiv_full_I_regionfacet <- epidf_indiv_full %>% 
+  filter(GEOID %in% geoid_subset) %>% 
+  pivot_longer(c("S_indiv", "I_indiv", "R_indiv")) %>% 
+  left_join(st_drop_geometry(select(county_lookup, GEOID, REGION6)), by="GEOID") %>% 
+  mutate(name=substr(name,1,1)) %>% 
+  filter(name=="I") %>% 
+	ggplot(aes(x = t, y = value, col = subpop, group = interaction(GEOID, name, subpop))) +
+	  geom_line(alpha=0.2) +
+	  labs(x = "Time", y = "Proportion", col = "Subpopulation") +
+	  theme_minimal() + 
+	  facet_wrap(~factor(REGION6), nrow=2)
+
+epidf_indiv_overallmean %>% 
+  pivot_longer(c("S_indiv", "I_indiv", "R_indiv")) %>% 
+  mutate(name=substr(name,1,1)) %>% 
+  filter(name=="I") %>% 
+	ggplot(aes(x = t, y = value, col = subpop, group = interaction(name, subpop))) +
+	  geom_line(alpha=0.2) +
+	  labs(x = "Time", y = "Proportion", col = "Subpopulation") +
+	  theme_minimal()
+
+epidf_indiv_regionalmean %>% 
+  pivot_longer(c("S_indiv", "I_indiv", "R_indiv")) %>% 
+  mutate(name=substr(name,1,1)) %>% 
+  filter(name=="I") %>% 
+	ggplot(aes(x = t, y = value, col = factor(REGION6), lty=subpop, group = interaction(REGION6, name, subpop))) +
+	  geom_line(alpha=1) +
+	  scale_color_manual(values=c("red","blue","green","orange","black","magenta")) + 
+	  labs(x = "Time", y = "Proportion", col = "Subpopulation") +
+	  theme_minimal()
+
 
   # ggplot(aes(x=t, y=value, col=name, lty=subpop, group=factor(GEOID))) + 
   #   geom_line() + 
   #   expand_limits(y=0)
 
 
-
-
-
-
-
-
-
+fig_rel_inf <- epidf_indiv_full %>% 
+  select(t, subpop, I_indiv, GEOID) %>% 
+  pivot_wider(names_from="subpop", values_from="I_indiv") %>% 
+  mutate(rel_inf=A/C) %>% 
+  ggplot(aes(x=t, y=rel_inf, group=GEOID)) + 
+    geom_line(alpha=0.2) 
 
 
 # temp2 <- temp %>% 

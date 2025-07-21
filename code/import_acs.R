@@ -4,10 +4,24 @@
 
 library(tidyverse)
 library(tidycensus)
+source('code/utils.R')
 
 # Load Census key
 readRenviron("~/.Renviron")
 year <- 2022
+
+stateregion <- read_csv("data/stateregion.csv")
+stateabbrev <- read_csv("data/stateabbrev.csv")
+
+# Download county geometries (2023 by default)
+counties_sf <- counties(cb = TRUE, year = 2022)
+
+# Extract GEOID-to-state mapping
+county_lookup <- counties_sf %>%
+  select(GEOID, STATEFP, STUSPS, STATE_NAME)  %>% 
+  inner_join(stateregion, by="STATE_NAME") 
+
+GEOID_vec <- sort(unique(county_lookup$GEOID))
 
 # //////////////////////////////////////////////////////////////////////////////
 # Household sizes 
@@ -153,29 +167,85 @@ acs_data <- acs_hhsize %>%
   left_join(acs_ag, by=c("GEOID","NAME")) %>% 
   left_join(acs_pop, by=c("GEOID","NAME")) 
 
+# Append the state and region: 
+acs_data <- acs_data %>% 
+  inner_join(st_drop_geometry(select(county_lookup, GEOID, STUSPS, STATE_NAME, REGION6)), by="GEOID")
+
 # //////////////////////////////////////////////////////////////////////////////
 # Append deviations from the mean
 # //////////////////////////////////////////////////////////////////////////////
 
 mean_hhSize_dist <- acs_data %>% 
-  group_by(hhSize) %>% 
   mutate(propwt=prop*population) %>% 
+  group_by(hhSize, REGION6) %>% 
   summarise(propwt=sum(propwt), population=sum(population)) %>% 
   mutate(propwt=propwt/population) %>% 
-  ungroup() %>% 
+  group_by(REGION6) %>% 
   mutate(propwt=propwt/sum(propwt)) %>% 
-  select(hhSize, prop_mean=propwt)
+  select(REGION6, hhSize, prop_mean=propwt) %>% 
+  arrange(REGION6, hhSize)
 
 mean_prop_crowded <- acs_data %>% 
   mutate(prop_crowded_wt=prop_crowded*population) %>% 
+  group_by(REGION6) %>% 
   summarise(prop_crowded_wt=sum(prop_crowded_wt), population=sum(population)) %>% 
   mutate(prop_crowded_wt = prop_crowded_wt/population) %>% 
-  pull(prop_crowded_wt)
+  select(REGION6, prop_crowded_mean=prop_crowded_wt)
 
 acs_data <- acs_data %>% 
-  left_join(mean_hhSize_dist, by="hhSize") %>% 
-  mutate(prop_crowded_mean=mean_prop_crowded) %>% 
+  left_join(mean_hhSize_dist, by=c("REGION6","hhSize")) %>% 
+  left_join(mean_prop_crowded, by="REGION6") %>% 
   mutate(hhSize_factor=prop/prop_mean) %>% 
   mutate(crowded_factor=prop_crowded/prop_crowded_mean) %>% 
   select(-prop_mean, -prop_crowded_mean)
+
+# //////////////////////////////////////////////////////////////////////////////
+# Append rural/urban designation
+# //////////////////////////////////////////////////////////////////////////////
+
+# vars_dhc_2020 <-  load_variables(2020, "dhc")
+
+# Load P2 urban-rural data from 2020 Census
+urban_rural <- get_decennial(
+  geography = "county",
+  table = "P2",
+  year = 2020) %>%
+  select(GEOID, variable, value) %>%
+  pivot_wider(names_from = variable, values_from = value) %>%
+  mutate(
+    prop_urban = P2_002N / P2_001N,
+    prop_rural = P2_003N / P2_001N,
+    urban_rural_category = case_when(
+      prop_urban >= .5 ~ "Urban-majority",
+      prop_urban < .5 ~ "Rural-majority"
+    )
+  ) %>% 
+  select(GEOID, prop_urban, prop_rural, urban_rural_category)
+  
+acs_data <- acs_data %>% 
+  left_join(select(urban_rural, GEOID, prop_rural), by="GEOID")
+
+
+
+# mean_hhSize_dist <- acs_data %>% 
+#   group_by(hhSize) %>% 
+#   mutate(propwt=prop*population) %>% 
+#   summarise(propwt=sum(propwt), population=sum(population)) %>% 
+#   mutate(propwt=propwt/population) %>% 
+#   ungroup() %>% 
+#   mutate(propwt=propwt/sum(propwt)) %>% 
+#   select(hhSize, prop_mean=propwt)
+
+# mean_prop_crowded <- acs_data %>% 
+#   mutate(prop_crowded_wt=prop_crowded*population) %>% 
+#   summarise(prop_crowded_wt=sum(prop_crowded_wt), population=sum(population)) %>% 
+#   mutate(prop_crowded_wt = prop_crowded_wt/population) %>% 
+#   pull(prop_crowded_wt)
+
+# acs_data <- acs_data %>% 
+#   left_join(mean_hhSize_dist, by="hhSize") %>% 
+#   mutate(prop_crowded_mean=mean_prop_crowded) %>% 
+#   mutate(hhSize_factor=prop/prop_mean) %>% 
+#   mutate(crowded_factor=prop_crowded/prop_crowded_mean) %>% 
+#   select(-prop_mean, -prop_crowded_mean)
 
