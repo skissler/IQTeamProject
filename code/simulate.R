@@ -82,20 +82,6 @@ for(geoid in GEOID_vec[1:500]){
   ic_joiner_C$frac = ic_joiner_C$frac - ic_joiner_C_inf$frac
   ic_joiner_C <- bind_rows(ic_joiner_C, ic_joiner_C_inf)
 
-#   ic_joiner_A %>% 
-#   	mutate(neff=frac*hh_size) %>% 
-#   	group_by(y) %>% 
-#   	summarise(neff=sum(neff))
-
-# ic_joiner_A %>% 
-# 	filter(y==1) %>% 
-# 	summarise(sum(frac))
-
-# ic_joiner_A %>% 
-# 	filter(y==0) %>% 
-# 	mutate(neff=frac*x) %>% 
-# 	summarise(neff=sum(frac))
-
 	# Create the initial conditions: 
 	init_C <- household_states %>% 
 		left_join(ic_joiner_C, by=c("x","y","z","hh_size","crowded")) %>% 
@@ -108,21 +94,6 @@ for(geoid in GEOID_vec[1:500]){
 		arrange(state_index) %>% 
 		replace_na(list(frac=0)) %>% 
 		pull(frac)
-	# init_C <- household_states %>% 
-	# 	left_join(ic_joiner_C, by=c("x","y","z","hh_size","crowded")) %>% 
-	# 	arrange(state_index) %>% 
-	# 	replace_na(list(frac=0)) %>% 
-	# 	mutate(frac=case_when(x==2 & y==0 & z==0 & crowded==0 ~ frac-0.01, TRUE~frac)) %>% 
-	# 	mutate(frac=case_when(x==1 & y==1 & z==0 & crowded==0 ~ 0.01, TRUE~frac)) %>% 
-	# 	pull(frac)
-
-	# init_A <- household_states %>% 
-	# 	left_join(ic_joiner_A, by=c("x","y","z","hh_size","crowded")) %>% 
-	# 	arrange(state_index) %>% 
-	# 	replace_na(list(frac=0)) %>% 
-	# 	mutate(frac=case_when(x==2 & y==0 & z==0 & crowded==0 ~ frac-0.01, TRUE~frac)) %>% 
-	# 	mutate(frac=case_when(x==1 & y==1 & z==0 & crowded==0 ~ 0.01, TRUE~frac)) %>% 
-	# 	pull(frac)
 
 	pop_cty <- acs_data %>% 
 		filter(GEOID==geoid) %>% 
@@ -264,8 +235,6 @@ fig_rel_inf <- epidf_indiv_full %>%
   mutate(rel_inf=A/C) %>% 
   ggplot(aes(x=t, y=rel_inf, group=GEOID)) + 
     geom_line(alpha=0.1) 
-
-
 
 # temp2 <- temp %>% 
 # 	left_join(naws_data, by=c("REGION6","hhSize"))
