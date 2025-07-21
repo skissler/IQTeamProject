@@ -190,9 +190,24 @@ Like varying household sizes and crowding for ag workers by county -- that seems
 Ok - it seems like I have a basic simulation working comparing county-level ag workers and general community transmission. The difference isn't massive, but it's there. I need to figure out how to automate this; then, I can look at comparing the curves more rigorously. 
 
 
+# 21 July 2025 
 
+I realized last night that an assortativity parameter of epsilon = 0.8 may still be way too high -- i.e. way too much proportional mixing. Agricultural workers on average make up 4.7% of the workforce of a given county. To calculate the fraction of contacts that agricultural workers have with other agricultural workers, we need: 
 
+(1-epsilon) + .047*(epsilon)
 
+So, a table: 
+
+| epsilon | fraction of contacts  | 
+-----------------------------------
+|   0     |          1            |
+|   0.1   |          0.90         |
+|   0.2   |          0.80         |
+|   0.5   |          0.52         |
+|   0.8   |          0.23         |
+|   1     |          0.047        |
+
+This all makes sense -- basically, since the agricultural population is small relative to the general community, epsilon gives roughly the number of contacts that an agricultural worker has with other agricultural workers. For the general community, even when epsilon is 1 (fully proportionate mixing), over 95% of contacts are still with the general community. So, changing epsilon won't really change the dynamics of the general community -- we're working with between 95% and 100% of contacts being among other general community members. It really just varies the number of contacts agricultural workers have with other agricultural workers, and if we think that most contacts are assortative - which I think is reasonable -- then we actually want epsilon to be relatively small; almost certainly something less than 0.5. 
 
 
 
