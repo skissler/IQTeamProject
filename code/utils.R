@@ -235,3 +235,7 @@ format_output_indiv <- function(model_output, household_states){
 		  select(t, subpop, S_indiv, I_indiv, R_indiv)
 	return(out)
 }
+
+
+
+

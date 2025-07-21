@@ -152,3 +152,30 @@ acs_data <- acs_hhsize %>%
   left_join(acs_crowding, by=c("GEOID","NAME")) %>% 
   left_join(acs_ag, by=c("GEOID","NAME")) %>% 
   left_join(acs_pop, by=c("GEOID","NAME")) 
+
+# //////////////////////////////////////////////////////////////////////////////
+# Append deviations from the mean
+# //////////////////////////////////////////////////////////////////////////////
+
+mean_hhSize_dist <- acs_data %>% 
+  group_by(hhSize) %>% 
+  mutate(propwt=prop*population) %>% 
+  summarise(propwt=sum(propwt), population=sum(population)) %>% 
+  mutate(propwt=propwt/population) %>% 
+  ungroup() %>% 
+  mutate(propwt=propwt/sum(propwt)) %>% 
+  select(hhSize, prop_mean=propwt)
+
+mean_prop_crowded <- acs_data %>% 
+  mutate(prop_crowded_wt=prop_crowded*population) %>% 
+  summarise(prop_crowded_wt=sum(prop_crowded_wt), population=sum(population)) %>% 
+  mutate(prop_crowded_wt = prop_crowded_wt/population) %>% 
+  pull(prop_crowded_wt)
+
+acs_data <- acs_data %>% 
+  left_join(mean_hhSize_dist, by="hhSize") %>% 
+  mutate(prop_crowded_mean=mean_prop_crowded) %>% 
+  mutate(hhSize_factor=prop/prop_mean) %>% 
+  mutate(crowded_factor=prop_crowded/prop_crowded_mean) %>% 
+  select(-prop_mean, -prop_crowded_mean)
+
