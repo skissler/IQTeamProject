@@ -220,6 +220,9 @@ household_model_twopop_crowding <- odin::odin({
   I_den_A[] <- H_A[i] * hh_size[i]
   I_A <- sum(I_num_A) / sum(I_den_A)
 
+  # print("I_C: {I_C}")
+  # print("I_A: {I_A}")
+
   # Mixing matrix entries: eps=0 is totally assortative, eps=1 is proportional mixing: 
   w_C <- pop_C / (pop_C + pop_A)
   w_A <- pop_A / (pop_C + pop_A)

@@ -249,9 +249,13 @@ region_map <- tibble(REGION6=1:6,
 
 
 
+rtsin <- function(t){
+	out <- 0.2*sin(2*pi*t/180) + 1
+	return(out)
+}
 
-
-
+# t <- seq(from=0, to=365, by=1)
+# plot(t, rtsin(t))
 
 
 

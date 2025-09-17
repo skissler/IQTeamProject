@@ -234,17 +234,75 @@ i.e. 800 people
 ok got it. 
 
 
+ic_joiner_C %>% 
+	group_by(crowded) %>% 
+	summarise(frac=sum(frac))
+
+epidf_indiv_full %>% 
+	filter(t==0) %>% 
+	print(n=200)
 
 
 
+epidf_hh %>% 
+	group_by(t, subpop, crowded) %>% 
+	summarise(prop_hh=sum(prop_hh))
 
 
+beta values for a given R0: 
+1.2: .765*(1/5)
+1.5: 1.05*(1/5)
+2.0: 1.53*(1/5)
+3.0: 2.52*(1/5)
 
 
+and final sizes we expect for each R0: 
 
+1.2: 0.3137
+1.5: 0.5828
+2.0: 0.7968
+3.0: 0.9405
 
+This is with the following parameter values: 
 
+```
 
+# Initialize model
+mod_national <- household_model_twopop_crowding$new(
+  n_states = n_states,
+  x = household_states$x,
+  y = household_states$y,
+  z = household_states$z,
+  hh_size = household_states$hh_size,
+  crowded = household_states$crowded,
+  rec_index = household_states$rec_index,
+  inf_index = household_states$inf_index,
+  init_C = init_nat_C,
+  init_A = init_nat_A,
+  gamma = 1/5,
+  tau_C = (1/4)*(1/5), # 20% SAR
+  tau_A = 0, 
+  tau_boost = (2/3)*(1/5) - (1/4)*(1/5), #9 - (1/4)*(1/5), #(2/3)*(1/5) - (1/4)*(1/5), # Boosts to a 40% SAR 
+  beta_C = 2.52*(1/5), 
+  beta_A = 0,
+  eps = 0,
+  pop_C = 10000,
+  pop_A = 0
+)
+
+```
+
+(and with crowding and household sizes averaged across counties at the national level) 
+
+# 23 July 2025 
+
+Thinking now about what kinds of Rt we should use. 
+
+Clearly Rt for COVID decreased rapidly to something near 1 and lingered there for much of 2020-2021. COVIDestim has information on this (hopefully I can find some papers associated with their work to support?), and this one too from [Canada](https://link.springer.com/article/10.1186/s12889-021-11684-x). Here are some [2014 estimates of R0](https://link.springer.com/article/10.1186/1471-2334-14-480?filter_by=popular&page=10) for influenza (seasonal and pandemic), which mostly run between 1.2 and 1.5. That might be the range we want to stick within, of course noting that higher Rt/R0 yields substantially smaller differences between the agricultural and general communities. 
+
+I wonder too if the region-level analysis is what we should foreground. It does seem like the county-level adjustment strategy, while good, could be criticized; and if we don't adjust, we see far fewer differences between the agricultural workforce and the general community. I do think adjustment is actually the right thing to do, because we actually see higher levels of baseline crowding in places that have high agricultural production (with the increased ACS crowding possibly due to the crowding of agricultural workers in that area), but we just don't have clear county-level data on crowding among agricultural workers. Another strategy might be to try a smaller variance on the variation in agricultural worker crowding; rather than giving them the same relative difference from the mean, since their mean is so much higher than the general community, maybe we impose the same standard deviation on the county-level crowding in the agricultural workforce and match the quantiles across counties. This would allow for some variation in crowding among ag workers at the county level without potentially over-inflating that variation -- or rather, giving us a conservative estimate of that variation, and we could assume some range of (1) the variation in ag workforce following the variation at the county level vs (2) totally random variation in the ag workforce relative to the  county. That might actually be the best way to do it. 
+
+But, I need to think a few steps ahead here: if we were to get county-level estimates of deviations in transmission between agricultural workers and the general community, what would we do with it? I think I need to think a bit more clearly through the outcome metrics we want; that might help direct the simulations I end up running here. 
 
 
 

@@ -39,6 +39,29 @@ naws_hh <- naws %>%
   summarise(prop=sum(prop)) %>% 
   rename(hhSize=hhSize_agg)
 
+
+# variance? 
+
+temp <- naws %>% 
+  select(FY, REGION6, HHFAMGRD, PWTYCRD) %>% 
+  filter(FY >= 2018 & FY <= 2022) %>% 
+  group_by(HHFAMGRD, REGION6) %>% 
+
+
+  summarise(PWTYCRD=sum(PWTYCRD)) %>% 
+  group_by(REGION6) %>% 
+  mutate(PWTYCRD_TOT=sum(PWTYCRD)) %>% 
+  mutate(HHFAMGRD_PROP=PWTYCRD/PWTYCRD_TOT) %>% 
+  arrange(REGION6, HHFAMGRD) %>% 
+  select(REGION=REGION6, hhSize=HHFAMGRD, prop=HHFAMGRD_PROP) %>% 
+  left_join(region_map, by=c("REGION"="REGION6")) %>% 
+  mutate(hhSize_agg = case_when(hhSize<=6 ~ hhSize, TRUE~7)) %>% 
+  group_by(REGION, REGION_NAME, REGION_ABBREV, hhSize_agg) %>% 
+  summarise(prop=sum(prop)) %>% 
+  rename(hhSize=hhSize_agg)
+
+
+
 # //////////////////////////////////////////////////////////////////////////////
 # Crowding
 # //////////////////////////////////////////////////////////////////////////////

@@ -39,6 +39,12 @@ n_states <- nrow(household_states)
 
 # Create a data frame to help make initial conditions: 
 ic_joiner <- make_ic_joiner(nat_data, fold_diff=crowding_fold_diff)
+# Make everyone crowded: 
+# ic_joiner <- ic_joiner %>% 
+#   group_by(hh_size) %>% 
+#   mutate(frac=sum(frac)) %>% 
+#   mutate(frac=case_when(crowded==0~0, TRUE~frac))
+
 
 # Create IC vector for the community. For now, make it so that 1% of households start off infected. All these infected households will be 2-person households with a single infected member. 
 init_nat_C <- household_states %>% 
@@ -68,16 +74,16 @@ mod_national <- household_model_twopop_crowding$new(
   gamma = 1/5,
   tau_C = (1/4)*(1/5), # 20% SAR
   tau_A = 0, 
-  tau_boost = (2/3) - (1/4), # Boosts to a 40% SAR 
-  beta_C = 1.52*(1/5), 
+  tau_boost = (2/3)*(1/5) - (1/4)*(1/5), #9 - (1/4)*(1/5), #(2/3)*(1/5) - (1/4)*(1/5), # Boosts to a 40% SAR 
+  beta_C = 2.52*(1/5), 
   beta_A = 0,
   eps = 0,
-  pop_C = 1000,
+  pop_C = 10000,
   pop_A = 0
 )
 
 # Simulate
-times <- seq(0, 100, by = 1)
+times <- seq(0, 1000, by = 1)
 out_national <- as_tibble(data.frame(mod_national$run(times)))
 
 epidf_hh_national <- format_output_hh(out_national, household_states)
