@@ -223,9 +223,29 @@ urban_rural <- get_decennial(
   select(GEOID, prop_urban, prop_rural, urban_rural_category)
   
 acs_data <- acs_data %>% 
-  left_join(select(urban_rural, GEOID, prop_rural), by="GEOID")
+  left_join(select(urban_rural, GEOID, prop_rural), by="GEOID") %>% 
+  ungroup() 
 
+# //////////////////////////////////////////////////////////////////////////////
+# Generate regional summaries for the acs
+# //////////////////////////////////////////////////////////////////////////////
 
+acs_data_regional <- acs_data %>% 
+  group_by(REGION6, hhSize) %>% 
+  mutate(
+    prop=prop*population, 
+    prop_crowded=prop_crowded*population,
+    prop_ag_workers=prop_ag_workers*population) %>% 
+  summarise(
+    prop=sum(prop), 
+    prop_crowded=sum(prop_crowded), 
+    prop_ag_workers=sum(prop_ag_workers), 
+    population=sum(population)) %>% 
+  mutate(
+    prop=prop/population,
+    prop_crowded=prop_crowded/population,
+    prop_ag_workers=prop_ag_workers/population) %>% 
+  ungroup() 
 
 # mean_hhSize_dist <- acs_data %>% 
 #   group_by(hhSize) %>% 

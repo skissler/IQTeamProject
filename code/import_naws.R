@@ -78,7 +78,8 @@ naws_crowding <- naws %>%
   filter(CROWDED1==1) %>% 
   select(REGION=REGION6, Crowded=CROWDED1, prop=CROWDED1_PROP) %>% 
   left_join(region_map, by=c("REGION"="REGION6")) %>% 
-  select(REGION, REGION_NAME, REGION_ABBREV, Crowded, prop_crowded=prop)
+  select(REGION, REGION_NAME, REGION_ABBREV, Crowded, prop_crowded=prop) %>% 
+  ungroup() 
 
 # //////////////////////////////////////////////////////////////////////////////
 # Combine
@@ -94,4 +95,5 @@ naws_crowding <- naws %>%
 
 naws_data <- naws_hh %>% 
   left_join(select(naws_crowding, REGION, REGION_NAME, REGION_ABBREV, prop_crowded), by=c("REGION","REGION_NAME","REGION_ABBREV")) %>% 
-  rename(REGION6=REGION)
+  rename(REGION6=REGION) %>% 
+  ungroup() 

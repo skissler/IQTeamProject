@@ -40,6 +40,19 @@ naws_data %>%
 	summarise(prop_crowded=first(prop_crowded)) 
 
 
+acs_data %>% 
+	filter(hhSize==1) %>% 
+	ggplot(aes(x=prop_ag_workers, fill=factor(REGION6))) + 
+		geom_histogram(position="identity") + 
+		theme_classic() 
+
+acs_data %>% 
+	filter(hhSize==1) %>% 
+	group_by(REGION6) %>% 
+	mutate(propagwt = prop_ag_workers * population) %>% 
+	summarise(propagwt = sum(propagwt), population=sum(population)) %>% 
+	mutate(propag = propagwt / population)
+
 # //////////////////////////////////////////////////////////////////////////////
 # Plot infections by region
 # //////////////////////////////////////////////////////////////////////////////
@@ -70,6 +83,30 @@ temp <- ggplot() +
 
 
 # //////////////////////////////////////////////////////////////////////////////
+# How do crowding levels compare? 
+# //////////////////////////////////////////////////////////////////////////////
+
+
+acs_data %>% 
+	left_join(naws_data, by=c("REGION6","hhSize")) %>% 
+	mutate(prop_crowded.y_adj = prop_crowded.y*crowded_factor) %>% 
+	select(GEOID, REGION6, hhSize, prop.x, prop.y, pcx=prop_crowded.x, pcy=prop_crowded.y_adj, crowded_factor) %>% 
+	select(GEOID, pcx, pcy) %>% 
+	pivot_longer(-GEOID) %>% 
+	ggplot(aes(x=value, fill=name)) + 
+		geom_histogram(position="identity", col="black", alpha=0.5, bins=50) + 
+		# geom_vline(data=naws_crowding_plotter, aes(xintercept=prop_crowded)) + 
+		theme_classic() 
+
+
+acs_data %>% 
+	ggplot(aes(x=crowded_factor)) + 
+		geom_histogram(bins=50) + 
+		theme_classic() + 
+		geom_vline(aes(xintercept=1))
+
+
+# //////////////////////////////////////////////////////////////////////////////
 # Where are the places with the biggest differences? 
 # //////////////////////////////////////////////////////////////////////////////
 
@@ -90,7 +127,7 @@ fig_fracdiff_hist <- fracdiff_df %>%
 		theme_classic() 
 
 fig_fracdiff_map <- fracdiff_df %>% 
-	mutate(fracdiff=case_when(fracdiff<1.2~NA, TRUE~fracdiff)) %>% 
+	# mutate(fracdiff=case_when(fracdiff<1.2~NA, TRUE~fracdiff)) %>% 
 	ggplot() + 
 	  geom_sf(aes(geometry=geometry, fill = fracdiff), color = NA) +  
 	  geom_sf(data = states, fill = NA, color = "black", size = 0.3) + 
@@ -137,7 +174,29 @@ fig_acscrowding_map <- acs_data %>%
 	  )
 
 
-
+fig_acscrowdingfactor_map <- acs_data %>% 
+	left_join(select(county_lookup, GEOID), by="GEOID") %>% 
+	st_as_sf() %>% 
+	st_transform(crs=5070) %>% 
+	filter(crowded_factor < 5) %>% 
+	ggplot() + 
+	  geom_sf(aes(geometry=geometry, fill = crowded_factor), color = NA) +  
+	  geom_sf(data = states, fill = NA, color = "black", size = 0.3) + 
+	  scale_fill_viridis_c(
+	    name = "Crowding factor",
+	    na.value = "lightgrey"
+	  ) +
+	  labs(
+	    title = "County-level Map of crowding (ACS)",
+	    subtitle = "Using sf geometries",
+	    caption = "Source: Your Data"
+	  ) +
+	  theme_void() +
+	  theme(
+	    legend.position = "right",
+	    plot.title = element_text(size = 16, face = "bold"),
+	    plot.subtitle = element_text(size = 12)
+	  )
 
 
 

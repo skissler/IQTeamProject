@@ -7,28 +7,8 @@ library(odin)
 source('code/utils.R')
 source('code/epimodels.R')
 
-# source('code/import_naws.R')
-# source('code/import_acs.R')
-
-# //////////////////////////////////////////////////////////////////////////////
-# Generate regional summaries for the acs
-# //////////////////////////////////////////////////////////////////////////////
-
-acs_data_regional <- acs_data %>% 
-	group_by(REGION6, hhSize) %>% 
-	mutate(
-		prop=prop*population, 
-		prop_crowded=prop_crowded*population,
-		prop_ag_workers=prop_ag_workers*population) %>% 
-	summarise(
-		prop=sum(prop), 
-		prop_crowded=sum(prop_crowded), 
-		prop_ag_workers=sum(prop_ag_workers), 
-		population=sum(population)) %>% 
-	mutate(
-		prop=prop/population,
-		prop_crowded=prop_crowded/population,
-		prop_ag_workers=prop_ag_workers/population)
+source('code/import_naws.R')
+source('code/import_acs.R')
 
 # //////////////////////////////////////////////////////////////////////////////
 # Run the simulation
