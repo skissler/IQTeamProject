@@ -135,11 +135,6 @@ fig_fracdiff_map <- fracdiff_df %>%
 	    name = "FracDiff",
 	    na.value = "lightgrey"
 	  ) +
-	  labs(
-	    title = "County-level Map of FracDiff",
-	    subtitle = "Using sf geometries",
-	    caption = "Source: Your Data"
-	  ) +
 	  theme_void() +
 	  theme(
 	    legend.position = "right",
@@ -162,9 +157,7 @@ fig_acscrowding_map <- acs_data %>%
 	    na.value = "lightgrey"
 	  ) +
 	  labs(
-	    title = "County-level Map of crowding (ACS)",
-	    subtitle = "Using sf geometries",
-	    caption = "Source: Your Data"
+	    title = "County-level Map of crowding (ACS)"
 	  ) +
 	  theme_void() +
 	  theme(
@@ -187,9 +180,7 @@ fig_acscrowdingfactor_map <- acs_data %>%
 	    na.value = "lightgrey"
 	  ) +
 	  labs(
-	    title = "County-level Map of crowding (ACS)",
-	    subtitle = "Using sf geometries",
-	    caption = "Source: Your Data"
+	    title = "County-level Map of crowding (ACS)"
 	  ) +
 	  theme_void() +
 	  theme(
