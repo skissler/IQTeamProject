@@ -65,7 +65,7 @@ household_model <- odin::odin({
       if(inf_index[i]>0) (x[i]+1)*H[inf_index[i]] else 0)
   # print("I: {I}")
 
-  }, debug_enable=TRUE)
+  })
 
 # Continue from here -- how should we specify the initial distributions of household sizes? How to deal with population sizes? How to make sure we've got the right mixing matrix approach? 
 
@@ -163,7 +163,7 @@ household_model_twopop <- odin::odin({
       if (inf_index[i] > 0) (x[i] + 1) * H_A[inf_index[i]] else 0
     )
 
-}, debug_enable = TRUE)
+})
 
 
 household_model_twopop_crowding <- odin::odin({
@@ -266,6 +266,6 @@ household_model_twopop_crowding <- odin::odin({
       if (inf_index[i] > 0) (x[i] + 1) * H_A[inf_index[i]] else 0
     )
 
-}, debug_enable = TRUE)
+})
 
 
