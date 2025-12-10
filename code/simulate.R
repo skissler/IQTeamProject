@@ -26,10 +26,15 @@ init_prev <- 0.001
 household_states <- generate_household_state_table(n_min=1, n_max=max_hh_size, crowding=TRUE)
 n_states <- nrow(household_states)
 
+# Pre-split the acs data: 
+acs_data_list <- split(acs_data, acs_data$GEOID)
+
 epidf_indiv_full <- tibble()
 
 for(geoid in GEOID_vec){
 # for(geoid in GEOID_vec[1:500]){
+
+	county_data <- acs_data_list[[geoid]]
 
 	# Which region is our county in? 
 	region <- county_lookup %>% 
@@ -38,19 +43,16 @@ for(geoid in GEOID_vec){
 		first()
 
 	# Get the adjustments: 
-	hhSize_factor <- acs_data %>% 
-		filter(GEOID==geoid) %>% 
+	hhSize_factor <- county_data %>% 
 		arrange(hhSize) %>% 
 		pull(hhSize_factor)
 
-	crowded_factor <- acs_data %>% 
-		filter(GEOID==geoid) %>% 
+	crowded_factor <- county_data %>% 
 		pull(crowded_factor) %>% 
 		first()
 
 	# Create the ic joiners: 
-	ic_joiner_C <- acs_data %>% 
-		filter(GEOID==geoid) %>% 
+	ic_joiner_C <- county_data %>% 
 		make_ic_joiner(fold_diff=crowding_fold_diff)
 
 	if(adjust_hhvars){
@@ -96,13 +98,11 @@ for(geoid in GEOID_vec){
 		replace_na(list(frac=0)) %>% 
 		pull(frac)
 
-	pop_cty <- acs_data %>% 
-		filter(GEOID==geoid) %>% 
+	pop_cty <- county_data %>% 
 		pull(population) %>% 
 		first()
 
-	prop_ag <- acs_data %>% 
-		filter(GEOID==geoid) %>% 
+	prop_ag <- county_data %>% 
 		pull(prop_ag_workers) %>% 
 		first()
 
