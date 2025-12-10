@@ -304,7 +304,9 @@ I wonder too if the region-level analysis is what we should foreground. It does 
 
 But, I need to think a few steps ahead here: if we were to get county-level estimates of deviations in transmission between agricultural workers and the general community, what would we do with it? I think I need to think a bit more clearly through the outcome metrics we want; that might help direct the simulations I end up running here. 
 
+# 10 Dec 2025
 
+After a long break (and some writing on the manuscript), I'm returning to this – I want to edit the codebase so that it's more streamlined and efficient. I've just started branch `CodeOptimization` to get started on that. 
 
 
 
