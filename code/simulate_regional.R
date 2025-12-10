@@ -15,10 +15,10 @@ source('code/import_acs.R')
 # //////////////////////////////////////////////////////////////////////////////
 
 # Define key variables
-max_hh_size <- 7
-crowding_fold_diff <- 2
-adjust_hhvars <- TRUE
-init_prev <- 0.001
+max_hh_size <- pars$max_hh_size
+crowding_fold_diff <- pars$crowding_fold_diff
+adjust_hhvars <- pars$adjust_hhvars
+init_prev <- pars$init_prev
 
 # Load household state definitions
 household_states <- generate_household_state_table(n_min=1, n_max=max_hh_size, crowding=TRUE)
@@ -88,13 +88,13 @@ for(region in 1:6){
 	  inf_index = household_states$inf_index,
 	  init_C = init_C,
 	  init_A = init_A,
-	  gamma = 1/5,
-	  tau_C = (1/4)*(1/5), # 20% SAR
-	  tau_A = (1/4)*(1/5), 
-	  tau_boost = (2/3)*(1/5) - (1/4)*(1/5), # Boosts to a 40% SAR 
-	  beta_C = .765*(1/5), 
-	  beta_A = .765*(1/5),
-	  eps = 0.33, # 0.4 # 0.52
+	  gamma = pars$gamma,
+	  tau_C = pars$tau_C, # 20% SAR
+	  tau_A = pars$tau_A, 
+	  tau_boost = pars$tau_boost, # Boosts to a 40% SAR 
+	  beta_C = pars$beta_C, 
+	  beta_A = pars$beta_C,
+	  eps = pars$eps, # 0.4 # 0.52
 	  pop_C = pop_C,
 	  pop_A = pop_A
 	)
@@ -110,34 +110,6 @@ for(region in 1:6){
 
 }
 
-# init_A_comp <- rep(0, length(init_A))
-# init_A_comp[1] <- 1
-# mod_comp <- household_model_twopop_crowding$new(
-#   n_states = n_states,
-#   x = household_states$x,
-#   y = household_states$y,
-#   z = household_states$z,
-#   hh_size = household_states$hh_size,
-#   crowded = household_states$crowded,
-#   rec_index = household_states$rec_index,
-#   inf_index = household_states$inf_index,
-#   init_C = init_C,
-#   init_A = init_A_comp,
-#   gamma = 1/5,
-#   tau_C = (1/4)*(1/5), # 20% SAR
-#   tau_A = 0, 
-#   tau_boost = (2/3)*(1/5) - (1/4)*(1/5), # Boosts to a 40% SAR 
-#   beta_C = 1.53*(1/5), 
-#   beta_A = 0,
-#   eps = 0.4, # 0.4 # 0.52
-#   pop_C = pop_C,
-#   pop_A = 0
-# )
-# # Simulate
-# times <- seq(0, 100, by = 1)
-# out_comp <- as_tibble(data.frame(mod_comp$run(times)))
-# epidf_indiv_comp <- format_output_indiv(out_comp, household_states)
-# fs <- epidf_indiv_comp %>% pull(R_indiv) %>% last()
 
 fig_indiv_full_I_regionfacet <- epidf_indiv_full %>% 
   pivot_longer(c("S_indiv", "I_indiv", "R_indiv")) %>% 
