@@ -17,10 +17,10 @@ source('code/import_acs.R')
 # update population sizes/fraction of agricultural workers; check all inputs to make sure they're updating correctly; check that crowding is implemented correctly. 
 
 # Define key variables
-max_hh_size <- 7
-crowding_fold_diff <- 2
-adjust_hhvars <- TRUE
-init_prev <- 0.001
+max_hh_size <- pars$max_hh_size
+crowding_fold_diff <- pars$crowding_fold_diff
+adjust_hhvars <- pars$adjust_hhvars
+init_prev <- pars$init_prev
 
 # Load household state definitions
 household_states <- generate_household_state_table(n_min=1, n_max=max_hh_size, crowding=TRUE)
@@ -121,13 +121,13 @@ for(geoid in GEOID_vec){
 	  inf_index = household_states$inf_index,
 	  init_C = init_C,
 	  init_A = init_A,
-	  gamma = 1/5,
-	  tau_C = (1/4)*(1/5), # 20% SAR
-	  tau_A = (1/4)*(1/5), 
-	  tau_boost = (2/3)*(1/5) - (1/4)*(1/5), # Boosts to a 40% SAR 
-	  beta_C = .765*(1/5), 
-	  beta_A = .765*(1/5),
-	  eps = 0.4, # 0.4 # 0.52
+	  gamma = pars$gamma,
+	  tau_C = pars$tau_C, # 20% SAR
+	  tau_A = pars$tau_A, 
+	  tau_boost = pars$tau_boost, # Boosts to a 40% SAR 
+	  beta_C = pars$beta_C, 
+	  beta_A = pars$beta_A,
+	  eps = pars$eps, # 0.4 # 0.52
 	  pop_C = pop_C,
 	  pop_A = pop_A
 	)
