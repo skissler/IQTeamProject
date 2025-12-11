@@ -1,8 +1,15 @@
+# code/utils.R
+
 library(tidyverse)
 library(sf)
 library(tigris)
 library(tidycensus)
+
+# Configure Tigris to cache downloads (speeds up repeated runs)
 options(tigris_use_cache = TRUE)
+
+# Ensure Census API key is available
+# Note: Users must set CENSUS_API_KEY in their .Renviron
 census_api_key(Sys.getenv("CENSUS_API_KEY"))
 
 get_state_boundaries <- function(internal=TRUE){
@@ -202,7 +209,6 @@ adjust_crowding <- function(df, fold_diff=1, indexcols=NULL){
 
 }
 
-
 make_ic_joiner <- function(dat, fold_diff=1, indexcols=NULL){
 
 	dat <- adjust_crowding(dat, fold_diff=fold_diff, indexcols=indexcols)
@@ -248,36 +254,8 @@ region_map <- tibble(REGION6=1:6,
   REGION_ABBREV=c("EA","SE","MW","SW","NW","CA"))
 
 
-
 rtsin <- function(t){
 	out <- 0.2*sin(2*pi*t/180) + 1
 	return(out)
 }
-
-# t <- seq(from=0, to=365, by=1)
-# plot(t, rtsin(t))
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 

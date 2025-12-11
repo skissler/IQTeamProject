@@ -14,7 +14,7 @@ stateregion <- read_csv("data/stateregion.csv")
 stateabbrev <- read_csv("data/stateabbrev.csv")
 
 # Download county geometries (2023 by default)
-counties_sf <- counties(cb = TRUE, year = 2022)
+counties_sf <- counties(cb = TRUE, year = year)
 
 # Extract GEOID-to-state mapping
 county_lookup <- counties_sf %>%
@@ -142,7 +142,7 @@ acs_ag <- acs_ag %>%
 acs_pop <- get_acs(
   geography = "county",
   variables = "B01003_001",  # total population
-  year = 2022,
+  year = year,
   survey = "acs5")
 
 # Clean up the result

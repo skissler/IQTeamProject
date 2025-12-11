@@ -1,4 +1,5 @@
 
+make_household_pyramid <- function(data_regional){
 # To create the side-by-side histogram effect, we will make the proportions
 # for one of the sources (ACS) negative. This will plot its bars to the left
 # of the central axis.
@@ -55,6 +56,11 @@ fig_hhsize_pyramid <- ggplot(data_modified, aes(x = hhSize, y = plot_prop, fill 
     panel.grid.major.y = element_blank(), # Remove horizontal grid lines
     axis.ticks = element_line(color = "grey80")
   )
+
+  return(fig_hhsize_pyramid)
+}
+
+fig_hhsize_pyramid <- make_household_pyramid(data_regional)
 
 # To save the plot to a file, you can uncomment the following line:
 # ggsave("household_size_pyramid_plot.png", plot = pyramid_plot, width = 10, height = 8, dpi = 300)

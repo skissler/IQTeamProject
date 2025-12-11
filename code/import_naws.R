@@ -41,13 +41,10 @@ naws_hh <- naws %>%
 
 
 # variance? 
-
 temp <- naws %>% 
   select(FY, REGION6, HHFAMGRD, PWTYCRD) %>% 
   filter(FY >= 2018 & FY <= 2022) %>% 
   group_by(HHFAMGRD, REGION6) %>% 
-
-
   summarise(PWTYCRD=sum(PWTYCRD)) %>% 
   group_by(REGION6) %>% 
   mutate(PWTYCRD_TOT=sum(PWTYCRD)) %>% 
@@ -59,7 +56,6 @@ temp <- naws %>%
   group_by(REGION, REGION_NAME, REGION_ABBREV, hhSize_agg) %>% 
   summarise(prop=sum(prop)) %>% 
   rename(hhSize=hhSize_agg)
-
 
 
 # //////////////////////////////////////////////////////////////////////////////
