@@ -6,7 +6,6 @@ source('code/summarystats.R')
 source('code/calibrate_model.R') 
 
 source('code/parameters.R')
-
 for(pars in pars_list){
 	source('code/simulate_regional.R')
 	# source('code/simulate.R') 
