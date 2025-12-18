@@ -15,10 +15,13 @@ source('code/import_acs.R')
 # //////////////////////////////////////////////////////////////////////////////
 
 # Define key variables
-max_hh_size <- pars$max_hh_size
-crowding_fold_diff <- pars$crowding_fold_diff
-adjust_hhvars <- pars$adjust_hhvars
-init_prev <- pars$init_prev
+# max_hh_size <- pars$max_hh_size
+# crowding_fold_diff <- pars$crowding_fold_diff
+# adjust_hhvars <- pars$adjust_hhvars
+# init_prev <- pars$init_prev
+
+run_regional_sim <- function(____){
+with(as.list(pars), {
 
 # Load household state definitions
 household_states <- generate_household_state_table(n_min=1, n_max=max_hh_size, crowding=TRUE)
@@ -109,6 +112,11 @@ for(region in 1:6){
 	epidf_indiv_full <- bind_rows(epidf_indiv_full, mutate(epidf_indiv,REGION6=region))
 
 }
+
+return(epidf_indiv_full)
+})
+}
+
 
 
 fig_indiv_full_I_regionfacet <- epidf_indiv_full %>% 
