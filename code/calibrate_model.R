@@ -29,9 +29,22 @@ nat_data <- acs_data %>%
 # Calibrate the model at the national level 
 # //////////////////////////////////////////////////////////////////////////////
 
-# Define key variables
-max_hh_size <- 7
-crowding_fold_diff <- 2
+pars_calibrate <- list(
+    gamma = 1/5,
+    tau_C = (1/4)*(1/5),             
+    tau_A = 0,
+    tau_boost = (2/3)*(1/5) - (1/4)*(1/5),  
+    beta_C = 2.52*(1/5),      # Calibrated beta scalar
+    beta_A = 0,      # Calibrated beta scalar
+    eps = 0,
+    max_hh_size = 7,
+    crowding_fold_diff=2,
+    adjust_hhvars = TRUE,
+    init_prev = 0.001
+  )
+
+run_calibration_sim <- function(pars, nat_data){
+with(as.list(pars), {
 
 # Load household state definitions
 household_states <- generate_household_state_table(n_min=1, n_max=max_hh_size, crowding=TRUE)
@@ -71,13 +84,13 @@ mod_national <- household_model_twopop_crowding$new(
   inf_index = household_states$inf_index,
   init_C = init_nat_C,
   init_A = init_nat_A,
-  gamma = 1/5,
-  tau_C = (1/4)*(1/5), # 20% SAR
-  tau_A = 0, 
-  tau_boost = (2/3)*(1/5) - (1/4)*(1/5), #9 - (1/4)*(1/5), #(2/3)*(1/5) - (1/4)*(1/5), # Boosts to a 40% SAR 
-  beta_C = 2.52*(1/5), 
-  beta_A = 0,
-  eps = 0,
+  gamma = gamma,
+  tau_C = tau_C, # 20% SAR
+  tau_A = tau_A, 
+  tau_boost = tau_boost,  
+  beta_C = beta_C, 
+  beta_A = beta_A,
+  eps = eps,
   pop_C = 10000,
   pop_A = 0
 )
@@ -85,9 +98,16 @@ mod_national <- household_model_twopop_crowding$new(
 # Simulate
 times <- seq(0, 1000, by = 1)
 out_national <- as_tibble(data.frame(mod_national$run(times)))
-
 epidf_hh_national <- format_output_hh(out_national, household_states)
 epidf_indiv_national <- format_output_indiv(out_national, household_states)
+return(epidf_indiv_national)
+})
+}
+
+# epidf_hh_national <- format_output_hh(out_national, household_states)
+# epidf_indiv_national <- format_output_indiv(out_national, household_states)
+
+epidf_indiv_national <- run_calibration_sim(pars_calibrate, nat_data)
 
 fig_indiv_national <- epidf_indiv_national %>% 
   pivot_longer(c("S_indiv", "I_indiv", "R_indiv")) %>% 
