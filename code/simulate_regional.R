@@ -14,11 +14,6 @@ source('code/import_acs.R')
 # Run the simulation
 # //////////////////////////////////////////////////////////////////////////////
 
-# Define key variables
-# max_hh_size <- pars$max_hh_size
-# crowding_fold_diff <- pars$crowding_fold_diff
-# adjust_hhvars <- pars$adjust_hhvars
-# init_prev <- pars$init_prev
 
 run_regional_sim <- function(pars, acs_data_regional, naws_data){
 with(as.list(pars), {
