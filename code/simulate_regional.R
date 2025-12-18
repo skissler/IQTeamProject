@@ -20,7 +20,7 @@ source('code/import_acs.R')
 # adjust_hhvars <- pars$adjust_hhvars
 # init_prev <- pars$init_prev
 
-run_regional_sim <- function(____){
+run_regional_sim <- function(pars, acs_data_regional, naws_data){
 with(as.list(pars), {
 
 # Load household state definitions
@@ -91,13 +91,13 @@ for(region in 1:6){
 	  inf_index = household_states$inf_index,
 	  init_C = init_C,
 	  init_A = init_A,
-	  gamma = pars$gamma,
-	  tau_C = pars$tau_C, # 20% SAR
-	  tau_A = pars$tau_A, 
-	  tau_boost = pars$tau_boost, # Boosts to a 40% SAR 
-	  beta_C = pars$beta_C, 
-	  beta_A = pars$beta_C,
-	  eps = pars$eps, # 0.4 # 0.52
+	  gamma = gamma,
+	  tau_C = tau_C, # 20% SAR
+	  tau_A = tau_A, 
+	  tau_boost = tau_boost, # Boosts to a 40% SAR 
+	  beta_C = beta_C, 
+	  beta_A = beta_C,
+	  eps = eps, # 0.4 # 0.52
 	  pop_C = pop_C,
 	  pop_A = pop_A
 	)
@@ -117,7 +117,7 @@ return(epidf_indiv_full)
 })
 }
 
-
+epidf_indiv_full <- run_regional_sim(pars, acs_data_regional, naws_data)
 
 fig_indiv_full_I_regionfacet <- epidf_indiv_full %>% 
   pivot_longer(c("S_indiv", "I_indiv", "R_indiv")) %>% 
@@ -152,3 +152,5 @@ fig_rel_inf <- epidf_indiv_full %>%
     geom_hline(yintercept=1, lty="dashed", col="lightgrey") + 
     expand_limits(y=0.5) + 
     theme_classic() 
+
+
