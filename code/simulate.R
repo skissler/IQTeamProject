@@ -17,11 +17,13 @@ source('code/import_acs.R')
 # update population sizes/fraction of agricultural workers; check all inputs to make sure they're updating correctly; check that crowding is implemented correctly. 
 
 # Define key variables
-max_hh_size <- pars$max_hh_size
-crowding_fold_diff <- pars$crowding_fold_diff
-adjust_hhvars <- pars$adjust_hhvars
-init_prev <- pars$init_prev
+# max_hh_size <- pars$max_hh_size
+# crowding_fold_diff <- pars$crowding_fold_diff
+# adjust_hhvars <- pars$adjust_hhvars
+# init_prev <- pars$init_prev
 
+run_county_sim <- function(pars, acs_data, naws_data){
+with(as.list(pars), {
 # Load household state definitions
 household_states <- generate_household_state_table(n_min=1, n_max=max_hh_size, crowding=TRUE)
 n_states <- nrow(household_states)
@@ -31,8 +33,9 @@ acs_data_list <- split(acs_data, acs_data$GEOID)
 
 epidf_indiv_full <- tibble()
 
-for(geoid in GEOID_vec){
+# for(geoid in GEOID_vec){
 # for(geoid in GEOID_vec[1:500]){
+for(geoid in GEOID_vec[1:5]){
 
 	county_data <- acs_data_list[[geoid]]
 
@@ -121,13 +124,13 @@ for(geoid in GEOID_vec){
 	  inf_index = household_states$inf_index,
 	  init_C = init_C,
 	  init_A = init_A,
-	  gamma = pars$gamma,
-	  tau_C = pars$tau_C, # 20% SAR
-	  tau_A = pars$tau_A, 
-	  tau_boost = pars$tau_boost, # Boosts to a 40% SAR 
-	  beta_C = pars$beta_C, 
-	  beta_A = pars$beta_A,
-	  eps = pars$eps, # 0.4 # 0.52
+	  gamma = gamma,
+	  tau_C = tau_C, # 20% SAR
+	  tau_A = tau_A, 
+	  tau_boost = tau_boost, # Boosts to a 40% SAR 
+	  beta_C = beta_C, 
+	  beta_A = beta_A,
+	  eps = eps, # 0.4 # 0.52
 	  pop_C = pop_C,
 	  pop_A = pop_A
 	)
@@ -147,5 +150,10 @@ for(geoid in GEOID_vec){
 	}
 
 }
+return(epidf_indiv_full)
+})
+}
 
-write_csv(epidf_indiv_full, file="output/epidf_indiv_full.csv")
+epidf_indiv_full <- run_county_sim(pars, acs_data, naws_data)
+
+# write_csv(epidf_indiv_full, file="output/epidf_indiv_full.csv")

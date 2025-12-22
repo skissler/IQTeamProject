@@ -14,7 +14,6 @@ source('code/import_acs.R')
 # Run the simulation
 # //////////////////////////////////////////////////////////////////////////////
 
-
 run_regional_sim <- function(pars, acs_data_regional, naws_data){
 with(as.list(pars), {
 
