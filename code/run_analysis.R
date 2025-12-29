@@ -8,7 +8,7 @@ source('code/calibrate_model.R')
 source('code/parameters.R')
 for(pars in pars_list){
 	# source('code/simulate_regional.R')
-	# source('code/simulate_list.R') 
+	# source('code/simulate.R') 
 	# source('code/plot_model_output.R')	
 }
 

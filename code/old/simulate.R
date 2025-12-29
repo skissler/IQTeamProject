@@ -4,8 +4,6 @@
 
 library(tidyverse)
 library(odin)
-library(future.apply) # for parallelizing lapply
-plan(multisession)
 source('code/utils.R')
 source('code/epimodels.R')
 
@@ -33,12 +31,11 @@ n_states <- nrow(household_states)
 # Pre-split the acs data: 
 acs_data_list <- split(acs_data, acs_data$GEOID)
 
-# epidf_indiv_full <- tibble()
+epidf_indiv_full <- tibble()
 
 # for(geoid in GEOID_vec){
 # for(geoid in GEOID_vec[1:500]){
-# for(geoid in GEOID_vec[1:5]){
-results_list <- future_lapply(GEOID_vec[1:100], function(geoid){
+for(geoid in GEOID_vec[1:25]){
 
 	county_data <- acs_data_list[[geoid]]
 
@@ -145,17 +142,14 @@ results_list <- future_lapply(GEOID_vec[1:100], function(geoid){
 	epidf_hh <- format_output_hh(out, household_states)
 	epidf_indiv <- format_output_indiv(out, household_states)
 
-	# epidf_indiv_full <- bind_rows(epidf_indiv_full, mutate(epidf_indiv,GEOID=geoid,REGION6=region))
+	epidf_indiv_full <- bind_rows(epidf_indiv_full, mutate(epidf_indiv,GEOID=geoid,REGION6=region))
 
 	counter <- which(GEOID_vec==geoid)
 	if(counter %% 20 == 0){
 		print(counter)	
 	}
 
-	return(mutate(epidf_indiv, GEOID=geoid, REGION6=region))
-})
-
-epidf_indiv_full <- bind_rows(results_list)
+}
 return(epidf_indiv_full)
 })
 }
