@@ -113,6 +113,8 @@ return(epidf_indiv_full)
 
 epidf_indiv_full <- run_regional_sim(pars, acs_data_regional, naws_data)
 
+write_csv(epidf_indiv_full, file=paste0("output/epidf_indiv_full_regional_",pars$parset,".csv"))
+
 fig_indiv_full_I_regionfacet <- epidf_indiv_full %>% 
   pivot_longer(c("S_indiv", "I_indiv", "R_indiv")) %>% 
   mutate(name=substr(name,1,1)) %>% 
