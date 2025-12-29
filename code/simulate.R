@@ -35,10 +35,8 @@ acs_data_list <- split(acs_data, acs_data$GEOID)
 
 # epidf_indiv_full <- tibble()
 
-# for(geoid in GEOID_vec){
-# for(geoid in GEOID_vec[1:500]){
-# for(geoid in GEOID_vec[1:5]){
-results_list <- future_lapply(GEOID_vec[1:100], function(geoid){
+# results_list <- future_lapply(GEOID_vec[1:100], function(geoid){
+results_list <- future_lapply(GEOID_vec, function(geoid){
 
 	county_data <- acs_data_list[[geoid]]
 
@@ -162,4 +160,4 @@ return(epidf_indiv_full)
 
 epidf_indiv_full <- run_county_sim(pars, acs_data, naws_data)
 
-# write_csv(epidf_indiv_full, file="output/epidf_indiv_full.csv")
+write_csv(epidf_indiv_full, file="output/epidf_indiv_full.csv")
