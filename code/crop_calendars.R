@@ -51,7 +51,13 @@ epidf_indiv_full <- read_csv("output/epidf_indiv_full_regional_1.csv")
 params <- pars_list[[1]]
 
 # at any given time, how many people are symptomatic? 
-# first: find the number of newly infected individuals. 
+symp_temp <- epidf_indiv_full %>% 
+	filter(REGION6==6) %>% 
+	group_by(subpop) %>% 
+	arrange(t) %>% 
+	mutate(Inew = lag(S_indiv) - S_indiv) %>% 
+	replace_na(list(Inew=0)) %>% 
+	mutate(symp_start=t+1, symp_end=t+3)
 
 
 # Calculate proportion of pop symptomatically infected by day: 
@@ -66,4 +72,7 @@ epidf_indiv_full %>%
 	ggplot(aes(x=t/7, y=R_indiv, col=subpop)) + 
 		geom_line(linewidth=0.8, alpha=0.8) + 
 		theme_classic() 
+
+
+
 

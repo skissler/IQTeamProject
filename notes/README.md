@@ -334,6 +334,32 @@ Each day, I can count the number of new infections (or the change in the proport
 
 That said: I think it might still be helpful to have a cumulative-I category so that we can calculate this straightforwardly. Let me see what it'd take to implement that. 
 
+That said -- getting this from the household model isn't totally straightforward. What if we were to derive it from the S/I/R outputs? How would this work? 
+
+- Everyone who enters R must have come through I
+- The number of new infections is equal to the reduction in the number susceptible from one time step to the next... yes? So maybe that's all we need. 
+
+Right -- of course. The new infections in each time step is just the reduction in the number of susceptible individuals. 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
