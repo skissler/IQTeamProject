@@ -309,9 +309,30 @@ But, I need to think a few steps ahead here: if we were to get county-level esti
 After a long break (and some writing on the manuscript), I'm returning to this – I want to edit the codebase so that it's more streamlined and efficient. I've just started branch `CodeOptimization` to get started on that. 
 
 
+# 13 Jan 2026 
 
+Some important updates: I've gotten the code to run much faster, so that we can run full county-level simulations in reasonable time. I've also gotten some sensitivity analyses coded up, though not fully run and analyzed yet. 
 
+I'm working now on assessing the impact on harvests. One option is to use the monthly harvest expenditures from UCDavis, linke above, to estimate the timing of harvests; but this pertains to a single acre on a single farm. It's not clear how this generalizes to the full farm, or to farms across a state/region. Specifically: the UCDavis harvest expenditures for lettuce have a single harvest in April. However, on a given farm, lettuce is often harvested twice -- and, at the state leve, harvests may happen somewhat continuously across the entire spring/summer, depending on when the farm planted. There's a choice to be made here, about whether to assess the impact to a single farm or whether to zoom out and think about the impact on the state/region. I think I'm going to focus on the state/region since it's a more generalizable impact and since it depends less on the contingencies of when a given farm chooses to sow/harvest. 
 
+However, this requires a different dataset. I haven't been able to find information on harvest volumes specifically, but USDA does post "movements" of different crops by region, which seem to align with when harvests happen, and others have used these movements as a proxy for harvests. I might use these as an estimate of harvest volume for hte central valley of CA, which I'll use as my basis for the impact assessment. 
+
+Ok, I've now got code in `crop_calendars.R` that pulls the movements data for lettuce, strawberries, and oranges, and plots it. It looks decent, about like I'd expect. 
+
+Now: I think the next step is to see how epidemics starting at different times of year would impact these movements. 
+
+# 14 Jan 2026 
+Next step: calculate the reduction in available labor due to an outbreak with peak on a specific date. 
+
+Get weekly labor shortges: I might be able to back-calculate from R, but the cleanest way is to add a compartment for the cumulative number of infections. That said -- the cumulative number of infections at any time is equal to I + R. I is the number currently infected (infectious); but if we want a shorter symptomatic period, I'd like a way to easily implement that. 
+
+When a person moves into I, the clock starts ticking. Say, on average, a person spends five days infectious, but only days 2-4 are symptomatic. So, the people in the symptmoatic category are those in I, but who aren't in their first or fifth day of infection (on average). 
+
+Importantly: I don't need to worry about movement into R. For these purposes, I can just imagine that symptoms start 1 day after entering the I compartment (for example) and end two days after that. A person's symptoms can definitely persist after they're no longer infectious; all we need is that they've been infected. So, I just need to define a proportion of symptomatic individuals (or rather, a proportion who are symptomatic enough for it to impact agricultural labor) and a timing/duration of symptoms. 
+
+Each day, I can count the number of new infections (or the change in the proportion of people infected); this group of people will become symptomatic one day later and remain symptomatic for two days, so we can figure out the total number symptomatic each day, which should be enough. 
+
+That said: I think it might still be helpful to have a cumulative-I category so that we can calculate this straightforwardly. Let me see what it'd take to implement that. 
 
 
 
