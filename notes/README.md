@@ -348,8 +348,14 @@ Ok: I have the symptomatic curves generated. I want to maybe align these with th
 
 For now, though: I need to figure out how to overlay, and then how to automate. 
 
+Let's do this in terms of the general community peak. 
+
+We can shift the epidemic backward by whatever increment we want. The output table gives us number of cases (infections, symptomatic cases) there are on each day -- it's counts, which is what we want. So, if we know the proportion of the (agricultural) population that's symptomatic on each day, we can get the effective workforce size; it's 1 - this value. Then, we can just multiply this by the production curve. This will give us an effective labor curve over time. I think, then, we want to integrate the two curves and find their difference; that's really what we want. 
+
+Let's start with that first bit, though: generating the effective labor curves over time given the epidemic. 
 
 
+Let's start, for ease, without a time shift: what's the impact of an epidemic that starts at time 0 (i.e. Jan 1)? 
 
 
 

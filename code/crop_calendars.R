@@ -1,3 +1,6 @@
+library(tidyverse)
+library(purrr)
+
 # uses input from simulate_regional.R. 
 
 # Steps: 
@@ -65,7 +68,7 @@ indices <- epidf_indiv_full %>%
 	select(t, subpop, REGION6)
 
 
-temp <- epidf_indiv_full %>% 
+epidf_REGION6 <- epidf_indiv_full %>% 
 	filter(REGION6==6) %>% 
 	full_join(symp_temp, by=c("subpop","REGION6"), relationship="many-to-many") %>% 
 	mutate(tosum=case_when(t >= symp_start & t <= symp_end ~ Inew, TRUE~0)) %>% 
@@ -78,17 +81,22 @@ temp <- epidf_indiv_full %>%
 		symp=sum(tosum)
 		)
 
-temp %>% 
+fig_symp <- epidf_REGION6 %>% 
 	select(t, subpop, I_indiv, symp) %>% 
 	pivot_longer(c("I_indiv","symp")) %>% 
 	ggplot(aes(x=t, y=value, col=subpop, lty=name)) + 
 		geom_line() + 
 		theme_classic() 
 
+# epidf_REGION6 %>% 
+# 	group_by(subpop) %>% 
+# 	mutate(ismax_symp = case_when(symp==max(symp)~1, TRUE~0)) %>% 
+# 	mutate(ismax_I = case_when(I_indiv==max(I_indiv)~1, TRUE~0)) %>% 
+# 	filter(ismax_symp==1 | ismax_I == 1)
+
 
 epidf_indiv_full %>% 
 	left_join(symp_temp, by=c("t"="symp_start","subpop","REGION6"))
-
 
 # Calculate proportion of pop symptomatically infected by day: 
 epidf_indiv_full %>% 
@@ -104,5 +112,50 @@ epidf_indiv_full %>%
 		theme_classic() 
 
 
+# ==============================================================================
+# Overlay and assess impact 
+# ==============================================================================
+
+# Find when symptomatic cases peak in the general community, assuming an epidemic start time of 0: 
+
+peaktime <- epidf_REGION6 %>% 
+	ungroup() %>% 
+	filter(subpop=="C") %>% 
+	filter(symp==max(symp)) %>% 
+	pull(t) 
+
+wf_df <- epidf_REGION6 %>% 
+	mutate(wf=1-symp) %>% 
+	filter(subpop=="A") %>% 
+	select(t, wf)
+
+avg_movements_daily <- avg_movements %>% 
+	split(.$commodity) %>% 
+	map(~ split(., .$week)) %>% 
+	map(~ map(., ~ cross_join(., tibble(day=1:7)))) %>% 
+	map(~ map(., ~ mutate(., day=(week-1)*7+day))) %>% 
+	map(~ bind_rows(.)) %>% 
+	bind_rows() %>% 
+	mutate(lbs = lbs/7)
+
+fig_avg_movements_daily <- avg_movements_daily %>% 
+	ggplot(aes(x=day, y=lbs, col=commodity)) + 
+		geom_line() + 
+		theme_classic() 
+
+labor_shortage_df <- avg_movements_daily %>% 
+	left_join(wf_df, by=c("day"="t")) %>% 
+	mutate(lbs_adj = lbs*wf)
+
+fig_labor_shortage <- labor_shortage_df %>% 
+	select(commodity, day, lbs, lbs_adj) %>% 
+	pivot_longer(c("lbs","lbs_adj")) %>% 
+	ggplot(aes(x=day, y=value, col=commodity, lty=name)) + 
+		geom_line() 
+
+labor_shortage_df %>% 
+	group_by(commodity) %>% 
+	summarise(lbs_tot = sum(lbs), lbs_adj_tot=sum(lbs_adj)) %>% 
+	mutate(pct_loss = (1 - lbs_adj_tot/lbs_tot)*100)
 
 
