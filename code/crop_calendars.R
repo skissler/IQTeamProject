@@ -57,7 +57,37 @@ symp_temp <- epidf_indiv_full %>%
 	arrange(t) %>% 
 	mutate(Inew = lag(S_indiv) - S_indiv) %>% 
 	replace_na(list(Inew=0)) %>% 
-	mutate(symp_start=t+1, symp_end=t+3)
+	mutate(symp_start=t+1, symp_end=t+3) %>% 
+	select(subpop, REGION6, Inew, symp_start, symp_end) 
+
+indices <- epidf_indiv_full %>% 
+	filter(REGION6==6) %>% 
+	select(t, subpop, REGION6)
+
+
+temp <- epidf_indiv_full %>% 
+	filter(REGION6==6) %>% 
+	full_join(symp_temp, by=c("subpop","REGION6"), relationship="many-to-many") %>% 
+	mutate(tosum=case_when(t >= symp_start & t <= symp_end ~ Inew, TRUE~0)) %>% 
+	group_by(t, subpop) %>% 
+	summarise(
+		S_indiv = first(S_indiv),
+		I_indiv = first(I_indiv),
+		R_indiv = first(R_indiv),
+		REGION6=first(REGION6), 
+		symp=sum(tosum)
+		)
+
+temp %>% 
+	select(t, subpop, I_indiv, symp) %>% 
+	pivot_longer(c("I_indiv","symp")) %>% 
+	ggplot(aes(x=t, y=value, col=subpop, lty=name)) + 
+		geom_line() + 
+		theme_classic() 
+
+
+epidf_indiv_full %>% 
+	left_join(symp_temp, by=c("t"="symp_start","subpop","REGION6"))
 
 
 # Calculate proportion of pop symptomatically infected by day: 

@@ -342,6 +342,11 @@ That said -- getting this from the household model isn't totally straightforward
 Right -- of course. The new infections in each time step is just the reduction in the number of susceptible individuals. 
 
 
+# 18 Jan 2026 
+
+Ok: I have the symptomatic curves generated. I want to maybe align these with the number of symptomatic cases we see each year with influenza -- while also exploring other scenarios, of course. 
+
+For now, though: I need to figure out how to overlay, and then how to automate. 
 
 
 
