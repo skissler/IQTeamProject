@@ -214,7 +214,9 @@ impact_df_combined <- bind_rows(lapply(0:364, function(x){
 fig_impact <- impact_df_combined %>% 
 	ggplot(aes(x=peakday, y=pct_loss, col=commodity)) + 
 		geom_line(linewidth=0.8, alpha=0.8) + 
-		theme_classic() 
+		theme_classic() + 
+		scale_color_manual(values=c("Oranges"="orange", "Strawberries"="magenta", "Lettuce, Iceberg"="blue")) #+ 
+		
 
 
 
