@@ -354,10 +354,13 @@ We can shift the epidemic backward by whatever increment we want. The output tab
 
 Let's start with that first bit, though: generating the effective labor curves over time given the epidemic. 
 
-
 Let's start, for ease, without a time shift: what's the impact of an epidemic that starts at time 0 (i.e. Jan 1)? 
 
+An important aspect of the time shift - we need to make sure we wrap around the epidemic curve so that we catch the impact at the tail end of the season. 
 
+# 19 Jan 2026 
+
+Ok, got it, I think -- I've plotted the percent reduction in harvest for each commodity (oranges, lettuce, strawberries) as the timing of the peak varies across the year. It looks about how I'd expect. Done for now. 
 
 
 

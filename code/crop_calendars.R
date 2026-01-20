@@ -158,4 +158,107 @@ labor_shortage_df %>%
 	summarise(lbs_tot = sum(lbs), lbs_adj_tot=sum(lbs_adj)) %>% 
 	mutate(pct_loss = (1 - lbs_adj_tot/lbs_tot)*100)
 
+# ==============================================================================
+# Automate the impact assessments 
+# ==============================================================================
+
+get_impact <- function(peakday=0, avg_movements_daily, epidf_REGION6){
+
+	# when is the community peak? 
+	peaktime <- epidf_REGION6 %>% 
+		ungroup() %>% 
+		filter(subpop=="C") %>% 
+		filter(symp==max(symp)) %>% 
+		pull(t) 
+
+	# Get the daily workforce strength, indexed from the peak day: 
+	wf_df <- epidf_REGION6 %>% 
+		mutate(wf=1-symp) %>% 
+		filter(subpop=="A") %>% 
+		select(t, wf) %>% 
+		ungroup() %>% 
+		mutate(t=t-peaktime, ndays=n()) %>% 
+		mutate(t=case_when(t<0 ~ ndays+t, TRUE~t )) %>% 
+		select(-ndays) %>% 
+		arrange(t)
+
+	# Adjust the time inedex so the peak aligns with peakday: 
+	wf_df <- wf_df %>% 
+		mutate(ndays=n()) %>% 
+		mutate(t = t + peakday) %>% 
+		mutate(t = case_when(t > ndays ~ t-ndays, TRUE~t )) %>% 
+		select(-ndays) %>% 
+		arrange(t) 
+
+	labor_shortage_df <- avg_movements_daily %>% 
+		inner_join(wf_df, by=c("day"="t")) %>% 
+		mutate(lbs_adj = lbs*wf)
+
+	impact_df <- labor_shortage_df %>% 
+		group_by(commodity) %>% 
+		summarise(lbs_tot = sum(lbs), lbs_adj_tot=sum(lbs_adj)) %>% 
+		mutate(pct_loss = (1 - lbs_adj_tot/lbs_tot)*100)
+
+	return(impact_df)
+
+}
+
+get_impact(peakday=0, avg_movements_daily, epidf_REGION6)
+
+impact_df_combined <- bind_rows(lapply(0:364, function(x){
+	out <- get_impact(x, avg_movements_daily, epidf_REGION6)
+	out <- mutate(out, peakday=x)
+	return(out)
+	}))
+
+fig_impact <- impact_df_combined %>% 
+	ggplot(aes(x=peakday, y=pct_loss, col=commodity)) + 
+		geom_line(linewidth=0.8, alpha=0.8) + 
+		theme_classic() 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
