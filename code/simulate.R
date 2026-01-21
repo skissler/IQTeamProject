@@ -1,16 +1,30 @@
 # //////////////////////////////////////////////////////////////////////////////
-# Import
+# Simulate County-Level Epidemics
+# //////////////////////////////////////////////////////////////////////////////
+# Runs the household-structured epidemic model for each US county, using
+# county-specific household size distributions and crowding rates.
+#
+# Requires: pars object (from parameters.R or direct definition)
+# Outputs: epidf_indiv_full.csv in output directory
 # //////////////////////////////////////////////////////////////////////////////
 
-library(tidyverse)
-library(odin)
-library(future.apply) # for parallelizing lapply
-plan(multisession)
-source('code/utils.R')
-source('code/epimodels.R')
+# Load dependencies (skip if already loaded via run_analysis.R)
+if (!exists("paths")) {
+  source('code/setup.R')
+}
 
-source('code/import_naws.R')
-source('code/import_acs.R')
+# Set up parallel processing
+if (sim_settings$use_parallel) {
+  future::plan(future::multisession)
+}
+
+# Import data (skip if already loaded)
+if (!exists("naws_data")) {
+  source('code/import_naws.R')
+}
+if (!exists("acs_data")) {
+  source('code/import_acs.R')
+}
 
 # //////////////////////////////////////////////////////////////////////////////
 # Derive dataset for ag and non-ag households 
@@ -160,4 +174,4 @@ return(epidf_indiv_full)
 
 epidf_indiv_full <- run_county_sim(pars, acs_data, naws_data)
 
-write_csv(epidf_indiv_full, file="output/epidf_indiv_full.csv")
+write_csv(epidf_indiv_full, file = paths$county_output)

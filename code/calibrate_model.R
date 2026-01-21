@@ -1,14 +1,24 @@
 # //////////////////////////////////////////////////////////////////////////////
-# Import
+# Calibrate Model
+# //////////////////////////////////////////////////////////////////////////////
+# Calibrates the epidemic model at the national level to achieve target R0
+# values. Uses aggregated ACS household data to set initial conditions.
+#
+# Outputs: epidf_indiv_national (national-level simulation results)
 # //////////////////////////////////////////////////////////////////////////////
 
-library(tidyverse)
-library(odin)
-source('code/utils.R')
-source('code/epimodels.R')
+# Load dependencies (skip if already loaded via run_analysis.R)
+if (!exists("paths")) {
+  source('code/setup.R')
+}
 
-source('code/import_naws.R')
-source('code/import_acs.R')
+# Import data (skip if already loaded)
+if (!exists("naws_data")) {
+  source('code/import_naws.R')
+}
+if (!exists("acs_data")) {
+  source('code/import_acs.R')
+}
 
 # //////////////////////////////////////////////////////////////////////////////
 # Derive national dataset 

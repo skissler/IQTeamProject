@@ -12,9 +12,11 @@ This is an epidemiological modeling project in R that assesses the impact of an 
 - R 4.5.0 with renv for dependency management
 - Census API key set in `~/.Renviron` as `CENSUS_API_KEY`
 
-**Restore dependencies:**
+**First-time setup:**
 ```r
-renv::restore()
+renv::restore()                  # Install dependencies
+source('code/setup_check.R')     # Validate environment
+check_setup()                    # Will report any missing components
 ```
 
 **Run full analysis from R (working directory must be project root):**
@@ -22,17 +24,30 @@ renv::restore()
 source('code/run_analysis.R')
 ```
 
-This orchestrates: `utils.R` → `summarystats.R` → `calibrate_model.R` → `parameters.R` → `simulate_regional.R` (×4 parameter sets)
+This orchestrates: `setup.R` → `summarystats.R` → `calibrate_model.R` → `parameters.R` → `simulate_regional.R` (×4 parameter sets)
 
 **Run individual components:**
 ```r
-source('code/utils.R')           # Load helper functions first
+source('code/setup.R')           # Load all dependencies and config (do this first)
 source('code/calibrate_model.R') # National-level calibration only
 source('code/simulate.R')        # County-level simulation (default params)
 source('code/simulate_regional.R') # Regional simulation (requires pars object)
 ```
 
 ## Architecture
+
+### Configuration (`code/config.R`)
+Central configuration file containing all paths, parameters, and settings:
+- `paths` - File paths for input data and output directories
+- `data_settings` - ACS/Census year settings, NAWS date range
+- `default_pars` - Baseline epidemiological parameters (gamma, tau, beta, eps)
+- `sim_settings` - Simulation options (time steps, parallelization)
+- `region_map` - NAWS region name/abbreviation mapping
+
+### Setup Files
+- **`setup.R`** - Consolidated dependency loader; source this once at session start
+- **`setup_check.R`** - Environment validation; run `check_setup()` to verify prerequisites
+- **`utils_documented.R`** - Helper functions with roxygen documentation
 
 ### Disease Models (`code/epimodels.R`)
 Uses the `odin` package to define four progressively complex compartmental models:
@@ -64,7 +79,9 @@ Four parameter configurations for sensitivity analysis varying R0: 1.2 (default)
 ## Key Conventions
 
 - All scripts assume working directory is project root
-- Helper functions in `utils.R` must be sourced before other scripts
+- Source `setup.R` at session start to load all dependencies and configuration
+- All configurable values (paths, parameters, years) are in `config.R`
 - Simulations use `future.apply::future_lapply()` for parallelization
-- Regional mapping defined in `utils.R` (`region_map` tibble)
+- Regional mapping defined in `config.R` (`region_map` tibble)
 - Maximum household size capped at 7; crowding fold-difference = 2
+- Archived/deprecated code is in `code/_archived/` (not used in current analysis)

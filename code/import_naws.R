@@ -1,17 +1,27 @@
 # //////////////////////////////////////////////////////////////////////////////
-# Import packages
+# Import NAWS Data
+# //////////////////////////////////////////////////////////////////////////////
+# Processes National Agricultural Workers Survey data for:
+#   - Household size distributions by NAWS region
+#   - Crowding rates by region
+#
+# Requires: NAWS SAS data file (data/naws_all.sas7bdat)
+# Outputs: naws_data, naws_hh, naws_crowding data frames
 # //////////////////////////////////////////////////////////////////////////////
 
-library(tidyverse) 
-library(haven)
-source('code/utils.R')
+# Load setup if not already loaded (allows standalone use or via setup.R)
+if (!exists("paths")) {
+  source('code/config.R')
+  library(tidyverse)
+  library(haven)
+}
 
 # //////////////////////////////////////////////////////////////////////////////
 # Load data
 # //////////////////////////////////////////////////////////////////////////////
 
-# Load data (change path as needed)
-naws <- read_sas("data/naws_all.sas7bdat")  # or read_sav()
+# Load NAWS data using configured path
+naws <- haven::read_sas(paths$naws_data)
 
 # Key variables: 
 # FY (year of survey i.e. financial year) 
@@ -23,9 +33,9 @@ naws <- read_sas("data/naws_all.sas7bdat")  # or read_sav()
 # Household sizes
 # //////////////////////////////////////////////////////////////////////////////
 
-naws_hh <- naws %>% 
-  select(FY, REGION6, HHFAMGRD, PWTYCRD) %>% 
-  filter(FY >= 2018 & FY <= 2022) %>% 
+naws_hh <- naws %>%
+  select(FY, REGION6, HHFAMGRD, PWTYCRD) %>%
+  filter(FY >= data_settings$naws_start_year & FY <= data_settings$naws_end_year) %>% 
   group_by(HHFAMGRD, REGION6) %>% 
   summarise(PWTYCRD=sum(PWTYCRD)) %>% 
   group_by(REGION6) %>% 
@@ -40,10 +50,10 @@ naws_hh <- naws %>%
   rename(hhSize=hhSize_agg)
 
 
-# variance? 
-temp <- naws %>% 
-  select(FY, REGION6, HHFAMGRD, PWTYCRD) %>% 
-  filter(FY >= 2018 & FY <= 2022) %>% 
+# variance?
+temp <- naws %>%
+  select(FY, REGION6, HHFAMGRD, PWTYCRD) %>%
+  filter(FY >= data_settings$naws_start_year & FY <= data_settings$naws_end_year) %>% 
   group_by(HHFAMGRD, REGION6) %>% 
   summarise(PWTYCRD=sum(PWTYCRD)) %>% 
   group_by(REGION6) %>% 
@@ -62,9 +72,9 @@ temp <- naws %>%
 # Crowding
 # //////////////////////////////////////////////////////////////////////////////
 
-naws_crowding <- naws %>% 
-  select(FY, REGION6, CROWDED1, PWTYCRD) %>% 
-  filter(FY >= 2018) %>% 
+naws_crowding <- naws %>%
+  select(FY, REGION6, CROWDED1, PWTYCRD) %>%
+  filter(FY >= data_settings$naws_start_year) %>% 
   group_by(CROWDED1, REGION6) %>% 
   summarise(PWTYCRD=sum(PWTYCRD)) %>% 
   group_by(REGION6) %>% 

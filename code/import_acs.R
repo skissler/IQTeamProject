@@ -1,17 +1,33 @@
 # //////////////////////////////////////////////////////////////////////////////
-# Import packages
+# Import ACS Data
+# //////////////////////////////////////////////////////////////////////////////
+# Downloads county-level American Community Survey data for:
+#   - Household size distributions
+#   - Crowding (persons per room)
+#   - Agricultural employment
+#   - Population
+#   - Urban/rural classification
+#
+# Requires: Census API key in ~/.Renviron
+# Outputs: acs_data, acs_data_regional data frames
 # //////////////////////////////////////////////////////////////////////////////
 
-library(tidyverse)
-library(tidycensus)
-source('code/utils.R')
+# Load setup if not already loaded (allows standalone use or via setup.R)
+if (!exists("paths")) {
+  source('code/config.R')
+  library(tidyverse)
+  library(tidycensus)
+  library(tigris)
+  options(tigris_use_cache = TRUE)
+  readRenviron("~/.Renviron")
+  census_api_key(Sys.getenv("CENSUS_API_KEY"))
+}
 
-# Load Census key
-readRenviron("~/.Renviron")
-year <- 2022
+# Use configuration values
+year <- data_settings$acs_year
 
-stateregion <- read_csv("data/stateregion.csv")
-stateabbrev <- read_csv("data/stateabbrev.csv")
+stateregion <- read_csv(paths$state_region, show_col_types = FALSE)
+stateabbrev <- read_csv(paths$state_abbrev, show_col_types = FALSE)
 
 # Download county geometries (2023 by default)
 counties_sf <- counties(cb = TRUE, year = year)
@@ -205,11 +221,11 @@ acs_data <- acs_data %>%
 
 # vars_dhc_2020 <-  load_variables(2020, "dhc")
 
-# Load P2 urban-rural data from 2020 Census
+# Load P2 urban-rural data from decennial Census
 urban_rural <- get_decennial(
   geography = "county",
   table = "P2",
-  year = 2020) %>%
+  year = data_settings$decennial_year) %>%
   select(GEOID, variable, value) %>%
   pivot_wider(names_from = variable, values_from = value) %>%
   mutate(

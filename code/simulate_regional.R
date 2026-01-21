@@ -1,14 +1,25 @@
 # //////////////////////////////////////////////////////////////////////////////
-# Import
+# Simulate Regional Epidemics
+# //////////////////////////////////////////////////////////////////////////////
+# Runs the household-structured epidemic model for each NAWS region, using
+# region-specific household size distributions and crowding rates.
+#
+# Requires: pars object (from parameters.R or run_analysis.R loop)
+# Outputs: epidf_indiv_full_regional_*.csv in output directory
 # //////////////////////////////////////////////////////////////////////////////
 
-library(tidyverse)
-library(odin)
-source('code/utils.R')
-source('code/epimodels.R')
+# Load dependencies (skip if already loaded via run_analysis.R)
+if (!exists("paths")) {
+  source('code/setup.R')
+}
 
-source('code/import_naws.R')
-source('code/import_acs.R')
+# Import data (skip if already loaded)
+if (!exists("naws_data")) {
+  source('code/import_naws.R')
+}
+if (!exists("acs_data_regional")) {
+  source('code/import_acs.R')
+}
 
 # //////////////////////////////////////////////////////////////////////////////
 # Run the simulation
@@ -113,7 +124,7 @@ return(epidf_indiv_full)
 
 epidf_indiv_full <- run_regional_sim(pars, acs_data_regional, naws_data)
 
-write_csv(epidf_indiv_full, file=paste0("output/epidf_indiv_full_regional_",pars$parset,".csv"))
+write_csv(epidf_indiv_full, file = paste0(paths$regional_output_prefix, pars$parset, ".csv"))
 
 fig_indiv_full_I_regionfacet <- epidf_indiv_full %>% 
   pivot_longer(c("S_indiv", "I_indiv", "R_indiv")) %>% 
