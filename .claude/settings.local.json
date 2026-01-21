@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(ls:*)",
+      "Bash(head:*)",
+      "Bash(git -C /Users/stephen_ally/Dropbox \\\\\\(Personal\\\\\\)/DropboxHarvard/Projects/IQTeamProject log --oneline -15)",
+      "Bash(wc:*)",
+      "Bash(grep:*)"
+    ]
+  }
+}

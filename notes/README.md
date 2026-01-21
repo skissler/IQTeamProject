@@ -362,6 +362,10 @@ An important aspect of the time shift - we need to make sure we wrap around the 
 
 Ok, got it, I think -- I've plotted the percent reduction in harvest for each commodity (oranges, lettuce, strawberries) as the timing of the peak varies across the year. It looks about how I'd expect. Done for now. 
 
+# 20 Jan 2026
+
+We're closing in, I think. I want to come up with some kind of very basic assessment of the proportion of lost agricultural production in each region due to the outbreak. For this, I think we can assume some kind of constant productivity across the year, that all the agricultural workers are working year-round and that we can just count up workdays lost and transalte that into economic losses. It'd be tough to do some kind of comprehensive analysis across all crops because the labor needs are so different. 
+
 
 
 
