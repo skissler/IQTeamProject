@@ -170,15 +170,23 @@ These estimates are conservative in several respects: they do not account for la
 
 ### Sensitivity analyses
 
-Sensitivity analyses revealed several key patterns (Supplementary Figures S2-S5):
+We conducted sensitivity analyses to assess how key model assumptions affected our results:
 
-**Reproduction number:** Higher $R_0$ amplified both absolute disease burden and the agricultural worker-general population differential. At $R_0 = 3.0$, agricultural worker attack rates approached 80-90% in some regions, with differentials exceeding 20 percentage points.
+**Reproduction number (R₀):** We varied R₀ from 1.2 (baseline) to 1.5, 2.0, and 3.0 by adjusting the between-household transmission rate β. Higher R₀ values increase both absolute disease burden and the differential between agricultural workers and the general population.
 
-**Assortative mixing:** Stronger assortativity ($\epsilon$) among agricultural workers amplified disparities. At $\epsilon = 0.7$, agricultural workers experienced attack rates [X] percentage points higher than at $\epsilon = 0$ (random mixing), as infections remained concentrated within the high-risk population.
+**Assortativity (ε):** We examined mixing patterns ranging from complete assortativity (ε = 0, agricultural workers only contact other agricultural workers) to baseline moderate assortativity (ε = 0.33) to stronger proportional mixing (ε = 0.5 and 0.7). Higher ε values reduce the concentration of infection within the agricultural worker population by increasing their contact with the lower-risk general population.
 
-**Crowded household transmission:** Increasing the SAR in crowded households to 60% increased agricultural worker attack rates by [X] percentage points while having minimal effect on the general population, widening the differential.
+**Secondary attack rate in crowded households:** We varied the SAR in crowded households from 30% to 60% (baseline 40%) to encompass the range observed across different respiratory pathogens and household studies. This directly affects the within-household transmission rate τ_crowded.
 
-**Regional variation:** Differential impacts varied substantially by region, driven by both the proportion of agricultural workers and regional crowding rates. Regions with >10% agricultural workers and >20% crowding in that population showed the largest vulnerabilities.
+**Crowding fold difference:** We tested how the relationship between household size and crowding probability affects results by varying the fold difference parameter from 1 (all household sizes ≥2 equally likely to be crowded) to 3 (size-7 households 3× more likely to be crowded than size-2 households), with baseline at 2.
+
+**County-level NAWS adjustment approaches:** For county-level simulations, we tested multiple approaches to assign household characteristics to agricultural workers:
+
+1. **Regional NAWS only (baseline):** Use regional NAWS data without county-level adjustment
+2. **Proportional adjustment:** Adjust NAWS distributions proportionally to county-level deviations from regional ACS means
+3. **No adjustment (ACS only):** Use county-level ACS data for both populations (conservative, as it minimizes the agricultural worker-general population differential)
+
+These approaches address uncertainty in how agricultural worker household characteristics vary at the county level given limited data availability.
 
 ## Discussion
 
@@ -324,22 +332,28 @@ We then applied these factors to the NAWS regional distributions and renormalize
 
 ### Supplementary Figures
 
-**Figure S1.** Sensitivity of attack rates to secondary attack rate in crowded households
+**Figure S1.** Household size and crowding distributions by population and region
 
-**Figure S2.** Impact of assortative mixing parameter on disease dynamics
+**Figure S2.** Sensitivity of attack rates to reproduction number (R₀). Attack rates for agricultural workers (red) and general population (blue) across regions for R₀ = 1.2, 1.5, 2.0, and 3.0.
 
-**Figure S3.** County-level heterogeneity in agricultural worker population and crowding
+**Figure S3.** Sensitivity to assortative mixing parameter (ε). Attack rate differentials (agricultural workers minus general population) for ε = 0, 0.33, 0.5, and 0.7.
 
-**Figure S4.** Productivity impacts across different outbreak timing scenarios
+**Figure S4.** Sensitivity to secondary attack rate in crowded households. Attack rates by population for crowded household SAR = 30%, 40%, 50%, and 60%.
 
-**Figure S5.** Multi-region comparison of disease dynamics under varying $R_0$
+**Figure S5.** Sensitivity to crowding fold difference. Impact of varying the relationship between household size and crowding probability (fold difference = 1, 2, 3).
+
+**Figure S6.** Sensitivity to county-level NAWS adjustment approach. Comparison of attack rate differentials under three approaches: (A) Regional NAWS only, (B) Proportional adjustment (baseline), (C) ACS only (conservative).
+
+**Figure S7.** Regional heterogeneity in baseline results. Attack rate differentials by region, with inset showing relationship to regional agricultural worker proportion and crowding levels.
+
+**Figure S8.** Productivity impacts by outbreak timing. Seasonal productivity losses for strawberries, lettuce, and oranges as a function of outbreak peak timing (day of year).
 
 ### Supplementary Tables
 
 **Table S1.** Regional household size and crowding data from ACS and NAWS
 
-**Table S2.** Crop calendar and labor intensity data by region
+**Table S2.** Crop calendar and labor intensity data by region  
 
-**Table S3.** Baseline and sensitivity analysis parameter values
+**Table S3.** Baseline and sensitivity analysis parameter values. Complete specification of all parameter combinations examined.
 
-**Table S4.** Simulation results summary across all scenarios
+**Table S4.** Simulation results summary across all scenarios. Peak prevalence, time to peak, and final attack rate for agricultural workers and general population under all parameter combinations.
