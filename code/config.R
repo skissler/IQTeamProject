@@ -19,7 +19,11 @@ paths <- list(
 
   # Primary output files
   county_output = "output/epidf_indiv_full.csv",
-  regional_output_prefix = "output/epidf_indiv_full_regional_"
+  regional_output_prefix = "output/epidf_indiv_full_regional_",
+
+  # Sensitivity analysis outputs
+  sensitivity_summary = "output/sensitivity_summary.csv",
+  sensitivity_differential = "output/sensitivity_differential.csv"
 )
 
 # ==============================================================================

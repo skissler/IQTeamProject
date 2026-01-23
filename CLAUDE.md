@@ -24,7 +24,7 @@ check_setup()                    # Will report any missing components
 source('code/run_analysis.R')
 ```
 
-This orchestrates: `setup.R` → `summarystats.R` → `calibrate_model.R` → `parameters.R` → `simulate_regional.R` (×4 parameter sets)
+This orchestrates: `setup.R` → `summarystats.R` → `calibrate_model.R` → `parameters.R` → `simulate_regional.R` (×12 parameter sets) → `sensitivity_analysis.R` → `crop_calendars.R`
 
 **Run individual components:**
 ```r
@@ -32,6 +32,7 @@ source('code/setup.R')           # Load all dependencies and config (do this fir
 source('code/calibrate_model.R') # National-level calibration only
 source('code/simulate.R')        # County-level simulation (default params)
 source('code/simulate_regional.R') # Regional simulation (requires pars object)
+source('code/sensitivity_analysis.R') # Compare results across sensitivity dimensions
 ```
 
 ## Architecture
@@ -65,16 +66,40 @@ The models implement House & Keeling (2009) household-structured transmission wi
 - **`simulate.R`** / **`simulate_regional.R`** - Runs epidemic simulations across counties/regions
 
 ### Parameter Sets (`code/parameters.R`)
-Four parameter configurations for sensitivity analysis varying R0: 1.2 (default), 1.5, 2.0, 3.0. Key parameters:
+Defines 12 parameter configurations for one-at-a-time sensitivity analysis across four dimensions:
+
+**Sensitivity Dimensions (baseline values in bold):**
+1. **R0 values:** 1.2 **(baseline)**, 1.5, 2.0, 3.0
+2. **Assortativity (ε):** 0, 0.33 **(baseline)**, 0.5, 0.7
+3. **SAR in crowded households:** 30%, 40% **(baseline)**, 50%, 60%
+4. **Crowding fold difference:** 1, 2 **(baseline)**, 3
+
+**Key Parameters:**
 - `gamma` - Recovery rate (1/5 = 5-day infectious period)
 - `tau_C`, `tau_A` - Household secondary attack rates (community/agricultural)
+- `tau_boost` - Additional transmission rate for crowded households
 - `beta_C`, `beta_A` - Community transmission rates
-- `eps` - Assortativity between populations (0.33)
+- `eps` - Assortativity between populations
+- `crowding_fold_diff` - How much more likely large households are to be crowded
+
+**Parameter Set Naming Convention:**
+- `r0_1.2`, `r0_1.5`, etc. - R0 sensitivity runs
+- `eps_0`, `eps_0.5`, etc. - Assortativity sensitivity runs
+- `sar_0.3`, `sar_0.5`, etc. - Crowded household SAR sensitivity runs
+- `fold_1`, `fold_3` - Crowding fold difference sensitivity runs
+
+### Sensitivity Analysis (`code/sensitivity_analysis.R`)
+Loads all regional simulation outputs and generates comparative summaries:
+- Calculates summary statistics (peak prevalence, attack rates, timing)
+- Computes differential metrics (agricultural workers vs community)
+- Creates comparison figures across sensitivity dimensions
 
 ### Output Files
 - `output/epidf_indiv_full.csv` - County-level daily trajectories (~46 MB)
-- `output/epidf_indiv_full_regional_*.csv` - Regional sensitivity runs
-- `figures/` - Generated visualizations (PDF/PNG)
+- `output/epidf_indiv_full_regional_{parset_name}.csv` - Regional sensitivity runs (e.g., `epidf_indiv_full_regional_r0_1.2.csv`)
+- `output/sensitivity_summary.csv` - Summary statistics for all parameter sets
+- `output/sensitivity_differential.csv` - Differential metrics (A vs C) for all parameter sets
+- `figures/sensitivity_*.pdf` - Comparison visualizations
 
 ## Key Conventions
 
@@ -83,5 +108,6 @@ Four parameter configurations for sensitivity analysis varying R0: 1.2 (default)
 - All configurable values (paths, parameters, years) are in `config.R`
 - Simulations use `future.apply::future_lapply()` for parallelization
 - Regional mapping defined in `config.R` (`region_map` tibble)
-- Maximum household size capped at 7; crowding fold-difference = 2
+- Maximum household size capped at 7; baseline crowding fold-difference = 2
+- Output files include parameter metadata (`parset`, `parset_name`, `sens_type`, `sens_value`)
 - Archived/deprecated code is in `code/_archived/` (not used in current analysis)
