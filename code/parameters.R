@@ -17,13 +17,32 @@
 # ==============================================================================
 
 #' Calculate tau_boost for a target SAR in crowded households
+#'
+#' Derives the within-household transmission rate (tau) needed to achieve a
+#' target secondary attack rate (SAR), then returns the boost needed above
+#' the baseline tau.
+#'
 #' @param sar_crowded Target SAR for crowded households (proportion, e.g., 0.40)
 #' @param gamma Recovery rate
 #' @param tau_base Baseline tau for uncrowded households
 #' @return tau_boost value to add to tau_base for crowded households
+#'
+#' @details
+#' In the House & Keeling household model with exponentially distributed
+#' infectious periods, the SAR for a 2-person household is derived from
+#' competing exponentials (infection at rate tau vs recovery at rate gamma):
+#'
+#'   SAR = tau / (tau + gamma)
+#'
+#' Solving for tau:
+#'   tau = SAR * gamma / (1 - SAR)
+#'
+#' Note: The formula SAR = 1 - exp(-tau/gamma) would apply to a model with
+#' FIXED infectious duration, not exponentially distributed. That formula
+#' is incorrect for the House & Keeling framework.
 calculate_tau_boost <- function(sar_crowded, gamma, tau_base) {
-  # SAR = 1 - exp(-tau / gamma) => tau = -gamma * log(1 - SAR)
-  tau_crowded <- -gamma * log(1 - sar_crowded)
+  # SAR = tau / (tau + gamma)  =>  tau = SAR * gamma / (1 - SAR)
+  tau_crowded <- sar_crowded * gamma / (1 - sar_crowded)
   tau_boost <- tau_crowded - tau_base
   return(tau_boost)
 }
