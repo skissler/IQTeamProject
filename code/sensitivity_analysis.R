@@ -135,9 +135,11 @@ plot_sensitivity <- function(diff_df, sens_dimension, metric = "attack_rate_diff
                              add_baseline = TRUE) {
 
   # Filter to relevant sensitivity dimension (include baseline r0_1.2 for reference)
+  # Handle NA values in sens_type
   baseline_parset <- "r0_1.2"
 
   plot_data <- diff_df %>%
+    filter(!is.na(sens_type)) %>%
     filter(sens_type == sens_dimension | parset_name == baseline_parset)
 
   # Get nice labels
@@ -150,7 +152,7 @@ plot_sensitivity <- function(diff_df, sens_dimension, metric = "attack_rate_diff
 
   sens_labels <- c(
     "r0" = "Basic Reproduction Number (R0)",
-    "eps" = "Assortativity (\u03B5)",
+    "eps" = "Assortativity (epsilon)",
     "sar" = "SAR in Crowded Households",
     "fold" = "Crowding Fold Difference"
   )
@@ -186,19 +188,25 @@ plot_sensitivity <- function(diff_df, sens_dimension, metric = "attack_rate_diff
 #' @return ggplot object (faceted)
 plot_sensitivity_overview <- function(diff_df, metric = "attack_rate_diff") {
 
-  # Prepare data with nice factor labels
+  # Filter out rows with NA sens_type and prepare data with nice factor labels
   plot_data <- diff_df %>%
+    filter(!is.na(sens_type)) %>%
     mutate(
       sens_type_label = case_when(
         sens_type == "r0" ~ "R0",
-        sens_type == "eps" ~ "Assortativity (\u03B5)",
+        sens_type == "eps" ~ "Assortativity (epsilon)",
         sens_type == "sar" ~ "SAR (Crowded)",
-        sens_type == "fold" ~ "Crowding Fold"
+        sens_type == "fold" ~ "Crowding Fold",
+        TRUE ~ sens_type
       ),
       sens_type_label = factor(sens_type_label,
-                               levels = c("R0", "Assortativity (\u03B5)",
+                               levels = c("R0", "Assortativity (epsilon)",
                                           "SAR (Crowded)", "Crowding Fold"))
-    )
+    ) %>%
+    # Create numeric x for proper line connections within each facet
+    group_by(sens_type) %>%
+    mutate(x_numeric = as.numeric(factor(sens_value))) %>%
+    ungroup()
 
   metric_labels <- c(
     "attack_rate_diff" = "Attack Rate Difference\n(Agricultural - Community)",
@@ -209,7 +217,7 @@ plot_sensitivity_overview <- function(diff_df, metric = "attack_rate_diff") {
   p <- plot_data %>%
     ggplot(aes(x = factor(sens_value), y = .data[[metric]], color = factor(REGION6))) +
     geom_point(size = 2, alpha = 0.8) +
-    geom_line(aes(group = REGION6), alpha = 0.5) +
+    geom_line(aes(group = REGION6, x = x_numeric), alpha = 0.5) +
     facet_wrap(~sens_type_label, scales = "free_x", nrow = 1) +
     labs(
       x = "Parameter Value",
@@ -239,7 +247,9 @@ plot_epidemic_curves <- function(all_data, sens_dimension, region = 1) {
 
   baseline_parset <- "r0_1.2"
 
+  # Filter data, handling NA values in sens_type
   plot_data <- all_data %>%
+    filter(!is.na(sens_type)) %>%
     filter((sens_type == sens_dimension | parset_name == baseline_parset) &
            REGION6 == region) %>%
     mutate(
@@ -310,20 +320,25 @@ run_sensitivity_analysis <- function() {
   sens_dimensions <- c("r0", "eps", "sar", "fold")
 
   for (sens_dim in sens_dimensions) {
-    # Check if data exists for this dimension
-    if (sum(diff_stats$sens_type == sens_dim) > 0) {
+    # Check if data exists for this dimension (handle NA values)
+    n_rows <- sum(diff_stats$sens_type == sens_dim, na.rm = TRUE)
+
+    if (n_rows > 0) {
+      cat("  Processing:", sens_dim, "(", n_rows, "rows)\n")
 
       # Attack rate difference plot
       fig_sens <- plot_sensitivity(diff_stats, sens_dim, "attack_rate_diff")
       filename <- paste0("sensitivity_", sens_dim, "_attackrate")
       ggsave(file.path(paths$figures_dir, paste0(filename, ".pdf")), fig_sens, width = 8, height = 5)
-      cat("  Saved:", paste0(filename, ".pdf\n"))
+      cat("    Saved:", paste0(filename, ".pdf\n"))
 
       # Epidemic curves for region 1
       fig_curves <- plot_epidemic_curves(all_data, sens_dim, region = 1)
       filename <- paste0("sensitivity_", sens_dim, "_curves_region1")
       ggsave(file.path(paths$figures_dir, paste0(filename, ".pdf")), fig_curves, width = 8, height = 5)
-      cat("  Saved:", paste0(filename, ".pdf\n"))
+      cat("    Saved:", paste0(filename, ".pdf\n"))
+    } else {
+      cat("  Skipping:", sens_dim, "(no data)\n")
     }
   }
 
@@ -358,7 +373,9 @@ run_sensitivity_analysis <- function() {
   ))
 }
 
-# Run if called directly
-if (sys.nframe() == 0 || !interactive()) {
-  results <- run_sensitivity_analysis()
-}
+# ==============================================================================
+# Run Analysis
+# ==============================================================================
+# Always run when sourced (the function handles its own error checking)
+
+results <- run_sensitivity_analysis()
