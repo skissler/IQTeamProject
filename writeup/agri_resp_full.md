@@ -1,4 +1,5 @@
-## Abstract
+
+# Modeling the impact of respiratory illness outbreaks on the agricultural workforce and food production in the United States## Abstract
 
 **Background:** Respiratory disease outbreaks pose significant threats to critical infrastructure, including food production systems. Agricultural workers face elevated disease transmission risk due to crowded living conditions and unique occupational exposures, yet the impact of respiratory outbreaks on agricultural productivity remains poorly quantified. 
 

@@ -1,5 +1,5 @@
 <!--
-cat agri_resp_title.md agri_resp_abstract.md agri_resp_intro.md agri_resp_methods.md agri_resp_results.md agri_resp_discussion.md agri_resp_supplement.md > agri_resp_full.md
+cat writeup/agri_resp_title.md writeup/agri_resp_abstract.md writeup/agri_resp_intro.md writeup/agri_resp_methods.md writeup/agri_resp_results.md writeup/agri_resp_discussion.md writeup/agri_resp_supplement.md > writeup/agri_resp_full.md
 -->
 
 # Modeling the impact of respiratory illness outbreaks on the agricultural workforce and food production in the United States
