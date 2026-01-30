@@ -1,9 +1,3 @@
-<!--
-cat agri_resp_title.md agri_resp_abstract.md agri_resp_intro.md agri_resp_methods.md agri_resp_results.md agri_resp_discussion.md agri_resp_supplement.md > agri_resp_full.md
--->
-
-# Modeling the impact of respiratory illness outbreaks on the agricultural workforce and food production in the United States
-
 ## Abstract
 
 **Background:** Respiratory disease outbreaks pose significant threats to critical infrastructure, including food production systems. Agricultural workers face elevated disease transmission risk due to crowded living conditions and unique occupational exposures, yet the impact of respiratory outbreaks on agricultural productivity remains poorly quantified. 
@@ -12,9 +6,7 @@ cat agri_resp_title.md agri_resp_abstract.md agri_resp_intro.md agri_resp_method
 
 **Results:** Agricultural worker households exhibited substantially higher crowding rates (xx% vs xx% in the general population), despite smiilar mean household sizes. At a baseline reproduction number of 1.2, disease prevalence peaked xx% higher among agricultural workers compared to the general population, and cumulative attack rates exceeded the general population by xx%. Under baseline assumptions, productivity losses during peak harvest periods reached xx% for strawberries, xx% for lettuce, and xx% for oranges. 
 
-**Conclusions:** Household crowding creates disproportionate disease burden among agricultural workers, potentially leading to substantial harvesting-related productivity losses. These findings highlight the need for targeted outbreak preparedness and mitigation strategies in the agricultural sector to maintain food system resilience. 
-
-## Introduction
+**Conclusions:** Household crowding creates disproportionate disease burden among agricultural workers, potentially leading to substantial harvesting-related productivity losses. These findings highlight the need for targeted outbreak preparedness and mitigation strategies in the agricultural sector to maintain food system resilience. ## Introduction
 
 Respiratory disease outbreaks can cause economic and infrastructural disruptions that cascade beyond their immediate public health impacts. The food system is particularly vulnerable to outbreaks [x]. The COVID-19 pandemic, for example, profoundly impacted food production, processing, and distribution [x, Jayson Lusk]. Agricultural labor is the critical foundation upon which the rest of the food system rests, yet agricultural workers may be especially vulnerable to respiratory disease. This vulnerability stems from many factors, including an increased rate of comorbidities [x], limited healthcare access [x], frequent migration [x], and household crowding [x]. 
 
@@ -93,9 +85,7 @@ xxxx
 
 where xx is the average harvest volume for day t and xx is the amount of available labor accounting for illness. 
 
-**[make table of parameters; possibly for supplement]** 
-
-## Results
+**[make table of parameters; possibly for supplement]** ## Results
 
 ### Household crowding leads to higher modeled disease prevalence among agricultural workers. 
 
@@ -113,7 +103,6 @@ County-level simluations demonstrated geographic heterogeneity in these infectio
 The simulated outbreaks yielded substantial productivity losses for all three crops we considered, with the impact varying by outbreak timing. For strawberries, peak productivity losses were xx% with the worst outbreak timing being a peak at xxx. For iceberg lettuce, maximum losses were xx% for outbreaks that peaked in xx. For oranges, peak losses were xx% for outbreaks peaking in xx. 
 
 ## Discussion
-
 ## Acknowledgments
 
 ## Funding

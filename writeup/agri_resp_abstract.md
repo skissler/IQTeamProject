@@ -1,0 +1,9 @@
+## Abstract
+
+**Background:** Respiratory disease outbreaks pose significant threats to critical infrastructure, including food production systems. Agricultural workers face elevated disease transmission risk due to crowded living conditions and unique occupational exposures, yet the impact of respiratory outbreaks on agricultural productivity remains poorly quantified. 
+
+**Methods:** We developed a household-structured susceptible-infectious-recovered (SIR) transmission model to compare disease dynamics between agricultural workers and the general U.S. population. Using data from the American Community Survey and National Agricultural Workers Survey, we parameterized household size and crowding distributions across regions. We simulated outbreaks with reproduction numbers ranging from 1.1 to 3.0 and secondary attack rates of xx - xx% in uncrowded households and xx - xx% in crowded households. We assessed productivity losses for three labor-intensive crops (oranges, lettuce, strawberries) with different harvest seasonalities. 
+
+**Results:** Agricultural worker households exhibited substantially higher crowding rates (xx% vs xx% in the general population), despite smiilar mean household sizes. At a baseline reproduction number of 1.2, disease prevalence peaked xx% higher among agricultural workers compared to the general population, and cumulative attack rates exceeded the general population by xx%. Under baseline assumptions, productivity losses during peak harvest periods reached xx% for strawberries, xx% for lettuce, and xx% for oranges. 
+
+**Conclusions:** Household crowding creates disproportionate disease burden among agricultural workers, potentially leading to substantial harvesting-related productivity losses. These findings highlight the need for targeted outbreak preparedness and mitigation strategies in the agricultural sector to maintain food system resilience. 
