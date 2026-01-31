@@ -5,6 +5,9 @@
 cat writeup/agri_resp/agri_resp_abstract.md; printf '\n\n'; 
 cat writeup/agri_resp/agri_resp_intro.md; printf '\n\n'; 
 cat writeup/agri_resp/agri_resp_methods.md; printf '\n\n'; 
+cat writeup/agri_resp/agri_resp_methods_data.md; printf '\n\n'; 
+cat writeup/agri_resp/agri_resp_methods_model.md; printf '\n\n'; 
+cat writeup/agri_resp/agri_resp_methods_statistics.md; printf '\n\n'; 
 cat writeup/agri_resp/agri_resp_results.md; printf '\n\n'; 
 cat writeup/agri_resp/agri_resp_discussion.md; printf '\n\n'; 
 cat writeup/agri_resp/agri_resp_supplement.md;
