@@ -122,8 +122,7 @@ household_model_twopop_crowding <- odin::odin({
   init_A[] <- user()
 
   gamma <- user()
-  tau_C <- user()
-  tau_A <- user()
+  tau <- user()
   tau_boost <- user()
   beta_C <- user()
   beta_A <- user()
@@ -172,12 +171,12 @@ household_model_twopop_crowding <- odin::odin({
 
   deriv(H_C[]) <-
     gamma * (-y[i] * H_C[i] + if (rec_index[i] > 0) (y[i] + 1) * H_C[rec_index[i]] else 0) +
-    (tau_C + tau_boost*crowded[i]) * (-x[i] * y[i] * H_C[i] + if (inf_index[i] > 0) (x[i] + 1) * (y[i] - 1) * H_C[inf_index[i]] else 0) +
+    (tau + tau_boost*crowded[i]) * (-x[i] * y[i] * H_C[i] + if (inf_index[i] > 0) (x[i] + 1) * (y[i] - 1) * H_C[inf_index[i]] else 0) +
     lambda_C * (-x[i] * H_C[i] + if (inf_index[i] > 0) (x[i] + 1) * H_C[inf_index[i]] else 0)
 
   deriv(H_A[]) <-
     gamma * (-y[i] * H_A[i] + if (rec_index[i] > 0) (y[i] + 1) * H_A[rec_index[i]] else 0) +
-    (tau_A + tau_boost*crowded[i]) * (-x[i] * y[i] * H_A[i] + if (inf_index[i] > 0) (x[i] + 1) * (y[i] - 1) * H_A[inf_index[i]] else 0) +
+    (tau + tau_boost*crowded[i]) * (-x[i] * y[i] * H_A[i] + if (inf_index[i] > 0) (x[i] + 1) * (y[i] - 1) * H_A[inf_index[i]] else 0) +
     lambda_A * (-x[i] * H_A[i] + if (inf_index[i] > 0) (x[i] + 1) * H_A[inf_index[i]] else 0)
 })
 
@@ -279,8 +278,7 @@ run_simulation <- function(r0, epsilon, sar_uncrowded, sar_crowded, crowding_fol
     init_C = init_C,
     init_A = init_A,
     gamma = gamma,
-    tau_C = tau_base,
-    tau_A = tau_base,
+    tau = tau_base,
     tau_boost = tau_boost,
     beta_C = beta,
     beta_A = beta,

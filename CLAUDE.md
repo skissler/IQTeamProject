@@ -41,7 +41,7 @@ source('code/sensitivity_analysis.R') # Compare results across sensitivity dimen
 Central configuration file containing all paths, parameters, and settings:
 - `paths` - File paths for input data and output directories
 - `data_settings` - ACS/Census year settings, NAWS date range
-- `default_pars` - Baseline epidemiological parameters (gamma, tau, beta, eps)
+- `default_pars` - Baseline epidemiological parameters (gamma, sar_uncrowded, sar_crowded, beta, eps)
 - `sim_settings` - Simulation options (time steps, parallelization)
 - `region_map` - NAWS region name/abbreviation mapping
 
@@ -75,10 +75,18 @@ Defines 12 parameter configurations for one-at-a-time sensitivity analysis acros
 4. **Crowding fold difference:** 1, 2 **(baseline)**, 3
 
 **Key Parameters:**
+
+*Primary SAR parameters (defined in config.R):*
+- `sar_uncrowded` - Baseline secondary attack rate for uncrowded households (20%)
+- `sar_crowded` - Secondary attack rate for crowded households (40%)
+
+*Derived transmission parameters (computed in parameters.R):*
+- `tau` - Within-household transmission rate, derived from `sar_uncrowded` using: `tau = SAR * gamma / (1 - SAR)`
+- `tau_boost` - Additional transmission rate for crowded households, computed as the difference between tau_crowded and tau
+
+*Other epidemiological parameters:*
 - `gamma` - Recovery rate (1/5 = 5-day infectious period)
-- `tau_C`, `tau_A` - Household secondary attack rates (community/agricultural)
-- `tau_boost` - Additional transmission rate for crowded households
-- `beta_C`, `beta_A` - Community transmission rates
+- `beta_C`, `beta_A` - Community transmission rates (between-household)
 - `eps` - Assortativity between populations
 - `crowding_fold_diff` - How much more likely large households are to be crowded
 

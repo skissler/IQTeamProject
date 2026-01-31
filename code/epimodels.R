@@ -244,7 +244,7 @@ household_model <- odin::odin({
 #'   \item{rec_index[], inf_index[]}{Transition indices}
 #'   \item{init_C[], init_A[]}{Initial distributions for each population}
 #'   \item{gamma}{Recovery rate (shared)}
-#'   \item{tau_C, tau_A}{Within-household transmission rates}
+#'   \item{tau}{Within-household transmission rate (shared by both populations)}
 #'   \item{beta_C, beta_A}{Between-household transmission rates}
 #'   \item{eps}{Assortativity parameter (0 = assortative, 1 = proportional)}
 #'   \item{pop_C, pop_A}{Population sizes (for mixing matrix weights)}
@@ -276,8 +276,7 @@ household_model_twopop <- odin::odin({
   init_A[] <- user()
 
   gamma <- user()
-  tau_C <- user()
-  tau_A <- user()
+  tau <- user()
   beta_C <- user()
   beta_A <- user()
   eps <- user()
@@ -332,7 +331,7 @@ household_model_twopop <- odin::odin({
       -y[i] * H_C[i] +
       if (rec_index[i] > 0) (y[i] + 1) * H_C[rec_index[i]] else 0
     ) +
-    tau_C * (
+    tau * (
       -x[i] * y[i] * H_C[i] +
       if (inf_index[i] > 0) (x[i] + 1) * (y[i] - 1) * H_C[inf_index[i]] else 0
     ) +
@@ -347,7 +346,7 @@ household_model_twopop <- odin::odin({
       -y[i] * H_A[i] +
       if (rec_index[i] > 0) (y[i] + 1) * H_A[rec_index[i]] else 0
     ) +
-    tau_A * (
+    tau * (
       -x[i] * y[i] * H_A[i] +
       if (inf_index[i] > 0) (x[i] + 1) * (y[i] - 1) * H_A[inf_index[i]] else 0
     ) +
@@ -398,8 +397,7 @@ household_model_twopop <- odin::odin({
 #'   \item{rec_index[], inf_index[]}{Transition indices}
 #'   \item{init_C[], init_A[]}{Initial distributions for each population}
 #'   \item{gamma}{Recovery rate (1/infectious period)}
-#'   \item{tau_C}{Baseline within-HH transmission rate (community)}
-#'   \item{tau_A}{Baseline within-HH transmission rate (agricultural)}
+#'   \item{tau}{Baseline within-HH transmission rate (shared by both populations)}
 #'   \item{tau_boost}{Additional transmission rate for crowded households}
 #'   \item{beta_C, beta_A}{Between-household transmission rates}
 #'   \item{eps}{Assortativity parameter}
@@ -409,7 +407,7 @@ household_model_twopop <- odin::odin({
 #' @section Typical Parameter Values:
 #' \describe{
 #'   \item{gamma}{1/5 (5-day infectious period)}
-#'   \item{tau_C, tau_A}{0.05 (20% SAR in uncrowded households)}
+#'   \item{tau}{0.05 (20% SAR in uncrowded households)}
 #'   \item{tau_boost}{0.083 (boosting to 40% SAR in crowded households)}
 #'   \item{beta_C, beta_A}{0.153 for R0=1.2 (calibrated)}
 #'   \item{eps}{0.33 (moderate assortativity)}
@@ -434,7 +432,7 @@ household_model_twopop <- odin::odin({
 #'   inf_index = states$inf_index,
 #'   init_C = init_C, init_A = init_A,
 #'   gamma = 1/5,
-#'   tau_C = 0.05, tau_A = 0.05, tau_boost = 0.083,
+#'   tau = 0.05, tau_boost = 0.083,
 #'   beta_C = 0.153, beta_A = 0.153,
 #'   eps = 0.33,
 #'   pop_C = 1000000, pop_A = 50000
@@ -476,8 +474,7 @@ household_model_twopop_crowding <- odin::odin({
 
   # Epidemiological parameters
   gamma <- user()       # Recovery rate
-  tau_C <- user()       # Community baseline within-HH transmission
-  tau_A <- user()       # Agricultural baseline within-HH transmission
+  tau <- user()         # Baseline within-HH transmission (shared by both populations)
   tau_boost <- user()   # Additional transmission for crowded HHs
   beta_C <- user()      # Community between-HH transmission
   beta_A <- user()      # Agricultural between-HH transmission
@@ -565,7 +562,7 @@ household_model_twopop_crowding <- odin::odin({
       if (rec_index[i] > 0) (y[i] + 1) * H_C[rec_index[i]] else 0
     ) +
     # Within-household infection (with crowding boost)
-    (tau_C + tau_boost*crowded[i]) * (
+    (tau + tau_boost*crowded[i]) * (
       -x[i] * y[i] * H_C[i] +
       if (inf_index[i] > 0) (x[i] + 1) * (y[i] - 1) * H_C[inf_index[i]] else 0
     ) +
@@ -586,7 +583,7 @@ household_model_twopop_crowding <- odin::odin({
       if (rec_index[i] > 0) (y[i] + 1) * H_A[rec_index[i]] else 0
     ) +
     # Within-household infection (with crowding boost)
-    (tau_A + tau_boost*crowded[i]) * (
+    (tau + tau_boost*crowded[i]) * (
       -x[i] * y[i] * H_A[i] +
       if (inf_index[i] > 0) (x[i] + 1) * (y[i] - 1) * H_A[inf_index[i]] else 0
     ) +

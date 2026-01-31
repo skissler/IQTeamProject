@@ -95,13 +95,18 @@ nat_data <- acs_data %>%
 #   R0 = 2.0 → beta_scalar = 1.53
 #   R0 = 3.0 → beta_scalar = 2.52
 
+# Helper function to calculate tau from SAR (duplicated from parameters.R for standalone use)
+calculate_tau_calibrate <- function(sar, gamma) {
+  sar * gamma / (1 - sar)
+}
+
 pars_calibrate <- list(
   # Disease dynamics
+  gamma = 1/5,                              # Recovery rate (5-day infectious period)
 
-gamma = 1/5,                              # Recovery rate (5-day infectious period)
-  tau_C = (1/4) * (1/5),                    # Within-HH transmission: 20% SAR baseline
-  tau_A = 0,                                # Disabled for calibration
-  tau_boost = (2/3) * (1/5) - (1/4) * (1/5), # Crowding boost: to 40% SAR
+  # SAR-based parameters (primary)
+  sar_uncrowded = 0.20,                     # Within-HH SAR: 20% baseline
+  sar_crowded = 0.40,                       # Crowded HH SAR: 40%
 
   # Between-household transmission
   # MODIFY THIS VALUE to calibrate different R0 targets:
@@ -119,6 +124,10 @@ gamma = 1/5,                              # Recovery rate (5-day infectious peri
   adjust_hhvars = TRUE,
   init_prev = 0.001
 )
+
+# Compute derived tau parameters from SAR values
+pars_calibrate$tau <- calculate_tau_calibrate(pars_calibrate$sar_uncrowded, pars_calibrate$gamma)
+pars_calibrate$tau_boost <- calculate_tau_calibrate(pars_calibrate$sar_crowded, pars_calibrate$gamma) - pars_calibrate$tau
 
 # ==============================================================================
 # Calibration Simulation Function
@@ -203,8 +212,7 @@ run_calibration_sim <- function(pars, nat_data) {
       init_C = init_nat_C,
       init_A = init_nat_A,
       gamma = gamma,
-      tau_C = tau_C,
-      tau_A = tau_A,
+      tau = tau,
       tau_boost = tau_boost,
       beta_C = beta_C,
       beta_A = beta_A,

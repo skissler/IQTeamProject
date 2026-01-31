@@ -51,16 +51,19 @@ default_pars <- list(
   gamma = 1/5,                  # Recovery rate: 1/5 = 5-day infectious period
 
   # Household secondary attack rates (SAR)
-  # tau represents within-household transmission rate
-  tau_C = (1/4) * (1/5),        # Community baseline SAR: 20%
-  tau_A = (1/4) * (1/5),        # Agricultural worker baseline SAR: 20%
-  tau_boost = (2/3) * (1/5) - (1/4) * (1/5),  # SAR boost for crowded households: to 40%
+  # Primary parameters: SAR values for uncrowded and crowded households
+  # Derived parameters (tau, tau_boost) computed in parameters.R using:
+  #   tau = SAR * gamma / (1 - SAR)
+  sar_uncrowded = 0.20,         # Baseline SAR for uncrowded households: 20%
+  sar_crowded = 0.40,           # SAR for crowded households: 40%
 
   # Community transmission (beta determines R0)
-  # beta_C = 0.765 * gamma gives R0 ~ 1.2 (baseline)
-  # beta_C = 1.05 * gamma gives R0 ~ 1.5
-  # beta_C = 1.53 * gamma gives R0 ~ 2.0
-  # beta_C = 2.52 * gamma gives R0 ~ 3.0
+  # beta_scalar * gamma gives beta_C and beta_A
+  # beta_scalar = 0.765 gives R0 ~ 1.2 (baseline)
+  # beta_scalar = 1.05 gives R0 ~ 1.5
+  # beta_scalar = 1.53 gives R0 ~ 2.0
+  # beta_scalar = 2.52 gives R0 ~ 3.0
+  beta_scalar = 0.765,          # Beta multiplier for target R0 (baseline R0 ~ 1.2)
   beta_C = 0.765 * (1/5),       # Community transmission rate (R0 ~ 1.2)
   beta_A = 0.765 * (1/5),       # Agricultural worker transmission rate
 
