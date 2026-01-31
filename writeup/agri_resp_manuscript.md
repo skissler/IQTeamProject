@@ -1,4 +1,13 @@
 <!--
+
+{ cat writeup/agri_resp_title.md; printf '\n\n'; 
+cat writeup/agri_resp_abstract.md; printf '\n\n'; 
+cat writeup/agri_resp_intro.md; printf '\n\n'; 
+cat writeup/agri_resp_methods.md; printf '\n\n'; 
+cat writeup/agri_resp_results.md; printf '\n\n'; 
+cat writeup/agri_resp_discussion.md; printf '\n\n'; 
+cat writeup/agri_resp_supplement.md;} > writeup/agri_resp_full_manuscript.md
+
 cat writeup/agri_resp_title.md writeup/agri_resp_abstract.md writeup/agri_resp_intro.md writeup/agri_resp_methods.md writeup/agri_resp_results.md writeup/agri_resp_discussion.md writeup/agri_resp_supplement.md > writeup/agri_resp_full.md
 -->
 
