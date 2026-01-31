@@ -8,3 +8,4 @@
 **Results:** Agricultural worker households exhibited substantially higher crowding rates (xx% vs xx% in the general population), despite smiilar mean household sizes. At a baseline reproduction number of 1.2, disease prevalence peaked xx% higher among agricultural workers compared to the general population, and cumulative attack rates exceeded the general population by xx%. Under baseline assumptions, productivity losses during peak harvest periods reached xx% for strawberries, xx% for lettuce, and xx% for oranges. 
 
 **Conclusions:** Household crowding creates disproportionate disease burden among agricultural workers, potentially leading to substantial harvesting-related productivity losses. These findings highlight the need for targeted outbreak preparedness and mitigation strategies in the agricultural sector to maintain food system resilience. 
+
