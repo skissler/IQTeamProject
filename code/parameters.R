@@ -111,8 +111,14 @@ create_parset <- function(sens_type, sens_value, parset,
 
 # Use a named vector with numeric names for reliable lookup
 # Note: as.character(2.0) returns "2" not "2.0", so we use a lookup function
-beta_scalars_vec <- c(0.765, 1.05, 1.53, 2.52)
-names(beta_scalars_vec) <- c(1.2, 1.5, 2.0, 3.0)
+# beta_scalars_vec <- c(0.765, 1.05, 1.53, 2.52)
+# names(beta_scalars_vec) <- c(1.2, 1.5, 2.0, 3.0)
+beta_scalars_vec <- c(
+  `1.2` = 0.7649,  # R0 = 1.2
+  `1.5` = 1.0490,  # R0 = 1.5
+  `2` = 1.5344,  # R0 = 2
+  `3` = 2.5270  # R0 = 3
+)
 
 #' Get calibrated beta scalar for a target R0
 #' @param r0 Target reproduction number
