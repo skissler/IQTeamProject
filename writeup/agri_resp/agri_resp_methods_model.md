@@ -4,13 +4,15 @@ We simulated respiratory disease spread using a deterministic household-structur
 
 #### Model structure
 
-The model divides the population into compartments based on infection status (susceptible, infectious, or recovered), household size (n = 1, 2, …, 7+), crowding status (crowded or uncrowded), and occupational group (agricultural worker or general population). Within each household type, we tracked the number of households with i infectious individuals out of n total members. more here. 
+The model divides the population into compartments based on infection status (susceptible, infectious, or recovered), household size (n = 1, 2, ..., 7+), crowding status (crowded or uncrowded), and occupational group (agricultural worker or general population). Within each household type, we tracked the number of households with i infectious individuals out of n total members. more here. 
 
 #### Model parameterization
 
 **Recovery rate:** We fixed the recovery rate at γ = 1/5 day^-1, corresponding to a mean infectious period of 5 days [x]. 
 
-**Within-household transmission:** We parameterized within-household transmission using secondary attack rate (SAR) estimates from household transmission studies. The SAR is the probability that a susceptible household member becomes infected by an infectious index case within the household. [edited SAR calculation here, Claude is wrong]
+**Within-household transmission:** We parameterized within-household transmission using secondary attack rate (SAR) estimates from household transmission studies. The SAR is the probability that a susceptible household member becomes infected by an infectious index case within the household. In the household model, the secondary attack rate informs the within-household transmission rate. Specifically, the secondary attack rate is equal to the probability that an infection occurs prior to both recovery and infection from the outside; i.e., 
+
+
 
 **Between-household transmission:** With γ and τ fixed, we calibrated the between-household transmission rate β to achieve a specified basic reproduction number R0. We simulated outbreaks at the national level using the national population-weighted average household size distribution from the ACS data. We a given β value, we ran the model to equilibrium and compared the outbreak’s final size with the theoretical prediction from the implicit relationship  [<- check this]. We adjusted β using a bisection search algorithm until the simulated final size was within 0.0005 of the theoretical value. For the baseline analysis, we used R0 = 1.2, reflecting the estimated reproduction number for seasonal influenza and the effective reproduction number during many COVID-19 surges when behavioral mitigations were in place. This yielded β = xx and yielded a final attack rate of xx. In sensitivity analyses, we considered R0 values of 1.2, 1.5, 2.0, and 3.0. 
 
