@@ -176,3 +176,39 @@ cat("  Output files:\n")
 for (name in unlist(results)) {
   cat("    -", paste0(paths$regional_output_prefix, name, ".csv"), "\n")
 }
+
+# ==============================================================================
+# Generate diagnostic plots for each parameter set
+# ==============================================================================
+
+cat("\n  Generating diagnostic plots...\n")
+
+for (parset_name in unlist(results)) {
+  # Load the output file
+  output_file <- paste0(paths$regional_output_prefix, parset_name, ".csv")
+  epidf <- read_csv(output_file, show_col_types = FALSE)
+
+  # Create infection curve plot (faceted by region)
+  fig <- epidf %>%
+    pivot_longer(c("S_indiv", "I_indiv", "R_indiv")) %>%
+    mutate(name = substr(name, 1, 1)) %>%
+    filter(name == "I") %>%
+    ggplot(aes(x = t, y = value, col = subpop)) +
+    geom_line(alpha = 1, linewidth = 0.8) +
+    geom_hline(yintercept = 0.005, lty = "dashed", alpha = 0.2) +
+    labs(
+      x = "Time (days)",
+      y = "Proportion Infected",
+      col = "Subpopulation",
+      title = paste0("Infection curves: ", parset_name)
+    ) +
+    theme_minimal() +
+    facet_wrap(~factor(REGION6), nrow = 2)
+
+  # Save the plot
+  fig_file <- paste0(paths$figures_dir, "/regional_I_", parset_name, ".pdf")
+  ggsave(fig_file, fig, width = 10, height = 6)
+  cat("    -", fig_file, "\n")
+}
+
+cat("  Diagnostic plots complete.\n")
