@@ -54,19 +54,7 @@ source('code/parameters.R')
 # ==============================================================================
 
 cat("\nStep 5: Running regional simulations for all parameter sets...\n")
-cat("  Total parameter sets:", length(pars_list), "\n\n")
-
-# Track timing
-start_time <- Sys.time()
-
-for (i in seq_along(pars_list)) {
-  pars <- pars_list[[i]]
-  cat("  [", i, "/", length(pars_list), "] Running: ", pars$parset_name, "\n", sep = "")
-  source('code/simulate_regional.R')
-}
-
-elapsed <- difftime(Sys.time(), start_time, units = "mins")
-cat("\n  Completed all simulations in", round(elapsed, 1), "minutes\n")
+source('code/run_regional_batch.R')
 
 # ==============================================================================
 # 6. Sensitivity Analysis

@@ -1,6 +1,6 @@
 library(tidyverse)
 library(odin)
-source('code/utils.R')
+source('code/utils_documented.R')
 source('code/epimodels.R')
 
 # Load household state definitions

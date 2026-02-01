@@ -89,7 +89,7 @@ default_pars <- list(
 
 sim_settings <- list(
   # Time parameters (days)
-  t_max = 100,                  # Maximum simulation time for county runs
+  t_max = 365,                  # Maximum simulation time (full year)
   t_max_calibration = 1000,     # Maximum time for calibration runs
   t_step = 1,                   # Time step size
 

@@ -125,6 +125,60 @@ calculate_differential_stats <- function(summary_df) {
 # Visualization Functions
 # ==============================================================================
 
+# Baseline parameter values (must match config.R defaults)
+# Used to map the r0_1.2 baseline parset to correct values for each dimension
+baseline_values <- list(
+  r0 = 1.2,
+  eps = 0.33,
+  sar = 0.40,
+  fold = 2
+)
+
+#' Prepare data for sensitivity plotting
+#'
+#' For each sensitivity dimension, includes both the dedicated sensitivity runs
+#' AND the baseline (r0_1.2), with the baseline's sens_value correctly mapped
+#' to that dimension's baseline parameter value.
+#'
+#' @param df Data frame with sens_type, sens_value, parset_name columns
+#' @param sens_dimension Which dimension to prepare ("r0", "eps", "sar", "fold")
+#' @return Data frame ready for plotting with correct sens_value for x-axis
+prepare_sensitivity_data <- function(df, sens_dimension) {
+  baseline_parset <- "r0_1.2"
+
+  # Get rows for this sensitivity dimension
+  sens_rows <- df %>%
+    filter(!is.na(sens_type) & sens_type == sens_dimension)
+
+  # Get baseline row and update sens_value to the correct baseline for this dimension
+  baseline_rows <- df %>%
+    filter(parset_name == baseline_parset) %>%
+    mutate(
+      sens_type = sens_dimension,
+      sens_value = baseline_values[[sens_dimension]]
+    )
+
+  # Combine: if this is the r0 dimension, baseline is already included
+  # Otherwise, we add the remapped baseline
+  if (sens_dimension == "r0") {
+    result <- sens_rows
+  } else {
+    # For non-r0 dimensions, check if baseline value already exists
+    baseline_val <- baseline_values[[sens_dimension]]
+    existing_vals <- unique(sens_rows$sens_value)
+
+    if (baseline_val %in% existing_vals) {
+      # Baseline already represented (shouldn't happen with current parameters.R logic)
+      result <- sens_rows
+    } else {
+      # Add the remapped baseline
+      result <- bind_rows(sens_rows, baseline_rows)
+    }
+  }
+
+  return(result)
+}
+
 #' Create sensitivity comparison plot for a given dimension
 #' @param diff_df Differential statistics data frame
 #' @param sens_dimension Sensitivity dimension to plot ("r0", "eps", "sar", "fold")
@@ -134,13 +188,8 @@ calculate_differential_stats <- function(summary_df) {
 plot_sensitivity <- function(diff_df, sens_dimension, metric = "attack_rate_diff",
                              add_baseline = TRUE) {
 
-  # Filter to relevant sensitivity dimension (include baseline r0_1.2 for reference)
-  # Handle NA values in sens_type
-  baseline_parset <- "r0_1.2"
-
-  plot_data <- diff_df %>%
-    filter(!is.na(sens_type)) %>%
-    filter(sens_type == sens_dimension | parset_name == baseline_parset)
+  # Use helper to get data with correctly mapped baseline values
+  plot_data <- prepare_sensitivity_data(diff_df, sens_dimension)
 
   # Get nice labels
   metric_labels <- c(
@@ -188,9 +237,11 @@ plot_sensitivity <- function(diff_df, sens_dimension, metric = "attack_rate_diff
 #' @return ggplot object (faceted)
 plot_sensitivity_overview <- function(diff_df, metric = "attack_rate_diff") {
 
-  # Filter out rows with NA sens_type and prepare data with nice factor labels
-  plot_data <- diff_df %>%
-    filter(!is.na(sens_type)) %>%
+  # Combine data from all sensitivity dimensions with correct baseline mappings
+  sens_dimensions <- c("r0", "eps", "sar", "fold")
+  plot_data <- bind_rows(
+    lapply(sens_dimensions, function(dim) prepare_sensitivity_data(diff_df, dim))
+  ) %>%
     mutate(
       sens_type_label = case_when(
         sens_type == "r0" ~ "R0",
@@ -245,15 +296,11 @@ plot_sensitivity_overview <- function(diff_df, metric = "attack_rate_diff") {
 #' @return ggplot object
 plot_epidemic_curves <- function(all_data, sens_dimension, region = 1) {
 
-  baseline_parset <- "r0_1.2"
-
-  # Filter data, handling NA values in sens_type
-  plot_data <- all_data %>%
-    filter(!is.na(sens_type)) %>%
-    filter((sens_type == sens_dimension | parset_name == baseline_parset) &
-           REGION6 == region) %>%
+  # Use helper to get data with correctly mapped baseline values
+  plot_data <- prepare_sensitivity_data(all_data, sens_dimension) %>%
+    filter(REGION6 == region) %>%
     mutate(
-      sens_label = paste0(sens_type, " = ", sens_value)
+      sens_label = paste0(sens_dimension, " = ", sens_value)
     )
 
   p <- plot_data %>%

@@ -4,7 +4,7 @@
 
 library(tidyverse)
 library(scales)
-source('code/utils.R')
+source('code/utils_documented.R')
 source('code/epimodels.R')
 
 source('code/import_naws.R')

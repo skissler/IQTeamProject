@@ -236,7 +236,7 @@ format_output_indiv <- function(model_output, household_states){
 	out <- out_hh %>% 
 		  mutate(S_num=prop_hh*x, I_num = prop_hh*y, R_num=prop_hh*z, den=prop_hh*hh_size) %>% 
 		  group_by(t, subpop) %>% 
-		  summarise(S_num=sum(S_num), I_num=sum(I_num), R_num=sum(R_num), den=sum(den)) %>% 
+		  summarise(S_num=sum(S_num), I_num=sum(I_num), R_num=sum(R_num), den=sum(den), .groups = "drop") %>% 
 		  mutate(S_indiv=S_num/den, I_indiv=I_num/den, R_indiv=R_num/den) %>% 
 		  select(t, subpop, S_indiv, I_indiv, R_indiv)
 	return(out)

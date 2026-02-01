@@ -4,7 +4,7 @@
 
 library(tidyverse) 
 library(tidycensus)
-source('code/utils.R')
+source('code/utils_documented.R')
 source('code/import_naws.R')
 source('code/import_acs.R')
 

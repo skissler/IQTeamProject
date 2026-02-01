@@ -106,7 +106,7 @@ for(region in 1:6){
 	)
 
 	# Simulate
-	times <- seq(0, 365, by = 1)
+	times <- seq(0, sim_settings$t_max, by = sim_settings$t_step)
 	out <- as_tibble(data.frame(mod$run(times)))
 
 	epidf_hh <- format_output_hh(out, household_states)

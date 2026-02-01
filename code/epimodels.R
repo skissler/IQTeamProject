@@ -11,12 +11,12 @@
 #   3. household_model_twopop - Two populations with assortative mixing
 #   4. household_model_twopop_crowding - Adds household crowding effects (PRIMARY MODEL)
 #
-# Note: This file expects code/utils.R to be loaded for helper functions.
+# Note: This file expects code/utils_documented.R to be loaded for helper functions.
 # In practice, source code/setup.R which handles all dependencies.
 
 library(tidyverse)
 library(odin)
-source('code/utils.R')
+source('code/utils_documented.R')
 
 # ==============================================================================
 # 1. BASIC SIR MODEL
