@@ -283,7 +283,7 @@ base_pars <- list(
   crowding_fold_diff = 2,
 
   # Other settings
-  adjust_hhvars = TRUE,
+  adjust_hhvars = "multiplicative",  # Not used in calibration (national level)
   init_prev = 0.001
 )
 

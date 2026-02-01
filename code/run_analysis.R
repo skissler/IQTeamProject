@@ -13,7 +13,8 @@
 #   4. Define sensitivity parameter sets
 #   5. Run regional simulations for all parameter sets
 #   6. Sensitivity analysis and comparison figures
-#   7. Crop calendar productivity analysis
+#   7. County-level simulations (with and without HH adjustment)
+#   8. Crop calendar productivity analysis
 # ==============================================================================
 
 cat("\n", rep("=", 60), "\n", sep = "")
@@ -75,10 +76,45 @@ cat("\nStep 6: Running sensitivity analysis...\n")
 source('code/sensitivity_analysis.R')
 
 # ==============================================================================
-# 7. Crop Calendar Analysis
+# 7. County-Level Simulations
+# ==============================================================================
+# Runs county-level simulations with baseline parameters, using three different
+# approaches to derive county-level agricultural worker household distributions:
+#
+# - "none":           Use regional NAWS data directly (no county variation)
+# - "multiplicative": Multiply NAWS by (county_ACS / regional_ACS_mean)
+# - "additive":       Add (county_ACS - regional_ACS_mean) to NAWS
+
+cat("\nStep 7: Running county-level simulations...\n")
+
+# Use baseline parameters (parset 1 = r0_1.2 with all baseline values)
+pars <- pars_list[[1]]
+
+# Run with no adjustment (use regional NAWS directly)
+cat("  [1/3] Running with adjust_hhvars = 'none'...\n")
+pars$adjust_hhvars <- "none"
+paths$county_output <- "output/epidf_indiv_county_none.csv"
+source('code/simulate.R')
+
+# Run with multiplicative adjustment (baseline behavior)
+cat("  [2/3] Running with adjust_hhvars = 'multiplicative'...\n")
+pars$adjust_hhvars <- "multiplicative"
+paths$county_output <- "output/epidf_indiv_county_multiplicative.csv"
+source('code/simulate.R')
+
+# Run with additive adjustment
+cat("  [3/3] Running with adjust_hhvars = 'additive'...\n")
+pars$adjust_hhvars <- "additive"
+paths$county_output <- "output/epidf_indiv_county_additive.csv"
+source('code/simulate.R')
+
+cat("  County-level simulations complete.\n")
+
+# ==============================================================================
+# 8. Crop Calendar Analysis
 # ==============================================================================
 
-cat("\nStep 7: Running crop calendar productivity analysis...\n")
+cat("\nStep 8: Running crop calendar productivity analysis...\n")
 source('code/crop_calendars.R')
 
 # ==============================================================================
@@ -95,3 +131,7 @@ cat("  - Figures:", paths$figures_dir, "\n")
 cat("\nSensitivity summary files:\n")
 cat("  - output/sensitivity_summary.csv\n")
 cat("  - output/sensitivity_differential.csv\n")
+cat("\nCounty-level simulation files:\n")
+cat("  - output/epidf_indiv_county_none.csv (no adjustment)\n")
+cat("  - output/epidf_indiv_county_multiplicative.csv (multiplicative adjustment)\n")
+cat("  - output/epidf_indiv_county_additive.csv (additive adjustment)\n")

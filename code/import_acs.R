@@ -208,11 +208,15 @@ mean_prop_crowded <- acs_data %>%
   mutate(prop_crowded_wt = prop_crowded_wt/population) %>% 
   select(REGION6, prop_crowded_mean=prop_crowded_wt)
 
-acs_data <- acs_data %>% 
-  left_join(mean_hhSize_dist, by=c("REGION6","hhSize")) %>% 
-  left_join(mean_prop_crowded, by="REGION6") %>% 
-  mutate(hhSize_factor=prop/prop_mean) %>% 
-  mutate(crowded_factor=prop_crowded/prop_crowded_mean) %>% 
+acs_data <- acs_data %>%
+  left_join(mean_hhSize_dist, by=c("REGION6","hhSize")) %>%
+  left_join(mean_prop_crowded, by="REGION6") %>%
+  # Multiplicative adjustment factors (ratio to regional mean)
+  mutate(hhSize_factor=prop/prop_mean) %>%
+  mutate(crowded_factor=prop_crowded/prop_crowded_mean) %>%
+  # Additive adjustment differences (deviation from regional mean)
+  mutate(hhSize_diff=prop - prop_mean) %>%
+  mutate(crowded_diff=prop_crowded - prop_crowded_mean) %>%
   select(-prop_mean, -prop_crowded_mean)
 
 # //////////////////////////////////////////////////////////////////////////////

@@ -60,30 +60,53 @@ results_list <- future_lapply(GEOID_vec, function(geoid){
 		pull(REGION6) %>% 
 		first()
 
-	# Get the adjustments: 
-	hhSize_factor <- county_data %>% 
-		arrange(hhSize) %>% 
+	# Get the adjustment factors (multiplicative) and differences (additive):
+	hhSize_factor <- county_data %>%
+		arrange(hhSize) %>%
 		pull(hhSize_factor)
 
-	crowded_factor <- county_data %>% 
-		pull(crowded_factor) %>% 
+	crowded_factor <- county_data %>%
+		pull(crowded_factor) %>%
 		first()
 
-	# Create the ic joiners: 
-	ic_joiner_C <- county_data %>% 
+	hhSize_diff <- county_data %>%
+		arrange(hhSize) %>%
+		pull(hhSize_diff)
+
+	crowded_diff <- county_data %>%
+		pull(crowded_diff) %>%
+		first()
+
+	# Create the ic joiners:
+	ic_joiner_C <- county_data %>%
 		make_ic_joiner(fold_diff=crowding_fold_diff)
 
-	if(adjust_hhvars){
-		naws_data_processed <- naws_data %>% 
-			filter(REGION6==region) %>% 
-			mutate(hhSize_factor=hhSize_factor, crowded_factor=crowded_factor) %>% 
-			mutate(prop=prop*hhSize_factor) %>% 
-			mutate(prop=prop/sum(prop)) %>% 
-			mutate(prop_crowded=prop_crowded*crowded_factor) %>% 
-			mutate(prop_crowded=case_when(prop_crowded>1~1, TRUE~prop_crowded)) %>% 
+	# Adjust NAWS data based on adjust_hhvars setting:
+	#   "none"           - Use regional NAWS data directly
+	#   "multiplicative" - Multiply by (county/regional_mean) ratio
+	#   "additive"       - Add (county - regional_mean) difference
+	if (adjust_hhvars == "multiplicative") {
+		naws_data_processed <- naws_data %>%
+			filter(REGION6==region) %>%
+			mutate(hhSize_factor=hhSize_factor, crowded_factor=crowded_factor) %>%
+			mutate(prop=prop*hhSize_factor) %>%
+			mutate(prop=prop/sum(prop)) %>%
+			mutate(prop_crowded=prop_crowded*crowded_factor) %>%
+			mutate(prop_crowded=case_when(prop_crowded>1~1, prop_crowded<0~0, TRUE~prop_crowded)) %>%
 			select(-hhSize_factor, -crowded_factor)
+	} else if (adjust_hhvars == "additive") {
+		naws_data_processed <- naws_data %>%
+			filter(REGION6==region) %>%
+			mutate(hhSize_diff=hhSize_diff, crowded_diff=crowded_diff) %>%
+			mutate(prop=prop + hhSize_diff) %>%
+			mutate(prop=case_when(prop<0~0, TRUE~prop)) %>%  # Clamp to >= 0
+			mutate(prop=prop/sum(prop)) %>%                   # Renormalize
+			mutate(prop_crowded=prop_crowded + crowded_diff) %>%
+			mutate(prop_crowded=case_when(prop_crowded>1~1, prop_crowded<0~0, TRUE~prop_crowded)) %>%
+			select(-hhSize_diff, -crowded_diff)
 	} else {
-		naws_data_processed <- naws_data %>% 
+		# "none" or any other value: use regional NAWS data directly
+		naws_data_processed <- naws_data %>%
 			filter(REGION6==region)
 	}
 

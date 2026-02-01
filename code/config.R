@@ -75,7 +75,11 @@ default_pars <- list(
   crowding_fold_diff = 2,       # Crowding transmission multiplier for large households
 
   # Simulation settings
-  adjust_hhvars = TRUE,         # Adjust county household vars using regional NAWS data
+  # adjust_hhvars controls how county-level ag worker HH distributions are derived:
+  #   "none"           - Use regional NAWS data directly (no county variation)
+  #   "multiplicative" - Multiply NAWS by (county_ACS / regional_ACS_mean)
+  #   "additive"       - Add (county_ACS - regional_ACS_mean) to NAWS
+  adjust_hhvars = "multiplicative",
   init_prev = 0.001             # Initial prevalence (0.1% of population infected)
 )
 

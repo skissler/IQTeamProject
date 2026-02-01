@@ -64,7 +64,7 @@ calculate_tau_boost <- function(sar_crowded, gamma, tau) {
 #' @param eps Assortativity parameter
 #' @param crowding_fold_diff Crowding fold difference
 #' @param max_hh_size Maximum household size modeled
-#' @param adjust_hhvars Whether to adjust household vars using regional NAWS data
+#' @param adjust_hhvars How to adjust HH vars: "none", "multiplicative", or "additive"
 #' @param init_prev Initial prevalence
 #' @return Named list with all parameters and metadata
 create_parset <- function(sens_type, sens_value, parset,
