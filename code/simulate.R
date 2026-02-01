@@ -142,8 +142,7 @@ results_list <- future_lapply(GEOID_vec, function(geoid){
 	  gamma = gamma,
 	  tau = tau,             # Derived from sar_uncrowded
 	  tau_boost = tau_boost, # Boosts from sar_uncrowded to sar_crowded
-	  beta_C = beta_C,
-	  beta_A = beta_A,
+	  beta = beta,
 	  eps = eps,
 	  pop_C = pop_C,
 	  pop_A = pop_A

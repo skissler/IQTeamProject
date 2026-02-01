@@ -233,8 +233,8 @@ household_model <- odin::odin({
 #' Where w_C = pop_C/(pop_C+pop_A) and w_A = pop_A/(pop_C+pop_A)
 #'
 #' Force of infection:
-#' - lambda_C = beta_C * (m_CC*I_C + m_CA*I_A)
-#' - lambda_A = beta_A * (m_AC*I_C + m_AA*I_A)
+#' - lambda_C = beta * (m_CC*I_C + m_CA*I_A)
+#' - lambda_A = beta * (m_AC*I_C + m_AA*I_A)
 #'
 #' @section Parameters:
 #' \describe{
@@ -245,7 +245,7 @@ household_model <- odin::odin({
 #'   \item{init_C[], init_A[]}{Initial distributions for each population}
 #'   \item{gamma}{Recovery rate (shared)}
 #'   \item{tau}{Within-household transmission rate (shared by both populations)}
-#'   \item{beta_C, beta_A}{Between-household transmission rates}
+#'   \item{beta}{Between-household transmission rate}
 #'   \item{eps}{Assortativity parameter (0 = assortative, 1 = proportional)}
 #'   \item{pop_C, pop_A}{Population sizes (for mixing matrix weights)}
 #' }
@@ -277,8 +277,7 @@ household_model_twopop <- odin::odin({
 
   gamma <- user()
   tau <- user()
-  beta_C <- user()
-  beta_A <- user()
+  beta <- user()
   eps <- user()
   pop_C <- user()
   pop_A <- user()
@@ -322,8 +321,8 @@ household_model_twopop <- odin::odin({
   m_AA <- (1 - eps) + eps * w_A
 
   # Force of infection for each population
-  lambda_C <- beta_C * (m_CC * I_C + m_CA * I_A)
-  lambda_A <- beta_A * (m_AC * I_C + m_AA * I_A)
+  lambda_C <- beta * (m_CC * I_C + m_CA * I_A)
+  lambda_A <- beta * (m_AC * I_C + m_AA * I_A)
 
   # Community dynamics: recovery + within-HH + between-HH
   deriv(H_C[]) <-
@@ -399,7 +398,7 @@ household_model_twopop <- odin::odin({
 #'   \item{gamma}{Recovery rate (1/infectious period)}
 #'   \item{tau}{Baseline within-HH transmission rate (shared by both populations)}
 #'   \item{tau_boost}{Additional transmission rate for crowded households}
-#'   \item{beta_C, beta_A}{Between-household transmission rates}
+#'   \item{beta}{Between-household transmission rate}
 #'   \item{eps}{Assortativity parameter}
 #'   \item{pop_C, pop_A}{Population sizes}
 #' }
@@ -409,7 +408,7 @@ household_model_twopop <- odin::odin({
 #'   \item{gamma}{1/5 (5-day infectious period)}
 #'   \item{tau}{0.05 (20% SAR in uncrowded households)}
 #'   \item{tau_boost}{0.083 (boosting to 40% SAR in crowded households)}
-#'   \item{beta_C, beta_A}{0.153 for R0=1.2 (calibrated)}
+#'   \item{beta}{0.153 for R0=1.2 (calibrated)}
 #'   \item{eps}{0.33 (moderate assortativity)}
 #' }
 #'
@@ -433,7 +432,7 @@ household_model_twopop <- odin::odin({
 #'   init_C = init_C, init_A = init_A,
 #'   gamma = 1/5,
 #'   tau = 0.05, tau_boost = 0.083,
-#'   beta_C = 0.153, beta_A = 0.153,
+#'   beta = 0.153,
 #'   eps = 0.33,
 #'   pop_C = 1000000, pop_A = 50000
 #' )
@@ -476,8 +475,7 @@ household_model_twopop_crowding <- odin::odin({
   gamma <- user()       # Recovery rate
   tau <- user()         # Baseline within-HH transmission (shared by both populations)
   tau_boost <- user()   # Additional transmission for crowded HHs
-  beta_C <- user()      # Community between-HH transmission
-  beta_A <- user()      # Agricultural between-HH transmission
+  beta <- user()        # Between-household transmission rate
   eps <- user()         # Assortativity (0=assortative, 1=proportional)
   pop_C <- user()       # Community population size
   pop_A <- user()       # Agricultural population size
@@ -542,8 +540,8 @@ household_model_twopop_crowding <- odin::odin({
   # Force of infection
   # ============================================================================
 
-  lambda_C <- beta_C * (m_CC * I_C + m_CA * I_A)
-  lambda_A <- beta_A * (m_AC * I_C + m_AA * I_A)
+  lambda_C <- beta * (m_CC * I_C + m_CA * I_A)
+  lambda_A <- beta * (m_AC * I_C + m_AA * I_A)
 
   # ============================================================================
   # Differential equations: Community population

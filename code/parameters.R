@@ -89,8 +89,7 @@ create_parset <- function(sens_type, sens_value, parset,
     sar_crowded = sar_crowded,       # Primary parameter
     tau = tau,                       # Derived from sar_uncrowded
     tau_boost = tau_boost,           # Derived from sar_crowded - sar_uncrowded
-    beta_C = beta_scalar * gamma,
-    beta_A = beta_scalar * gamma,
+    beta = beta_scalar * gamma,
     eps = eps,
 
     # Household structure
@@ -243,7 +242,7 @@ pars_metadata <- tibble::tibble(
   sar_crowded = sapply(pars_list, `[[`, "sar_crowded"),
   tau = sapply(pars_list, `[[`, "tau"),
   tau_boost = sapply(pars_list, `[[`, "tau_boost"),
-  beta_C = sapply(pars_list, `[[`, "beta_C"),
+  beta = sapply(pars_list, `[[`, "beta"),
   eps = sapply(pars_list, `[[`, "eps"),
   crowding_fold_diff = sapply(pars_list, `[[`, "crowding_fold_diff")
 )

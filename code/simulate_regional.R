@@ -99,8 +99,7 @@ for(region in 1:6){
 	  gamma = gamma,
 	  tau = tau,
 	  tau_boost = tau_boost,
-	  beta_C = beta_C,
-	  beta_A = beta_A,
+	  beta = beta,
 	  eps = eps,
 	  pop_C = pop_C,
 	  pop_A = pop_A

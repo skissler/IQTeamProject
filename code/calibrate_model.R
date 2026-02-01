@@ -85,9 +85,9 @@ nat_data <- acs_data %>%
 # ==============================================================================
 #
 # Parameters for calibration run. Key settings:
-#   - Single population only (tau_A=0, beta_A=0, pop_A=0, eps=0)
+#   - Single population only (pop_A=0, eps=0)
 #   - Community transmission uses household-structured model
-#   - Beta value set to test a specific R0 (modify beta_C to test different R0s)
+#   - Beta value set to test a specific R0 (modify beta to test different R0s)
 #
 # Calibrated beta scalars (multiply by gamma to get beta):
 #   R0 = 1.2 → beta_scalar = 0.765
@@ -133,13 +133,13 @@ solve_final_size <- function(r0, tol = 1e-10, max_iter = 1000) {
 #' Runs a calibration simulation with a given beta_scalar and returns the
 #' final attack rate for the community population.
 #'
-#' @param beta_scalar Multiplier for gamma to get beta_C (beta_C = beta_scalar * gamma)
-#' @param base_pars List of base parameters (without beta_C set)
+#' @param beta_scalar Multiplier for gamma to get beta (beta = beta_scalar * gamma)
+#' @param base_pars List of base parameters (without beta set)
 #' @param nat_data National-level household data
 #' @return Final attack rate (proportion recovered at end of simulation)
 get_final_attack_rate <- function(beta_scalar, base_pars, nat_data) {
   pars <- base_pars
-  pars$beta_C <- beta_scalar * pars$gamma
+  pars$beta <- beta_scalar * pars$gamma
 
   result <- run_calibration_sim(pars, nat_data)
 
@@ -161,7 +161,7 @@ get_final_attack_rate <- function(beta_scalar, base_pars, nat_data) {
 #' the theoretical prediction for a given R0.
 #'
 #' @param target_r0 Target R0 value to calibrate for
-#' @param base_pars List of base parameters (without beta_C set)
+#' @param base_pars List of base parameters (without beta set)
 #' @param nat_data National-level household data
 #' @param tol Convergence tolerance for final size difference (default 0.0005)
 #' @param max_iter Maximum bisection iterations (default 50)
@@ -264,7 +264,7 @@ find_bounds_from_history <- function(eval_history, target_final_size,
   return(list(beta_lower = beta_lower, beta_upper = beta_upper))
 }
 
-# Base parameters for calibration (beta_C will be set by calibration)
+# Base parameters for calibration (beta will be set by calibration)
 base_pars <- list(
   # Disease dynamics
   gamma = 1/5,                              # Recovery rate (5-day infectious period)
@@ -273,8 +273,7 @@ base_pars <- list(
   sar_uncrowded = 0.20,                     # Within-HH SAR: 20% baseline
   sar_crowded = 0.40,                       # Crowded HH SAR: 40%
 
-  # Between-household transmission (beta_C set during calibration)
-  beta_A = 0,                               # Disabled for calibration
+  # Between-household transmission (beta set during calibration)
 
   # Population mixing (single population for calibration)
   eps = 0,                                  # No between-group mixing
@@ -377,8 +376,7 @@ run_calibration_sim <- function(pars, nat_data) {
       gamma = gamma,
       tau = tau,
       tau_boost = tau_boost,
-      beta_C = beta_C,
-      beta_A = beta_A,
+      beta = beta,
       eps = eps,
       pop_C = 10000,   # Arbitrary (model is normalized)
       pop_A = 0        # Disabled for single-population calibration
@@ -477,7 +475,7 @@ cat(")\n")
 # Run final verification simulations for all R0 values
 verification_results <- lapply(seq_along(r0_targets), function(i) {
   pars <- base_pars
-  pars$beta_C <- calibrated_beta_scalars[i] * base_pars$gamma
+  pars$beta <- calibrated_beta_scalars[i] * base_pars$gamma
   result <- run_calibration_sim(pars, nat_data)
   result$r0 <- r0_targets[i]
   result

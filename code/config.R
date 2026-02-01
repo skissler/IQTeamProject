@@ -58,14 +58,13 @@ default_pars <- list(
   sar_crowded = 0.40,           # SAR for crowded households: 40%
 
   # Community transmission (beta determines R0)
-  # beta_scalar * gamma gives beta_C and beta_A
+  # beta_scalar * gamma gives beta
   # beta_scalar = 0.765 gives R0 ~ 1.2 (baseline)
   # beta_scalar = 1.05 gives R0 ~ 1.5
   # beta_scalar = 1.53 gives R0 ~ 2.0
   # beta_scalar = 2.52 gives R0 ~ 3.0
   beta_scalar = 0.765,          # Beta multiplier for target R0 (baseline R0 ~ 1.2)
-  beta_C = 0.765 * (1/5),       # Community transmission rate (R0 ~ 1.2)
-  beta_A = 0.765 * (1/5),       # Agricultural worker transmission rate
+  beta = 0.765 * (1/5),         # Between-household transmission rate (R0 ~ 1.2)
 
   # Population mixing
   eps = 0.33,                   # Assortativity: probability of within-group contact
