@@ -179,58 +179,6 @@ prepare_sensitivity_data <- function(df, sens_dimension) {
   return(result)
 }
 
-#' Create sensitivity comparison plot for a given dimension
-#' @param diff_df Differential statistics data frame
-#' @param sens_dimension Sensitivity dimension to plot ("r0", "eps", "sar", "fold")
-#' @param metric Which metric to plot ("attack_rate_diff", "peak_prevalence_diff", etc.)
-#' @param add_baseline Whether to add baseline reference line
-#' @return ggplot object
-plot_sensitivity <- function(diff_df, sens_dimension, metric = "attack_rate_diff",
-                             add_baseline = TRUE) {
-
-  # Use helper to get data with correctly mapped baseline values
-  plot_data <- prepare_sensitivity_data(diff_df, sens_dimension)
-
-  # Get nice labels
-  metric_labels <- c(
-    "attack_rate_diff" = "Attack Rate Difference (A - C)",
-    "peak_prevalence_diff" = "Peak Prevalence Difference (A - C)",
-    "attack_rate_ratio" = "Attack Rate Ratio (A / C)",
-    "peak_prevalence_ratio" = "Peak Prevalence Ratio (A / C)"
-  )
-
-  sens_labels <- c(
-    "r0" = "Basic Reproduction Number (R0)",
-    "eps" = "Assortativity (epsilon)",
-    "sar" = "SAR in Crowded Households",
-    "fold" = "Crowding Fold Difference"
-  )
-
-  p <- plot_data %>%
-    ggplot(aes(x = factor(sens_value), y = .data[[metric]], fill = factor(REGION6))) +
-    geom_boxplot(alpha = 0.7, position = position_dodge(0.8)) +
-    labs(
-      x = sens_labels[sens_dimension],
-      y = metric_labels[metric],
-      fill = "Region",
-      title = paste("Sensitivity to", sens_labels[sens_dimension])
-    ) +
-    theme_minimal() +
-    theme(
-      legend.position = "bottom",
-      plot.title = element_text(hjust = 0.5)
-    )
-
-  if (add_baseline && grepl("diff", metric)) {
-    p <- p + geom_hline(yintercept = 0, linetype = "dashed", color = "gray50")
-  }
-  if (add_baseline && grepl("ratio", metric)) {
-    p <- p + geom_hline(yintercept = 1, linetype = "dashed", color = "gray50")
-  }
-
-  return(p)
-}
-
 #' Create multi-panel sensitivity overview figure
 #' @param diff_df Differential statistics data frame
 #' @param metric Which metric to plot
@@ -275,7 +223,7 @@ plot_sensitivity_overview <- function(diff_df, metric = "attack_rate_diff") {
       y = metric_labels[metric],
       color = "Region"
     ) +
-    theme_minimal() +
+    theme_classic() +
     theme(
       legend.position = "bottom",
       strip.text = element_text(face = "bold"),
@@ -317,8 +265,109 @@ plot_epidemic_curves <- function(all_data, sens_dimension, region = 1) {
       values = c("A" = "solid", "C" = "dashed"),
       labels = c("A" = "Agricultural", "C" = "Community")
     ) +
-    theme_minimal() +
+    theme_classic() +
     theme(legend.position = "bottom")
+
+  return(p)
+}
+
+#' Plot epidemic curves across sensitivity values for all regions (faceted)
+#' @param all_data Combined simulation output
+#' @param sens_dimension Sensitivity dimension to compare
+#' @param metric Which metric to plot: "I_indiv" (current infections) or "R_indiv" (cumulative)
+#' @return ggplot object with facets for each region
+plot_epidemic_curves_all_regions <- function(all_data, sens_dimension, metric = "I_indiv") {
+
+  sens_labels <- c(
+    "r0" = "R0",
+    "eps" = "Assortativity (epsilon)",
+    "sar" = "SAR (Crowded)",
+    "fold" = "Crowding Fold Diff."
+  )
+
+  metric_labels <- c(
+    "I_indiv" = "Proportion Currently Infected",
+    "R_indiv" = "Cumulative Proportion Infected"
+  )
+
+  title_type <- c(
+    "I_indiv" = "Epidemic Curves",
+    "R_indiv" = "Cumulative Infections"
+  )
+
+  # Use helper to get data with correctly mapped baseline values
+  plot_data <- prepare_sensitivity_data(all_data, sens_dimension) %>%
+    mutate(
+      region_label = paste("Region", REGION6)
+    )
+
+  p <- plot_data %>%
+    ggplot(aes(x = t, y = .data[[metric]], color = factor(sens_value), linetype = subpop)) +
+    geom_line(linewidth = 0.6, alpha = 0.8) +
+    facet_wrap(~region_label, ncol = 3) +
+    labs(
+      x = "Time (days)",
+      y = metric_labels[metric],
+      color = sens_labels[sens_dimension],
+      linetype = "Population",
+      title = paste(title_type[metric], "by Region - Sensitivity to", sens_labels[sens_dimension])
+    ) +
+    scale_linetype_manual(
+      values = c("A" = "solid", "C" = "dashed"),
+      labels = c("A" = "Agricultural", "C" = "Community")
+    ) +
+    theme_classic() +
+    theme(
+      legend.position = "bottom",
+      strip.text = element_text(face = "bold"),
+      panel.grid.minor = element_blank()
+    ) +
+    guides(color = guide_legend(nrow = 1), linetype = guide_legend(nrow = 1))
+
+  return(p)
+}
+
+#' Plot relative infection rate (A/C) across sensitivity values for all regions (faceted)
+#' @param all_data Combined simulation output
+#' @param sens_dimension Sensitivity dimension to compare
+#' @return ggplot object with facets for each region
+plot_relative_infection_all_regions <- function(all_data, sens_dimension) {
+
+  sens_labels <- c(
+    "r0" = "R0",
+    "eps" = "Assortativity (epsilon)",
+    "sar" = "SAR (Crowded)",
+    "fold" = "Crowding Fold Diff."
+  )
+
+  # Use helper to get data with correctly mapped baseline values
+  plot_data <- prepare_sensitivity_data(all_data, sens_dimension) %>%
+    select(t, subpop, I_indiv, REGION6, sens_value) %>%
+    pivot_wider(names_from = "subpop", values_from = "I_indiv") %>%
+    mutate(
+      rel_inf = A / C,
+      region_label = paste("Region", REGION6)
+    )
+
+  p <- plot_data %>%
+    ggplot(aes(x = t, y = rel_inf, color = factor(sens_value))) +
+    geom_line(linewidth = 0.6, alpha = 0.8) +
+    geom_hline(yintercept = 1, linetype = "dashed", color = "grey50", alpha = 0.5) +
+    facet_wrap(~region_label, ncol = 3) +
+    expand_limits(y = 0.5) +
+    labs(
+      x = "Time (days)",
+      y = "Relative Infection Rate (Agricultural / Community)",
+      color = sens_labels[sens_dimension],
+      title = paste("Relative Infection Rate by Region - Sensitivity to", sens_labels[sens_dimension])
+    ) +
+    theme_classic() +
+    theme(
+      legend.position = "bottom",
+      strip.text = element_text(face = "bold"),
+      panel.grid.minor = element_blank()
+    ) +
+    guides(color = guide_legend(nrow = 1))
 
   return(p)
 }
@@ -373,17 +422,32 @@ run_sensitivity_analysis <- function() {
     if (n_rows > 0) {
       cat("  Processing:", sens_dim, "(", n_rows, "rows)\n")
 
-      # Attack rate difference plot
-      fig_sens <- plot_sensitivity(diff_stats, sens_dim, "attack_rate_diff")
-      filename <- paste0("sensitivity_", sens_dim, "_attackrate")
-      ggsave(file.path(paths$figures_dir, paste0(filename, ".pdf")), fig_sens, width = 8, height = 5)
-      cat("    Saved:", paste0(filename, ".pdf\n"))
-
-      # Epidemic curves for region 1
-      fig_curves <- plot_epidemic_curves(all_data, sens_dim, region = 1)
-      filename <- paste0("sensitivity_", sens_dim, "_curves_region1")
+      # Epidemic curves for region 6 (California)
+      fig_curves <- plot_epidemic_curves(all_data, sens_dim, region = 6)
+      filename <- paste0("sensitivity_", sens_dim, "_curves_region6")
       ggsave(file.path(paths$figures_dir, paste0(filename, ".pdf")), fig_curves, width = 8, height = 5)
-      cat("    Saved:", paste0(filename, ".pdf\n"))
+      cat("    Saved:", paste0(filename, ".pdf (California)\n"))
+
+      # Epidemic curves for all regions (faceted) - current infections
+      fig_curves_all <- plot_epidemic_curves_all_regions(all_data, sens_dim, metric = "I_indiv")
+      filename_all <- paste0("sensitivity_", sens_dim, "_curves_all_regions")
+      ggsave(file.path(paths$figures_dir, paste0(filename_all, ".pdf")), fig_curves_all, width = 12, height = 8)
+      ggsave(file.path(paths$figures_dir, paste0(filename_all, ".png")), fig_curves_all, width = 12, height = 8, dpi = 300)
+      cat("    Saved:", paste0(filename_all, ".pdf/.png\n"))
+
+      # Cumulative infections for all regions (faceted)
+      fig_cumul_all <- plot_epidemic_curves_all_regions(all_data, sens_dim, metric = "R_indiv")
+      filename_cumul <- paste0("sensitivity_", sens_dim, "_cumulative_all_regions")
+      ggsave(file.path(paths$figures_dir, paste0(filename_cumul, ".pdf")), fig_cumul_all, width = 12, height = 8)
+      ggsave(file.path(paths$figures_dir, paste0(filename_cumul, ".png")), fig_cumul_all, width = 12, height = 8, dpi = 300)
+      cat("    Saved:", paste0(filename_cumul, ".pdf/.png\n"))
+
+      # Relative infection rate (A/C) for all regions (faceted)
+      fig_rel_inf_all <- plot_relative_infection_all_regions(all_data, sens_dim)
+      filename_rel <- paste0("sensitivity_", sens_dim, "_relative_infection_all_regions")
+      ggsave(file.path(paths$figures_dir, paste0(filename_rel, ".pdf")), fig_rel_inf_all, width = 12, height = 8)
+      ggsave(file.path(paths$figures_dir, paste0(filename_rel, ".png")), fig_rel_inf_all, width = 12, height = 8, dpi = 300)
+      cat("    Saved:", paste0(filename_rel, ".pdf/.png\n"))
     } else {
       cat("  Skipping:", sens_dim, "(no data)\n")
     }
@@ -395,7 +459,9 @@ run_sensitivity_analysis <- function() {
   cat(rep("=", 60), "\n\n", sep = "")
 
   # Mean differential statistics across regions
+  # Filter out baseline row (sens_type = NA) since it's already included in r0 dimension
   summary_table <- diff_stats %>%
+    filter(!is.na(sens_type)) %>%
     group_by(sens_type, sens_value) %>%
     summarise(
       mean_attack_rate_diff = mean(attack_rate_diff, na.rm = TRUE),
