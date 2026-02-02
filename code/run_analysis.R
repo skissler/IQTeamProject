@@ -75,7 +75,7 @@ source('code/sensitivity_analysis.R')
 
 cat("\nStep 7: Running county-level simulations...\n")
 
-# Use baseline parameters (parset 1 = r0_1.2 with all baseline values)
+# Use baseline parameters (parset 1 with all baseline values)
 pars <- pars_list[[1]]
 
 # Run with no adjustment (use regional NAWS directly)

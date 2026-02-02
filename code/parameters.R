@@ -4,12 +4,12 @@
 # Defines all parameter combinations for the sensitivity analyses.
 #
 # Sensitivity dimensions (one-at-a-time analysis):
-#   1. R0 values: 1.2 (baseline), 1.5, 2.0, 3.0
+#   1. R0 values: 1.2, 1.5 (baseline), 2.0, 3.0
 #   2. Assortativity (eps): 0, 0.33 (baseline), 0.5, 0.7
 #   3. SAR in crowded households: 30%, 40% (baseline), 50%, 60%
 #   4. Crowding fold difference: 1, 2 (baseline), 3
 #
-# Baseline parameters: R0=1.2, eps=0.33, SAR_crowded=40%, crowding_fold_diff=2
+# Baseline parameters are defined in config.R (default_pars)
 # ==============================================================================
 
 # ==============================================================================
@@ -103,37 +103,9 @@ create_parset <- function(sens_type, sens_value, parset,
 }
 
 # ==============================================================================
-# Calibrated Beta Scalars
-# ==============================================================================
-# These values are calibrated at the national level to achieve target R0 values
-# (see calibrate_model.R for methodology)
-
-# Use a named vector with numeric names for reliable lookup
-# Note: as.character(2.0) returns "2" not "2.0", so we use a lookup function
-# beta_scalars_vec <- c(0.765, 1.05, 1.53, 2.52)
-# names(beta_scalars_vec) <- c(1.2, 1.5, 2.0, 3.0)
-beta_scalars_vec <- c(
-  `1.2` = 0.7649,  # R0 = 1.2
-  `1.5` = 1.0490,  # R0 = 1.5
-  `2` = 1.5344,  # R0 = 2
-  `3` = 2.5270  # R0 = 3
-)
-
-#' Get calibrated beta scalar for a target R0
-#' @param r0 Target reproduction number
-#' @return Beta scalar value
-get_beta_scalar <- function(r0) {
-
-  idx <- which(abs(as.numeric(names(beta_scalars_vec)) - r0) < 0.01)
-  if (length(idx) == 0) {
-    stop("No calibrated beta scalar for R0 = ", r0)
-  }
-  return(beta_scalars_vec[idx])
-}
-
-# ==============================================================================
 # Sensitivity Parameter Values
 # ==============================================================================
+# Note: beta_scalars_vec and get_beta_scalar() are defined in config.R
 # Baseline values are defined in config.R (default_pars)
 
 r0_values <- c(1.2, 1.5, 2.0, 3.0)
@@ -178,7 +150,7 @@ for (eps in eps_values[eps_values != default_pars$eps]) {
     gamma = default_pars$gamma,
     sar_uncrowded = default_pars$sar_uncrowded,
     sar_crowded = default_pars$sar_crowded,
-    beta_scalar = default_pars$beta_scalar,
+    beta_scalar = get_beta_scalar(default_pars$r0),
     eps = eps,
     crowding_fold_diff = default_pars$crowding_fold_diff,
     max_hh_size = default_pars$max_hh_size,
@@ -198,7 +170,7 @@ for (sar in sar_crowded_values[sar_crowded_values != default_pars$sar_crowded]) 
     gamma = default_pars$gamma,
     sar_uncrowded = default_pars$sar_uncrowded,
     sar_crowded = sar,
-    beta_scalar = default_pars$beta_scalar,
+    beta_scalar = get_beta_scalar(default_pars$r0),
     eps = default_pars$eps,
     crowding_fold_diff = default_pars$crowding_fold_diff,
     max_hh_size = default_pars$max_hh_size,
@@ -218,7 +190,7 @@ for (fold in fold_diff_values[fold_diff_values != default_pars$crowding_fold_dif
     gamma = default_pars$gamma,
     sar_uncrowded = default_pars$sar_uncrowded,
     sar_crowded = default_pars$sar_crowded,
-    beta_scalar = default_pars$beta_scalar,
+    beta_scalar = get_beta_scalar(default_pars$r0),
     eps = default_pars$eps,
     crowding_fold_diff = fold,
     max_hh_size = default_pars$max_hh_size,
@@ -256,5 +228,7 @@ cat("  - R0 sensitivity:", sum(pars_metadata$sens_type == "r0"), "sets\n")
 cat("  - Assortativity (eps) sensitivity:", sum(pars_metadata$sens_type == "eps"), "sets\n")
 cat("  - SAR (crowded) sensitivity:", sum(pars_metadata$sens_type == "sar"), "sets\n")
 cat("  - Crowding fold difference sensitivity:", sum(pars_metadata$sens_type == "fold"), "sets\n")
-cat("\nBaseline parameters (parset 1, r0_1.2):\n")
-cat("  R0 = 1.2, eps = 0.33, SAR_crowded = 40%, crowding_fold_diff = 2\n")
+cat("\nBaseline parameters (parset 1, r0_", default_pars$r0, "):\n", sep = "")
+cat("  R0 = ", default_pars$r0, ", eps = ", default_pars$eps,
+    ", SAR_crowded = ", default_pars$sar_crowded * 100, "%",
+    ", crowding_fold_diff = ", default_pars$crowding_fold_diff, "\n", sep = "")

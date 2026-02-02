@@ -3,10 +3,12 @@
 # ==============================================================================
 # This script loads all regional simulation outputs and creates comparative
 # summaries and visualizations across the sensitivity dimensions:
-#   1. R0 values: 1.2 (baseline), 1.5, 2.0, 3.0
+#   1. R0 values: 1.2, 1.5 (baseline), 2.0, 3.0
 #   2. Assortativity (eps): 0, 0.33 (baseline), 0.5, 0.7
 #   3. SAR in crowded households: 30%, 40% (baseline), 50%, 60%
 #   4. Crowding fold difference: 1, 2 (baseline), 3
+#
+# Baseline values are defined in config.R (default_pars)
 #
 # Outputs:
 #   - output/sensitivity_summary.csv - Summary statistics for all parameter sets
@@ -125,26 +127,26 @@ calculate_differential_stats <- function(summary_df) {
 # Visualization Functions
 # ==============================================================================
 
-# Baseline parameter values (must match config.R defaults)
-# Used to map the r0_1.2 baseline parset to correct values for each dimension
+# Baseline parameter values from config.R
+# Used to map the baseline parset to correct values for each dimension
 baseline_values <- list(
-  r0 = 1.2,
-  eps = 0.33,
-  sar = 0.40,
-  fold = 2
+  r0 = default_pars$r0,
+  eps = default_pars$eps,
+  sar = default_pars$sar_crowded,
+  fold = default_pars$crowding_fold_diff
 )
 
 #' Prepare data for sensitivity plotting
 #'
 #' For each sensitivity dimension, includes both the dedicated sensitivity runs
-#' AND the baseline (r0_1.2), with the baseline's sens_value correctly mapped
+#' AND the baseline R0 parset, with the baseline's sens_value correctly mapped
 #' to that dimension's baseline parameter value.
 #'
 #' @param df Data frame with sens_type, sens_value, parset_name columns
 #' @param sens_dimension Which dimension to prepare ("r0", "eps", "sar", "fold")
 #' @return Data frame ready for plotting with correct sens_value for x-axis
 prepare_sensitivity_data <- function(df, sens_dimension) {
-  baseline_parset <- "r0_1.2"
+  baseline_parset <- paste0("r0_", default_pars$r0)
 
   # Get rows for this sensitivity dimension
   sens_rows <- df %>%

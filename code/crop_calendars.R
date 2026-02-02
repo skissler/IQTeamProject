@@ -77,8 +77,9 @@ cat("  Processed", length(unique(movements$commodity)), "commodities\n")
 
 cat("Loading baseline epidemic simulation...\n")
 
-# Load baseline regional simulation (r0_1.2 with default parameters)
-baseline_file <- file.path(paths$output_dir, "epidf_indiv_full_regional_r0_1.2.csv")
+# Load baseline regional simulation (using default R0 from config)
+baseline_file <- file.path(paths$output_dir,
+                           paste0("epidf_indiv_full_regional_r0_", default_pars$r0, ".csv"))
 
 if (!file.exists(baseline_file)) {
   stop("Baseline simulation file not found: ", baseline_file,
@@ -277,7 +278,7 @@ fig_impact <- impact_df_combined %>%
     y = "Production Loss (%)",
     color = "Commodity",
     title = "Estimated Production Loss by Epidemic Timing",
-    subtitle = "Based on baseline epidemic (R0 = 1.2) in California"
+    subtitle = paste0("Based on baseline epidemic (R0 = ", default_pars$r0, ") in California")
   ) +
   theme_minimal() +
   theme(legend.position = "bottom")

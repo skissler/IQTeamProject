@@ -27,6 +27,31 @@ paths <- list(
 )
 
 # ==============================================================================
+# Calibrated R0 to Beta Scalar Mapping
+# ==============================================================================
+# These values are calibrated at the national level to achieve target R0 values
+# (see calibrate_model.R for methodology)
+
+beta_scalars_vec <- c(
+  `1.2` = 0.7649,
+  `1.5` = 1.0490,
+  `2` = 1.5344,
+  `3` = 2.5270
+)
+
+#' Get calibrated beta scalar for a target R0
+#' @param r0 Target reproduction number
+#' @return Beta scalar value
+get_beta_scalar <- function(r0) {
+  idx <- which(abs(as.numeric(names(beta_scalars_vec)) - r0) < 0.01)
+  if (length(idx) == 0) {
+    stop("No calibrated beta scalar for R0 = ", r0,
+         "\nAvailable R0 values: ", paste(names(beta_scalars_vec), collapse = ", "))
+  }
+  return(beta_scalars_vec[idx])
+}
+
+# ==============================================================================
 # Data Settings
 # ==============================================================================
 
@@ -50,21 +75,16 @@ default_pars <- list(
   # Disease dynamics
   gamma = 1/5,                  # Recovery rate: 1/5 = 5-day infectious period
 
+  # Basic reproduction number (R0)
+  # beta_scalar is derived from r0 using get_beta_scalar()
+  r0 = 1.5,                     # Baseline R0 value
+
   # Household secondary attack rates (SAR)
   # Primary parameters: SAR values for uncrowded and crowded households
   # Derived parameters (tau, tau_boost) computed in parameters.R using:
   #   tau = SAR * gamma / (1 - SAR)
   sar_uncrowded = 0.20,         # Baseline SAR for uncrowded households: 20%
   sar_crowded = 0.40,           # SAR for crowded households: 40%
-
-  # Community transmission (beta determines R0)
-  # beta_scalar * gamma gives beta
-  # beta_scalar = 0.765 gives R0 ~ 1.2 (baseline)
-  # beta_scalar = 1.05 gives R0 ~ 1.5
-  # beta_scalar = 1.53 gives R0 ~ 2.0
-  # beta_scalar = 2.52 gives R0 ~ 3.0
-  beta_scalar = 0.765,          # Beta multiplier for target R0 (baseline R0 ~ 1.2)
-  beta = 0.765 * (1/5),         # Between-household transmission rate (R0 ~ 1.2)
 
   # Population mixing
   eps = 0.33,                   # Assortativity: probability of within-group contact
