@@ -44,38 +44,66 @@ with(as.list(pars), {
 household_states <- generate_household_state_table(n_min=1, n_max=max_hh_size, crowding=TRUE)
 n_states <- nrow(household_states)
 
-# Pre-split the acs data: 
+# //////////////////////////////////////////////////////////////////////////////
+# Pre-compute lookups to avoid repeated filtering inside the loop
+# //////////////////////////////////////////////////////////////////////////////
+
+# Pre-filter NAWS data by region (6 times instead of ~3000)
+naws_by_region <- lapply(1:6, function(r) {
+  naws_data %>% filter(REGION6 == r)
+})
+
+# Region lookup: named vector for O(1) access
+county_regions <- setNames(county_lookup$REGION6, county_lookup$GEOID)
+
+# Pre-compute scalar values per county
+county_scalars <- acs_data %>%
+  group_by(GEOID) %>%
+  summarise(
+    population = first(population),
+    prop_ag = first(prop_ag_workers),
+    crowded_factor = first(crowded_factor),
+    crowded_diff = first(crowded_diff),
+    .groups = "drop"
+  )
+scalars_list <- split(county_scalars, county_scalars$GEOID)
+
+# Pre-compute hhSize vectors per county (ordered by hhSize)
+hhsize_data <- acs_data %>%
+  arrange(GEOID, hhSize) %>%
+  group_by(GEOID) %>%
+  summarise(
+    hhSize_factor = list(hhSize_factor),
+    hhSize_diff = list(hhSize_diff),
+    .groups = "drop"
+  )
+hhsize_list <- setNames(
+  Map(list, hhsize_data$hhSize_factor, hhsize_data$hhSize_diff),
+  hhsize_data$GEOID
+)
+
+# Pre-split the acs data for ic_joiner creation:
 acs_data_list <- split(acs_data, acs_data$GEOID)
 
-# epidf_indiv_full <- tibble()
+# //////////////////////////////////////////////////////////////////////////////
 
-# results_list <- future_lapply(GEOID_vec[1:100], function(geoid){
 results_list <- future_lapply(GEOID_vec, function(geoid){
 
 	county_data <- acs_data_list[[geoid]]
 
-	# Which region is our county in? 
-	region <- county_lookup %>% 
-		filter(GEOID == geoid) %>% 
-		pull(REGION6) %>% 
-		first()
+	# Which region is our county in? (O(1) lookup)
+	region <- county_regions[[geoid]]
 
-	# Get the adjustment factors (multiplicative) and differences (additive):
-	hhSize_factor <- county_data %>%
-		arrange(hhSize) %>%
-		pull(hhSize_factor)
+	# Get scalar values (O(1) lookup)
+	scalars <- scalars_list[[geoid]]
+	pop_cty <- scalars$population
+	prop_ag <- scalars$prop_ag
+	crowded_factor <- scalars$crowded_factor
+	crowded_diff <- scalars$crowded_diff
 
-	crowded_factor <- county_data %>%
-		pull(crowded_factor) %>%
-		first()
-
-	hhSize_diff <- county_data %>%
-		arrange(hhSize) %>%
-		pull(hhSize_diff)
-
-	crowded_diff <- county_data %>%
-		pull(crowded_diff) %>%
-		first()
+	# Get hhSize vectors (O(1) lookup)
+	hhSize_factor <- hhsize_list[[geoid]][[1]]
+	hhSize_diff <- hhsize_list[[geoid]][[2]]
 
 	# Create the ic joiners:
 	ic_joiner_C <- county_data %>%
@@ -85,9 +113,11 @@ results_list <- future_lapply(GEOID_vec, function(geoid){
 	#   "none"           - Use regional NAWS data directly
 	#   "multiplicative" - Multiply by (county/regional_mean) ratio
 	#   "additive"       - Add (county - regional_mean) difference
+	# Start with pre-filtered regional data
+	naws_regional <- naws_by_region[[region]]
+
 	if (adjust_hhvars == "multiplicative") {
-		naws_data_processed <- naws_data %>%
-			filter(REGION6==region) %>%
+		naws_data_processed <- naws_regional %>%
 			mutate(hhSize_factor=hhSize_factor, crowded_factor=crowded_factor) %>%
 			mutate(prop=prop*hhSize_factor) %>%
 			mutate(prop=prop/sum(prop)) %>%
@@ -95,8 +125,7 @@ results_list <- future_lapply(GEOID_vec, function(geoid){
 			mutate(prop_crowded=case_when(prop_crowded>1~1, prop_crowded<0~0, TRUE~prop_crowded)) %>%
 			select(-hhSize_factor, -crowded_factor)
 	} else if (adjust_hhvars == "additive") {
-		naws_data_processed <- naws_data %>%
-			filter(REGION6==region) %>%
+		naws_data_processed <- naws_regional %>%
 			mutate(hhSize_diff=hhSize_diff, crowded_diff=crowded_diff) %>%
 			mutate(prop=prop + hhSize_diff) %>%
 			mutate(prop=case_when(prop<0~0, TRUE~prop)) %>%  # Clamp to >= 0
@@ -106,8 +135,7 @@ results_list <- future_lapply(GEOID_vec, function(geoid){
 			select(-hhSize_diff, -crowded_diff)
 	} else {
 		# "none" or any other value: use regional NAWS data directly
-		naws_data_processed <- naws_data %>%
-			filter(REGION6==region)
+		naws_data_processed <- naws_regional
 	}
 
 	ic_joiner_A <- naws_data_processed %>% 
@@ -133,20 +161,13 @@ results_list <- future_lapply(GEOID_vec, function(geoid){
 		replace_na(list(frac=0)) %>% 
 		pull(frac)
 
-	init_A <- household_states %>% 
-		left_join(ic_joiner_A, by=c("x","y","z","hh_size","crowded")) %>% 
-		arrange(state_index) %>% 
-		replace_na(list(frac=0)) %>% 
+	init_A <- household_states %>%
+		left_join(ic_joiner_A, by=c("x","y","z","hh_size","crowded")) %>%
+		arrange(state_index) %>%
+		replace_na(list(frac=0)) %>%
 		pull(frac)
 
-	pop_cty <- county_data %>% 
-		pull(population) %>% 
-		first()
-
-	prop_ag <- county_data %>% 
-		pull(prop_ag_workers) %>% 
-		first()
-
+	# pop_cty and prop_ag already extracted from scalars_list above
 	pop_C <- pop_cty*(1-prop_ag)
 	pop_A <- pop_cty*prop_ag
 

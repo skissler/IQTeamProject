@@ -302,6 +302,35 @@ impact_summary <- impact_df_combined %>%
     .groups = "drop"
   )
 
+# ------------------------------------------------------------------------------
+# Verification: Why mean_loss_pct is identical across commodities
+# ------------------------------------------------------------------------------
+# When averaging over all 364 possible epidemic peak days, each calendar day
+# experiences every part of the epidemic exactly once. This means the average
+# workforce availability at any calendar day equals mean(wf) regardless of the
+# commodity's seasonal production pattern. Therefore:
+#   mean_loss = (1 - mean(wf)) * 100
+# and this value is independent of the crop harvest schedule.
+#
+# Compute expected loss from mean workforce availability to verify:
+wf_for_verification <- epidf_with_symp %>%
+  filter(subpop == "A") %>%
+  mutate(wf = 1 - symp) %>%
+  summarise(mean_wf = mean(wf)) %>%
+  pull(mean_wf)
+
+expected_mean_loss <- (1 - wf_for_verification) * 100
+actual_mean_losses <- unique(round(impact_summary$mean_loss_pct, 6))
+
+cat("\n  Verification: Identical mean_loss_pct values are mathematically expected\n")
+cat("    Expected from mean(wf):", round(expected_mean_loss, 3), "%\n")
+cat("    Actual mean_loss_pct:  ", round(actual_mean_losses, 3), "%\n")
+if (length(actual_mean_losses) == 1 && abs(expected_mean_loss - actual_mean_losses) < 0.01) {
+  cat("    Status: VERIFIED - means match as expected\n")
+} else {
+  cat("    Status: WARNING - unexpected deviation from theory\n")
+}
+
 write_csv(impact_summary, file.path(paths$output_dir, "crop_impact_summary.csv"))
 cat("  Saved: crop_impact_summary.csv\n")
 
