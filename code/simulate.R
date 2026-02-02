@@ -180,13 +180,8 @@ results_list <- future_lapply(GEOID_vec, function(geoid){
 
 	# epidf_indiv_full <- bind_rows(epidf_indiv_full, mutate(epidf_indiv,GEOID=geoid,REGION6=region))
 
-	counter <- which(GEOID_vec==geoid)
-	if(counter %% 20 == 0){
-		print(counter)	
-	}
-
 	return(mutate(epidf_indiv, GEOID=geoid, REGION6=region))
-})
+}, future.seed = TRUE)
 
 epidf_indiv_full <- bind_rows(results_list)
 return(epidf_indiv_full)
