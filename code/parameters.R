@@ -220,6 +220,35 @@ pars_metadata <- tibble::tibble(
 )
 
 # ==============================================================================
+# Baseline Parameter Set Helper
+# ==============================================================================
+
+#' Get the baseline parameter set (matching default_pars$r0)
+#'
+#' Returns the parameter set from pars_list that uses the baseline R0 value
+#' defined in config.R. This ensures consistent baseline parameters across
+#' all scripts (simulate.R, simulate_regional.R, etc.)
+#'
+#' @return Named list with baseline parameters
+get_baseline_pars <- function() {
+
+  baseline_name <- paste0("r0_", default_pars$r0)
+  idx <- which(sapply(pars_list, `[[`, "parset_name") == baseline_name)
+
+
+  if (length(idx) == 0) {
+    stop("No parameter set found for baseline R0 = ", default_pars$r0,
+         "\nAvailable parset names: ",
+         paste(sapply(pars_list, `[[`, "parset_name"), collapse = ", "))
+  }
+
+  return(pars_list[[idx]])
+}
+
+# Store baseline for convenience
+baseline_pars <- get_baseline_pars()
+
+# ==============================================================================
 # Print Summary
 # ==============================================================================
 
@@ -228,7 +257,7 @@ cat("  - R0 sensitivity:", sum(pars_metadata$sens_type == "r0"), "sets\n")
 cat("  - Assortativity (eps) sensitivity:", sum(pars_metadata$sens_type == "eps"), "sets\n")
 cat("  - SAR (crowded) sensitivity:", sum(pars_metadata$sens_type == "sar"), "sets\n")
 cat("  - Crowding fold difference sensitivity:", sum(pars_metadata$sens_type == "fold"), "sets\n")
-cat("\nBaseline parameters (parset 1, r0_", default_pars$r0, "):\n", sep = "")
+cat("\nBaseline parameters (", baseline_pars$parset_name, "):\n", sep = "")
 cat("  R0 = ", default_pars$r0, ", eps = ", default_pars$eps,
     ", SAR_crowded = ", default_pars$sar_crowded * 100, "%",
     ", crowding_fold_diff = ", default_pars$crowding_fold_diff, "\n", sep = "")

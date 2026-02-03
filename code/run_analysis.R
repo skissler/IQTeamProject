@@ -75,8 +75,8 @@ source('code/sensitivity_analysis.R')
 
 cat("\nStep 7: Running county-level simulations...\n")
 
-# Use baseline parameters (parset 1 with all baseline values)
-pars <- pars_list[[1]]
+# Use baseline parameters (from get_baseline_pars() in parameters.R)
+pars <- baseline_pars
 
 # Run with no adjustment (use regional NAWS directly)
 cat("  [1/3] Running with adjust_hhvars = 'none'...\n")
@@ -104,6 +104,13 @@ cat("  County-level simulations complete.\n")
 
 cat("\nStep 8: Running crop calendar productivity analysis...\n")
 source('code/crop_calendars.R')
+
+# ==============================================================================
+# 9. Main Publication Figures
+# ==============================================================================
+
+cat("\nStep 9: Generating main publication figures...\n")
+source('code/plot_main_figures.R')
 
 # ==============================================================================
 # Summary
