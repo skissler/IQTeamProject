@@ -51,23 +51,6 @@ This study addresses these gaps by developing a disease transmission model speci
 
 #### Characteristics of the general population
 
-We obtained county-level data on population size, houehold size distribution, proportion of crowded households, and proportion of agricultural workers from the U.S. Census Bureau's 2022 American Community Survey (ACS) 5-year estimates. 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 We obtained county-level data on population size, household size distribution, proportion of crowded households, and proportion of agricultural workers from the U.S. Census Bureau’s 2022 American Community Survey (ACS) 5-year estimates. Following standard definitions, we classified households as crowded when they contained more than one individual per room (excluding bathrooms, kitchens, and hallways). Agricultural workers were defined as individuals employed in “farming, fishing, and forestry occupations” (ACS occupation codes). 
 
 To enable regional-level analysis, we aggregated county-level data using population-weighted averages. Household sizes of size 7 or greater were combined into a single category (7+) in the ACS dataset; we treated them as households of size 7 in our analysis. Households of size 7+ represent 1.4% of all households in the ACS data. 
