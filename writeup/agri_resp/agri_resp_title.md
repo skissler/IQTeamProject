@@ -11,7 +11,7 @@ cat writeup/agri_resp/agri_resp_methods_statistics.md; printf '\n\n';
 cat writeup/agri_resp/agri_resp_results.md; printf '\n\n'; 
 cat writeup/agri_resp/agri_resp_discussion.md; printf '\n\n'; 
 cat writeup/agri_resp/agri_resp_supplement.md;
-} > writeup/agri_resp/agri_resp_full_manuscript.md
+} > writeup/agri_resp/agri_resp_full.md
 
 -->
 
