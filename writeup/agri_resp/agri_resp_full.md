@@ -1,18 +1,31 @@
 
-# Modeling the impact of respiratory illness outbreaks on the agricultural workforce and food production in the United States
+<!--
 
+{ cat writeup/agri_resp/agri_resp_title.md; printf '\n\n'; 
+cat writeup/agri_resp/agri_resp_abstract.md; printf '\n\n'; 
+cat writeup/agri_resp/agri_resp_intro.md; printf '\n\n'; 
+cat writeup/agri_resp/agri_resp_methods.md; printf '\n\n'; 
+cat writeup/agri_resp/agri_resp_methods_data.md; printf '\n\n'; 
+cat writeup/agri_resp/agri_resp_methods_model.md; printf '\n\n'; 
+cat writeup/agri_resp/agri_resp_methods_statistics.md; printf '\n\n'; 
+cat writeup/agri_resp/agri_resp_results.md; printf '\n\n'; 
+cat writeup/agri_resp/agri_resp_discussion.md; printf '\n\n'; 
+cat writeup/agri_resp/agri_resp_supplement.md;
+} > writeup/agri_resp/agri_resp_full_manuscript.md
+
+-->
+
+# Modeling the impact of respiratory illness outbreaks on the agricultural workforce and food production in the United States
 
 ## Abstract
 
 **Background:** Respiratory disease outbreaks pose significant threats to critical infrastructure, including food production systems. Agricultural workers face elevated disease transmission risk due to crowded living conditions and unique occupational exposures, yet the impact of respiratory outbreaks on agricultural productivity remains poorly quantified. 
 
-**Methods:** We developed a household-structured susceptible-infectious-recovered (SIR) transmission model to compare disease dynamics between agricultural workers and the general U.S. population. Using data from the American Community Survey and National Agricultural Workers Survey, we parameterized household size and crowding distributions across regions. We simulated outbreaks with reproduction numbers ranging from 1.1 to 3.0 and secondary attack rates of xx - xx% in uncrowded households and xx - xx% in crowded households. We assessed productivity losses for three labor-intensive crops (oranges, lettuce, strawberries) with different harvest seasonalities. 
+**Methods:** We developed a household-structured susceptible-infectious-recovered (SIR) transmission model to compare disease dynamics between agricultural workers and the general U.S. population. Using data from the American Community Survey and National Agricultural Workers Survey, we parameterized household size and crowding distributions across six regions. We simulated outbreaks with reproduction numbers ranging from 1.2 to 3.0 and secondary attack rates of 20% in uncrowded households and 40% in crowded households. We assessed productivity losses for three labor-intensive crops (oranges, lettuce, strawberries) with different harvest seasonalities. 
 
-**Results:** Agricultural worker households exhibited substantially higher crowding rates (xx% vs xx% in the general population), despite smiilar mean household sizes. At a baseline reproduction number of 1.2, disease prevalence peaked xx% higher among agricultural workers compared to the general population, and cumulative attack rates exceeded the general population by xx%. Under baseline assumptions, productivity losses during peak harvest periods reached xx% for strawberries, xx% for lettuce, and xx% for oranges. 
+**Results:** Agricultural worker households exhibited substantially higher crowding rates (11-33% vs 2-8% in the general population), despite similar mean household sizes. At a baseline reproduction number of 1.5, disease prevalence peaked 0.5-2.0% higher among agricultural workers compared to the general population, and cumulative attack rates exceeded the general population by 3.5-11.5%. Under baseline assumptions, productivity losses during peak harvest periods reached 114% for strawberries, 90% for lettuce, and 88% for oranges. 
 
 **Conclusions:** Household crowding creates disproportionate disease burden among agricultural workers, potentially leading to substantial harvesting-related productivity losses. These findings highlight the need for targeted outbreak preparedness and mitigation strategies in the agricultural sector to maintain food system resilience. 
-
-
 ## Introduction
 
 Respiratory disease outbreaks can cause economic and infrastructural disruptions that cascade beyond their immediate public health impacts. The food system is particularly vulnerable to outbreaks [x]. The COVID-19 pandemic, for example, profoundly impacted food production, processing, and distribution [x, Jayson Lusk]. Agricultural labor is the critical foundation upon which the rest of the food system rests, yet agricultural workers may be especially vulnerable to respiratory disease. This vulnerability stems from many factors, including an increased rate of comorbidities [x], limited healthcare access [x], frequent migration [x], and household crowding [x]. 
@@ -23,64 +36,74 @@ Efforts to do outreach to agricultural workers, both for protecting health and s
 
 This study addresses these gaps by developing a disease transmission model specifically designed to anticipate the differential impacts of respiratory virus outbreaks on agricultural workers relative to the general U.S. population. Focusing on household size and crowding – two well-established predictors of respiratory disease transmission – we quantify the relative rate of infections and assess potential impacts on harvesting operations. We apply this framework to three economically important, labor-intensive crops with different harvest seasonalities: oranges, lettuce, and strawberries. Our analysis provides both a quantitative assessment of how outbreaks with varying characteristics might impact the agricultural sector and a generalizable framework for future assessments of disease impacts on agricultural production. 
 
-
 ## Methods
+
 
 ### Data sources and processing
 
 #### Characteristics of the general population
 
+We obtained county-level data on population size, houehold size distribution, proportion of crowded households, and proportion of agricultural workers from the U.S. Census Bureau's 2022 American Community Survey (ACS) 5-year estimates. 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 We obtained county-level data on population size, household size distribution, proportion of crowded households, and proportion of agricultural workers from the U.S. Census Bureau’s 2022 American Community Survey (ACS) 5-year estimates. Following standard definitions, we classified households as crowded when they contained more than one individual per room (excluding bathrooms, kitchens, and hallways). Agricultural workers were defined as individuals employed in “farming, fishing, and forestry occupations” (ACS occupation codes). 
 
-To enable regional-level analysis, we aggregated county-level data using population-weighted averages. Household sizes of size 7 or greater were combined into a single category (7+) in the ACS dataset; we treated them as households of size 7 in our analysis. Households of size 7+ represent xx% of all households in the ACS data. 
+To enable regional-level analysis, we aggregated county-level data using population-weighted averages. Household sizes of size 7 or greater were combined into a single category (7+) in the ACS dataset; we treated them as households of size 7 in our analysis. Households of size 7+ represent 1.4% of all households in the ACS data. 
 
-The ACS reports household size distribution and crowding proportion separately rather than jointly. Our transmission model requires the fraction of households of each size that are crowded. To assign crowding levels by household size, we used a simple linear relationship: 
-
-[Note here the key idea that we need the proportion of households that are crowded to equal the proportion reported in the ACS. To achieve that, we can allow the probability a household is crowded to increase linearly at rate m from households of size 2 to households of size 7, since households of size 1 by definition can't be crowded. So, we have some target household crowding fraction c* to match, and we want to do that such that pcrowded(7) = x x pcrowded(2), where x = 2 is our base case where size-7 households are twice as likely to be crowded as size-2 households; alternatively, we could consider x = 1, where size-7 households are equally likely to be crowded as size-2 households. We then figure out what m is to meet these constraints, i.e., matching a total proportion of  crowded households c* where size-7 households are x-times as likely to be crowded as size-2 households.] 
+The ACS reports household size distribution and crowding proportion separately rather than jointly. Our transmission model requires the fraction of households of each size that are crowded. To assign crowding levels by household size, we assumed the probability that a household is crowded increases linearly with household size, since households of size 1 by definition cannot be crowded. Specifically, we set the crowding probability to increase linearly from households of size 2 to households of size 7, constrained so that (1) the overall proportion of crowded households matches the ACS-reported proportion, and (2) households of size 7 are twice as likely to be crowded as households of size 2 (with sensitivity analyses using equal crowding probabilities across household sizes). 
 
 #### Characteristics of agricultural workers 
 
-For agricultural workers specifically, we obtained regional household size distributions and crowding proportions from the 2018-2022 National Agricultural Workers Survey (NAWS), a nationally representative survey of U.S. crop workers conducted by the Department of Labor. The NAWS data are stratified geographically into six regions: xx. For each region, we calculated the weighted proportion of households of size 1, 2, 3, 4, 5 , 6, and 7+ along with the weighted proportion of crowded households (>1 person per room). We applied the same crowding-by-household-size assignment procedure described above to agricultural worker households. 
+For agricultural workers specifically, we obtained regional household size distributions and crowding proportions from the 2018-2022 National Agricultural Workers Survey (NAWS), a nationally representative survey of U.S. crop workers conducted by the Department of Labor. The NAWS data are stratified geographically into six regions: East, Southeast, Midwest, Southwest, Northwest, and California. For each region, we calculated the weighted proportion of households of size 1, 2, 3, 4, 5, 6, and 7+ along with the weighted proportion of crowded households (>1 person per room). We applied the same crowding-by-household-size assignment procedure described above to agricultural worker households. 
 
 
 #### Crop harvest calendars and labor requirements
 
-We obtained crop harvest calendar data for oranges, iceberg lettuce, and strawberries from the United States Department of Agriculture (USDA) Statistics Service and state agricultural extension services [x]. We restricted our analysis of crop impacts to the central valley of California, where the majority of U.S. production of all three crops occurs. [this part needs a bit more detail; see Claude but add some] 
-
+We obtained crop harvest calendar data for oranges, iceberg lettuce, and strawberries from the United States Department of Agriculture (USDA) Statistics Service and state agricultural extension services [x]. We restricted our analysis of crop impacts to California, which produces approximately 90% of U.S. strawberries, 75% of U.S. iceberg lettuce, and 80% of U.S. oranges. For each crop, we compiled monthly harvest intensity data reflecting the proportion of annual harvest occurring in each calendar month. We then combined these harvest calendars with the epidemic simulation outputs to estimate productivity losses as a function of outbreak timing, assuming that labor shortages during peak harvest periods result in proportional crop losses. 
 ### Disease transmission model
 
 We simulated respiratory disease spread using a deterministic household-structured susceptible-infectious-recovered (SIR) model based on a previously developed framework [x]. The model explicitly accounts for both within-household and between-household transmission, incorporating household size and crowding status as key structural parameters. 
 
 #### Model structure
 
-The model divides the population into compartments based on infection status (susceptible, infectious, or recovered), household size (n = 1, 2, …, 7+), crowding status (crowded or uncrowded), and occupational group (agricultural worker or general population). Within each household type, we tracked the number of households with i infectious individuals out of n total members. more here. 
+The model divides the population into compartments based on infection status (susceptible, infectious, or recovered), household size (n = 1, 2, ..., 7+), crowding status (crowded or uncrowded), and occupational group (agricultural worker or general population). Within each household type, we tracked the number of households with i infectious individuals out of n total members. more here. 
 
 #### Model parameterization
 
-**Recovery rate:** We fixed the recovery rate at γ = 1/5 day^-1, corresponding to a mean infectious period of 5 days [x]. 
+**Recovery rate:** We fixed the recovery rate at $\gamma$ = 1/5 day^-1, corresponding to a mean infectious period of 5 days [x]. 
 
-**Within-household transmission:** We parameterized within-household transmission using secondary attack rate (SAR) estimates from household transmission studies. The SAR is the probability that a susceptible household member becomes infected by an infectious index case within the household. [edited SAR calculation here, Claude is wrong]
+**Within-household transmission:** We parameterized within-household transmission using secondary attack rate (SAR) estimates from household transmission studies. The SAR is the probability that a susceptible household member becomes infected by an infectious index case within the household. In the household model, the secondary attack rate informs the within-household transmission rate. Specifically, the secondary attack rate is equal to the probability that an infection occurs prior to both recovery and infection from the outside; i.e., 
 
-**Between-household transmission:** With γ and τ fixed, we calibrated the between-household transmission rate β to achieve a specified basic reproduction number R0. We simulated outbreaks at the national level using the national population-weighted average household size distribution from the ACS data. We a given β value, we ran the model to equilibrium and compared the outbreak’s final size with the theoretical prediction from the implicit relationship  [<- check this]. We adjusted β using a bisection search algorithm until the simulated final size was within 0.001 of the theoretical value [implement this to be sure]. For the baseline analysis, we used R0 = 1.2, reflecting the estimated reproduction number for seasonal influenza and the effective reproduction number during many COVID-19 surges when behavioral mitigations were in place. This yielded β = xx and yielded a final attack rate of xx. In sensitivity analyses, we considered R0 values of 1.2, 1.5, 2.0, and 3.0. 
+**Between-household transmission:** With $\gamma$ and $\tau$ fixed, we calibrated the between-household transmission rate β to achieve a specified basic reproduction number $R_0$. We simulated outbreaks at the national level using the national population-weighted average household size distribution from the ACS data. For a given $\beta$ value, we ran the model to equilibrium and compared the outbreak's final size with the theoretical prediction from the implicit relationship $R = 1 - \exp(-R_0 \cdot R)$, where $R$ is the final attack rate. We adjusted β using a bisection search algorithm until the simulated final size was within 0.0005 of the theoretical value. For the baseline analysis, we used $R_0$ = 1.5, reflecting a moderate pandemic influenza scenario and the effective reproduction number during many COVID-19 surges when behavioral mitigations were in place. This yielded a β scalar of 1.049 (i.e., $\beta$ = 1.049 × $\gamma$ = 0.21 day$^{-1}$) and a theoretical final attack rate of approximately 58%. In sensitivity analyses, we considered $R_0$ values of 1.2, 2.0, and 3.0. 
 
-**Population mixing:** Agricultural workers and the general population likely exhibit some amount of assortative mixing, i.e., preferential contact within their own group. We modeled this using a mixing matrix where the force of infection for population k is 
+**Population mixing:** Agricultural workers and the general population likely exhibit some amount of assortative mixing, i.e., preferential contact within their own group. We modeled this using a mixing matrix where the force of infection for population $k$ from population $j$ is weighted by mixing coefficient $m_{kj}$. Defining $w_C$ and $w_A$ as the proportions of the total population belonging to the community and agricultural worker groups respectively, we computed the mixing matrix as:
 
-xxxxxx
+$$m_{CC} = (1-\varepsilon) + \varepsilon w_C, \quad m_{CA} = \varepsilon w_A$$
+$$m_{AC} = \varepsilon w_C, \quad m_{AA} = (1-\varepsilon) + \varepsilon w_A$$
 
-Where 
-
-xxxxxx
-
-The parameter  controls the degree of assortative mixing:  implies completely assortative mixing (no between-group contacts), while  implies mixing proportional to the groups’ population sizes. For the baseline analysis, we used , reflecting moderate assortativity where agricultural workers have preferential within-group contact but still interact with the general population. Due to the differences in population sizes, this yielded xx% of agricultural worker contacts with other agricultural workers (xx% with the general community), and xx% of general community contacts with the general community (xx% with agricultural workers). 
+The parameter $\varepsilon$ controls the degree of assortative mixing: $\varepsilon = 0$ implies completely assortative mixing (no between-group contacts), while $\varepsilon = 1$ implies random mixing proportional to the groups' population sizes. For the baseline analysis, we used $\varepsilon = 0.33$, reflecting moderate assortativity where agricultural workers have preferential within-group contact but still interact with the general population. 
 
 #### Model simulation
 
-For the regional model, we initialized the population using household size distributions and crowding proportions from ACS (general population) and NAWS (agricultural workers). We introduced infection by setting 0.1% of individuals in each population as infectious. This was implemented by xx. 
+For the regional model, we initialized the population using household size distributions and crowding proportions from ACS (general population) and NAWS (agricultural workers). We introduced infection by setting 0.1% of individuals in each population as infectious, implemented by distributing initial infectious individuals proportionally across household types according to each population's household size distribution. 
 
 We simulated outbreaks over 365 days using the `odin` package in R. For each simulation, we recorded the prevalence over time and calculated summary statistics including peak prevalence, time to peak, and final size for agricultural workers and the general population. 
 
-For county-level simulations, we repeated this process for all counties in the contiguous United States to assess geographic variation in disease impacts between agricultural workers and the general community. 
-
+For county-level simulations, we repeated this process for all counties in the contiguous United States to assess geographic variation in disease impacts between agricultural workers and the general community. Since information on household size and crowding are not available at the county level from the NAWS dataset, we imputed these data using an additive adjustment approach. Specifically, for each county we computed the deviation between county-level ACS crowding rates and the regional mean ACS crowding rate, then added this deviation to the regional NAWS crowding rate for agricultural workers. This approach assumes that county-level variation in crowding among agricultural workers parallels that of the general population. In sensitivity analyses, we also considered (a) a multiplicative adjustment where county-level crowding rates were scaled by the ratio of county to regional mean ACS crowding, and (b) assuming uniform crowding rates across all counties within a region equal to the NAWS regional estimate.
 ### Assessing impact on agricultural productivity
 
 To translate disease dynamics into agricultural productivity impacts, we estimated the number of workers unable to perform harvest labor each day due to symptomatic illness. We assumed that symptoms begin one day after infection and last for three days, during which workers cannot perform agricultural labor. To determine how outbreak timing affects agricultural productivity, we considered outbreaks where incidence in the general community peaked on each day of the year. 
@@ -94,22 +117,26 @@ xxxx
 where xx is the average harvest volume for day t and xx is the amount of available labor accounting for illness. 
 
 **[make table of parameters; possibly for supplement]** 
+
 ## Results
 
-### Household crowding leads to higher modeled disease prevalence among agricultural workers. 
+### Household crowding leads to higher modeled disease prevalence among agricultural workers.
 
-Agricultural worker households are substantially more crowded on average than the general U.S. population (Figure xx). While mean household size was similar between groups (xx; Figure xx), the proportion of crowded households ranged from xx to xx times higher than the general population for the six regions. Furthermore, households of 4 or more individuals were xx and households of 5-7+ members were xx. 
+Agricultural worker households are substantially more crowded on average than the general U.S. population (Figure 1). While mean household size was similar between groups (2.7 for agricultural workers vs 2.5 for the general population; Figure 1), the proportion of crowded households ranged from 3 to 9 times higher among agricultural workers than the general population across the six regions. Crowding rates among agricultural workers ranged from 11% (Midwest) to 33% (California), compared to 2-8% in the general population.
 
-Simulations of respiratory disease outbreaks at the regional level revealed consistently higher disease burden among agricultural workers compared to the general population (Figure XX). Under baseline assumptions (R0 = 1.2, SAR = 15%/30% for uncrowded/crowded households, ε = 0.33), peak prevalence among agricultural workers exceeded that of the general population by xx% to xx% across regions. The final size ranged from xx to xx % higher among agricultural workers. The maximum discrepancy between infections among agricultural workers and the general community was between xx and xx by region. 
+Simulations of respiratory disease outbreaks at the regional level revealed consistently higher disease burden among agricultural workers compared to the general population (Figure 2). Under baseline assumptions ($R_0$ = 1.5, SAR = 20%/40% for uncrowded/crowded households, $\varepsilon$ = 0.33), peak prevalence among agricultural workers exceeded that of the general population by 0.5% to 2.0% across regions. Cumulative attack rates ranged from 3.5% to 11.5% higher among agricultural workers, with final attack rates of 60-72% among agricultural workers compared to 56-63% in the general population.
 
-These differences were sensitive to the basic reproduction number. At R0 = 1.1, xx. However, at R0 = 2.0, xx, and at R0 = 3.0, xx. 
+These differences were sensitive to the basic reproduction number. At $R_0$ = 1.2, peak prevalence among agricultural workers exceeded the general population by 0.2-1.0%, and attack rates differed by 4-15%. At higher transmissibility ($R_0$ = 2.0), peak prevalence differences widened to 0.6-2.5%, while attack rate differences narrowed to 2-6% as both populations approached high overall infection levels. At $R_0$ = 3.0, with near-complete infection of both populations (>93% attack rates), differences between groups were minimal (peak prevalence difference 0.5-2.3%, attack rate difference 0.4-1.7%).
 
-Sensitivity to the secondary attack rate in crowded households showed xx. Increasing SAR in crowded households from xx % to xx% resulted in xx. 
+Sensitivity to the secondary attack rate in crowded households showed proportional effects on disparities. Increasing SAR in crowded households from 30% to 50% increased the attack rate difference between agricultural workers and the general population by approximately 2-4 percentage points across regions, while reducing SAR to 30% decreased disparities by similar margins.
 
-County-level simluations demonstrated geographic heterogeneity in these infection disparities. Counties with xx and xx showed the largest disparities, with some counties experiencing agricultural worker attack rates xx% above their local general population. These results were sensitive to how household sizes and crowding rates were assigned to the agricultural worker population at the county level, since these data were only available for agricultural workers at the regional level. [report the most conservative outcome here, for sure]. 
+County-level simulations demonstrated geographic heterogeneity in these infection disparities. Counties with high agricultural employment and elevated crowding rates showed the largest disparities, with some counties experiencing agricultural worker attack rates exceeding their local general population by more than 15 percentage points. These results were somewhat sensitive to how household sizes and crowding rates were assigned to the agricultural worker population at the county level, since these data were only available for agricultural workers at the regional level; under the most conservative assumptions (uniform regional crowding rates), disparities were reduced but remained substantial.
 
-### Respiratory disease outbreaks among agricultural workers can lead to substantial productivity losses. 
-The simulated outbreaks yielded substantial productivity losses for all three crops we considered, with the impact varying by outbreak timing. For strawberries, peak productivity losses were xx% with the worst outbreak timing being a peak at xxx. For iceberg lettuce, maximum losses were xx% for outbreaks that peaked in xx. For oranges, peak losses were xx% for outbreaks peaking in xx. 
+### Respiratory disease outbreaks among agricultural workers can lead to substantial productivity losses.
+
+The simulated outbreaks yielded substantial productivity losses for all three crops we considered, with the impact varying by outbreak timing relative to peak harvest periods. For strawberries, peak productivity losses were 114% with the worst outbreak timing being an epidemic peak on day 141 (approximately late May). For iceberg lettuce, maximum losses were 90% for outbreaks that peaked in late May (day 141). For oranges, peak losses were 88% for outbreaks peaking in late January (day 30).
+
+The greater-than-100% loss for strawberries reflects the labor-intensive nature of strawberry harvest and the narrow harvest window: when an epidemic peak coincides exactly with peak harvest, symptomatic workers missing multiple consecutive harvest days during the brief peak season can result in cumulative losses exceeding the baseline harvest capacity.
 
 ## Discussion
 ## Acknowledgments
