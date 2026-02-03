@@ -11,21 +11,25 @@ cat writeup/agri_resp/agri_resp_methods_statistics.md; printf '\n\n';
 cat writeup/agri_resp/agri_resp_results.md; printf '\n\n'; 
 cat writeup/agri_resp/agri_resp_discussion.md; printf '\n\n'; 
 cat writeup/agri_resp/agri_resp_supplement.md;
-} > writeup/agri_resp/agri_resp_full_manuscript.md
+} > writeup/agri_resp/agri_resp_full.md
 
 -->
 
 # Modeling the impact of respiratory illness outbreaks on the agricultural workforce and food production in the United States
 
+
+
 ## Abstract
 
-**Background:** Respiratory disease outbreaks pose significant threats to critical infrastructure, including food production systems. Agricultural workers face elevated disease transmission risk due to crowded living conditions and unique occupational exposures, yet the impact of respiratory outbreaks on agricultural productivity remains poorly quantified. 
+**Background:** Respiratory disease outbreaks pose significant threats to critical infrastructure, including food production systems. Agricultural workers face elevated disease transmission risk due to crowded living conditions and occupational exposures, yet the impact of respiratory outbreaks on agricultural productivity remains poorly quantified. 
 
-**Methods:** We developed a household-structured susceptible-infectious-recovered (SIR) transmission model to compare disease dynamics between agricultural workers and the general U.S. population. Using data from the American Community Survey and National Agricultural Workers Survey, we parameterized household size and crowding distributions across six regions. We simulated outbreaks with reproduction numbers ranging from 1.2 to 3.0 and secondary attack rates of 20% in uncrowded households and 40% in crowded households. We assessed productivity losses for three labor-intensive crops (oranges, lettuce, strawberries) with different harvest seasonalities. 
+**Methods:** We developed a household-structured susceptible-infectious-recovered (SIR) transmission model to compare disease dynamics between agricultural workers and the general U.S. population. Using data from the American Community Survey and National Agricultural Workers Survey, we parameterized household size and crowding distributions across six regions. We simulated outbreaks with reproduction numbers ranging from 1.2 to 3.0 across various assumptions on household secondary attack rate and assortative mixing. We assessed productivity losses for three labor-intensive crops (oranges, lettuce, strawberries) with different harvest seasonalities. 
 
-**Results:** Agricultural worker households exhibited substantially higher crowding rates (11-33% vs 2-8% in the general population), despite similar mean household sizes. At a baseline reproduction number of 1.5, disease prevalence peaked 0.5-2.0% higher among agricultural workers compared to the general population, and cumulative attack rates exceeded the general population by 3.5-11.5%. Under baseline assumptions, productivity losses during peak harvest periods reached 114% for strawberries, 90% for lettuce, and 88% for oranges. 
+**Results:** Agricultural worker households exhibited substantially higher crowding rates (11-33% vs. 2-8% in the general population), despite similar mean household sizes. At a baseline reproduction number of 1.5, disease prevalence peaked 0.5-2.0% higher among agricultural workers compared to the general population, and cumulative attack rates exceeded the general population by 3.5-11.5%. Under baseline assumptions, productivity losses during peak harvest periods reached 114% for strawberries, 90% for lettuce, and 88% for oranges. 
 
-**Conclusions:** Household crowding creates disproportionate disease burden among agricultural workers, potentially leading to substantial harvesting-related productivity losses. These findings highlight the need for targeted outbreak preparedness and mitigation strategies in the agricultural sector to maintain food system resilience. 
+**Conclusions:** Household crowding may lead to disproportionate respiratory disease burden among agricultural workers, potentially generating substantial productivity losses. These findings highlight the need for targeted outbreak preparedness and mitigation strategies in the agricultural sector to maintain food system resilience. 
+
+
 ## Introduction
 
 Respiratory disease outbreaks can cause economic and infrastructural disruptions that cascade beyond their immediate public health impacts. The food system is particularly vulnerable to outbreaks [x]. The COVID-19 pandemic, for example, profoundly impacted food production, processing, and distribution [x, Jayson Lusk]. Agricultural labor is the critical foundation upon which the rest of the food system rests, yet agricultural workers may be especially vulnerable to respiratory disease. This vulnerability stems from many factors, including an increased rate of comorbidities [x], limited healthcare access [x], frequent migration [x], and household crowding [x]. 
@@ -36,7 +40,11 @@ Efforts to do outreach to agricultural workers, both for protecting health and s
 
 This study addresses these gaps by developing a disease transmission model specifically designed to anticipate the differential impacts of respiratory virus outbreaks on agricultural workers relative to the general U.S. population. Focusing on household size and crowding – two well-established predictors of respiratory disease transmission – we quantify the relative rate of infections and assess potential impacts on harvesting operations. We apply this framework to three economically important, labor-intensive crops with different harvest seasonalities: oranges, lettuce, and strawberries. Our analysis provides both a quantitative assessment of how outbreaks with varying characteristics might impact the agricultural sector and a generalizable framework for future assessments of disease impacts on agricultural production. 
 
+
+
 ## Methods
+
+
 
 
 ### Data sources and processing
@@ -74,6 +82,8 @@ For agricultural workers specifically, we obtained regional household size distr
 #### Crop harvest calendars and labor requirements
 
 We obtained crop harvest calendar data for oranges, iceberg lettuce, and strawberries from the United States Department of Agriculture (USDA) Statistics Service and state agricultural extension services [x]. We restricted our analysis of crop impacts to California, which produces approximately 90% of U.S. strawberries, 75% of U.S. iceberg lettuce, and 80% of U.S. oranges. For each crop, we compiled monthly harvest intensity data reflecting the proportion of annual harvest occurring in each calendar month. We then combined these harvest calendars with the epidemic simulation outputs to estimate productivity losses as a function of outbreak timing, assuming that labor shortages during peak harvest periods result in proportional crop losses. 
+
+
 ### Disease transmission model
 
 We simulated respiratory disease spread using a deterministic household-structured susceptible-infectious-recovered (SIR) model based on a previously developed framework [x]. The model explicitly accounts for both within-household and between-household transmission, incorporating household size and crowding status as key structural parameters. 
@@ -104,6 +114,8 @@ For the regional model, we initialized the population using household size distr
 We simulated outbreaks over 365 days using the `odin` package in R. For each simulation, we recorded the prevalence over time and calculated summary statistics including peak prevalence, time to peak, and final size for agricultural workers and the general population. 
 
 For county-level simulations, we repeated this process for all counties in the contiguous United States to assess geographic variation in disease impacts between agricultural workers and the general community. Since information on household size and crowding are not available at the county level from the NAWS dataset, we imputed these data using an additive adjustment approach. Specifically, for each county we computed the deviation between county-level ACS crowding rates and the regional mean ACS crowding rate, then added this deviation to the regional NAWS crowding rate for agricultural workers. This approach assumes that county-level variation in crowding among agricultural workers parallels that of the general population. In sensitivity analyses, we also considered (a) a multiplicative adjustment where county-level crowding rates were scaled by the ratio of county to regional mean ACS crowding, and (b) assuming uniform crowding rates across all counties within a region equal to the NAWS regional estimate.
+
+
 ### Assessing impact on agricultural productivity
 
 To translate disease dynamics into agricultural productivity impacts, we estimated the number of workers unable to perform harvest labor each day due to symptomatic illness. We assumed that symptoms begin one day after infection and last for three days, during which workers cannot perform agricultural labor. To determine how outbreak timing affects agricultural productivity, we considered outbreaks where incidence in the general community peaked on each day of the year. 
@@ -117,6 +129,8 @@ xxxx
 where xx is the average harvest volume for day t and xx is the amount of available labor accounting for illness. 
 
 **[make table of parameters; possibly for supplement]** 
+
+
 
 ## Results
 
@@ -138,7 +152,11 @@ The simulated outbreaks yielded substantial productivity losses for all three cr
 
 The greater-than-100% loss for strawberries reflects the labor-intensive nature of strawberry harvest and the narrow harvest window: when an epidemic peak coincides exactly with peak harvest, symptomatic workers missing multiple consecutive harvest days during the brief peak season can result in cumulative losses exceeding the baseline harvest capacity.
 
+
+
 ## Discussion
+
+
 ## Acknowledgments
 
 ## Funding
