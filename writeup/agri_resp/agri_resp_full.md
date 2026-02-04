@@ -73,15 +73,18 @@ Fresh % 5     12  25  26   18  12  2
 
 We simulated respiratory disease transmission using a deterministic household-structured susceptible-infectious-recovered (SIR) model based on a previously developed framework [x]. We split the population at the household level into "agricultural workers" and "general community", assuming the proportion of households belonging to agricultural workers was equal to the proportion of the working population involved in agricultural work according to the ACS data. Besides the impact of household size, household crowding, and assortative mixing, we did not assume any additional differences in transmission rates between these two sub-populations. 
 
-We assumed that mixing among agricultural workers and the general community was assortative, governed by parameter $\epsilon$. We modeled this using the mixing matrix 
+We assumed that mixing among agricultural workers (A) and the general community (C) was assortative, governed by parameter $\epsilon$. We modeled this using the mixing matrix 
 
-xxx
+$$ M = m_{CC}, m_{CA}, m_{AC}, m_{AA} = $$
+$$ (1-\epsilon) + \epsilon w_C, \epsilon w_A$$
+$$ \epsilon w_C, m_{AA} = (1-\epsilon) + \epsilon w_A$$
 
-Here, xxx. This matrix modulates the force of infection $\lambda$ experienced by each population such that 
+Here, $w_C$ is the fraction of the region's population made up by the general community and $w_A$ is the fraction of the population made up by agricultural workers. This matrix modulates the force of infection $\lambda$ experienced by each population such that 
 
-xx 
+$$\lambda_C = \beta (m_{CC} I_C + m_{CA} I_A$$ 
+$$\lambda_A = \beta (m_{AC} I_C + m_{AA} I_A$$
 
-where xx is xx. So, $\epsilon = 0$ implies xxx and $\epsilon = 1$ implies xxx. 
+where $\lambda_i$ is the force of infection for members of sub-population $i$, $\beta$ is the transmission constant, and $I_i$ is the proportion of infectious individuals in sub-population $i$; thus, $\epsilon = 0$ implies completely assortative mixing and $\epsilon = 1$ implies mixing proportional to each sub-population's size. 
 
 We assumed that the household secondary attack rate (the probability of infection given an infected household member) was higher in crowded households than in uncrowded households. For full details on the model structure, see the **Supplementary Methods.** 
 
