@@ -81,8 +81,8 @@ $$ \epsilon w_C, (1-\epsilon) + \epsilon w_A$$
 
 Here, $w_C$ is the fraction of the region's population made up by the general community and $w_A$ is the fraction of the population made up by agricultural workers. This matrix modulates the force of infection $\lambda$ experienced by each population such that 
 
-$$\lambda_C = \beta (m_{CC} I_C + m_{CA} I_A$$ 
-$$\lambda_A = \beta (m_{AC} I_C + m_{AA} I_A$$
+$$\lambda_C = \beta (m_{CC} I_C + m_{CA} I_A)$$ 
+$$\lambda_A = \beta (m_{AC} I_C + m_{AA} I_A)$$
 
 where $\lambda_i$ is the force of infection for members of sub-population $i$, $\beta$ is the transmission constant, and $I_i$ is the proportion of infectious individuals in sub-population $i$; thus, $\epsilon = 0$ implies completely assortative mixing and $\epsilon = 1$ implies mixing proportional to each sub-population's size. 
 
