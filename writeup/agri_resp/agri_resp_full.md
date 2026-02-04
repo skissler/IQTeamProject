@@ -69,15 +69,27 @@ Fresh % 5     12  25  26   18  12  2
 
 ### Disease transmission model
 
-We simulated respiratory disease spread using a deterministic household-structured susceptible-infectious-recovered (SIR) model based on a previously developed framework [x]. The model explicitly accounts for both within-household and between-household transmission, incorporating household size and crowding status as key structural parameters. 
-
 #### Model structure
 
-The model divides the population into compartments based on infection status (susceptible, infectious, or recovered), household size (n = 1, 2, ..., 7+), crowding status (crowded or uncrowded), and occupational group (agricultural worker or general population). Within each household type, we tracked the number of households with i infectious individuals out of n total members. more here. 
+We simulated respiratory disease transmission using a deterministic household-structured susceptible-infectious-recovered (SIR) model based on a previously developed framework [x]. We split the population at the household level into "agricultural workers" and "general community", assuming the proportion of households belonging to agricultural workers was equal to the proportion of the working population involved in agricultural work according to the ACS data. Besides the impact of household size, household crowding, and assortative mixing, we did not assume any additional differences in transmission rates between these two sub-populations. 
 
-The ACS reports household size distribution and crowding proportion separately rather than jointly. Our transmission model requires the fraction of households of each size that are crowded. To assign crowding levels by household size, we assumed the probability that a household is crowded increases linearly with household size, since households of size 1 by definition cannot be crowded. Specifically, we set the crowding probability to increase linearly from households of size 2 to households of size 7, constrained so that (1) the overall proportion of crowded households matches the ACS-reported proportion, and (2) households of size 7 are twice as likely to be crowded as households of size 2 (with sensitivity analyses using equal crowding probabilities across household sizes).
+We assumed that mixing among agricultural workers and the general community was assortative, governed by parameter $\epsilon$. We modeled this using the mixing matrix 
+
+xxx
+
+Here, xxx. This matrix modulates the force of infection $\lambda$ experienced by each population such that 
+
+xx 
+
+where xx is xx. So, $\epsilon = 0$ implies xxx and $\epsilon = 1$ implies xxx. 
+
+We assumed that the household secondary attack rate (the probability of infection given an infected household member) was higher in crowded households than in uncrowded households. For full details on the model structure, see the **Supplementary Methods.** 
 
 #### Model parameterization
+
+**clearly define baselines here; maybe include table** 
+
+**Joint distribution of household size and crowding.** The ACS reports household size distribution and crowding proportion separately rather than jointly. Our transmission model requires the fraction of households of each size that are crowded. To assign crowding levels by household size, we assumed the probability that a household is crowded increases linearly with household size, since households of size 1 by definition cannot be crowded. Specifically, we set the crowding probability to increase linearly from households of size 2 to households of size 7, constrained so that (1) the overall proportion of crowded households matches the ACS-reported proportion, and (2) households of size 7 are twice as likely to be crowded as households of size 2 (with sensitivity analyses using equal crowding probabilities across household sizes).
 
 **Recovery rate:** We fixed the recovery rate at $\gamma$ = 1/5 day^-1, corresponding to a mean infectious period of 5 days [x]. 
 
