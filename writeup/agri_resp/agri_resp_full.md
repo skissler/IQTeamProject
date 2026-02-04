@@ -77,7 +77,7 @@ We assumed that mixing among agricultural workers (A) and the general community 
 
 $$ M = m_{CC}, m_{CA}, m_{AC}, m_{AA} = $$
 $$ (1-\epsilon) + \epsilon w_C, \epsilon w_A$$
-$$ \epsilon w_C, m_{AA} = (1-\epsilon) + \epsilon w_A$$
+$$ \epsilon w_C, (1-\epsilon) + \epsilon w_A$$
 
 Here, $w_C$ is the fraction of the region's population made up by the general community and $w_A$ is the fraction of the population made up by agricultural workers. This matrix modulates the force of infection $\lambda$ experienced by each population such that 
 
