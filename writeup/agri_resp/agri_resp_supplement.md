@@ -15,6 +15,12 @@
 
 ### Supplementary Methods
 
+#### Data 
+
+Agricultural workers were defined as individuals employed in “farming, fishing, and forestry occupations” (ACS occupation codes xxx, xxx, and xxx). 
+
+To enable region-level analysis, we aggregated the county-level data using population-weighted averages. Household sizes of size 7 or greater were combined into a single category (7+) in the ACS dataset; we treated them as households of size 7 in our analysis. Households of size 7+ represent 1.4% of all households in the ACS data.
+
 #### Mathematical model formulation
 
 The household-structured SIR model tracks the distribution of households across disease states. Let $H_k(x,y,z,c)$ denote the number of households in population $k$ (where $k \in \{C, A\}$ for community and agricultural populations) with $x$ susceptible, $y$ infected, and $z$ recovered members, and crowding status $c \in \{0,1\}$. The total household size is $n = x + y + z$.
