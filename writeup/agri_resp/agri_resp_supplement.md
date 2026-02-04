@@ -23,6 +23,8 @@ To enable region-level analysis, we aggregated the county-level data using popul
 
 #### Mathematical model formulation
 
+Deriving $\tau$ and $\tau_{boost}$ from the SAR. 
+
 The household-structured SIR model tracks the distribution of households across disease states. Let $H_k(x,y,z,c)$ denote the number of households in population $k$ (where $k \in \{C, A\}$ for community and agricultural populations) with $x$ susceptible, $y$ infected, and $z$ recovered members, and crowding status $c \in \{0,1\}$. The total household size is $n = x + y + z$.
 
 The dynamics are governed by three types of transitions:

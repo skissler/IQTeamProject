@@ -90,22 +90,15 @@ We assumed that the household secondary attack rate (the probability of infectio
 
 #### Model parameterization
 
-**clearly define baselines here; maybe include table** 
+The transmission model has three main epidemiological parameters: the transmission rate for non-houshold contacts ($\beta$), the within-household transmission rate ($\tau$), and the recovery rate ($\gamma$). Following previous methods [x], we began by fixing the recovery rate $\gamma = 1/5$, which corresponds to a mean infectious period of 5 days. Then, given $\gamma$ and the household secondary attack rate (SAR), we derived $\tau$ (**Supplemental Methods**). We set the SAR for uncrowded households at 20%, following estimates for influenza [x]. For crowded households, we set the baseline SAR at 40%, in line with evidence on xxx [x]. In sensitivity analyses, we considered crowded-household SARs of xx - xx. Last, given values for $\gamma$ and $\tau$, we numerically identified the value of $\beta$ that would achieve a desired basic reproduction number ($R_0$) when simulating outbreaks at the national level. Specifically, for a candidate $\beta$ value, we ran the model to equilibrium, using national overall and agricultural worker population sizes from the ACS data, and we compared the outbreak's final size with the theoretical prediction from the implicit relationship $R = 1 - \exp(-R_0 \cdot R)$, where $R$ is the final attack rate. We adjusted $\beta$ using a bisection search algorithm until the simulated final size was within 0.0005 of the theoretical value. For the baseline analysis, we used $R_0$ = 1.5, reflecting a moderate pandemic influenza scenario and the effective reproduction number during many COVID-19 surges when behavioral mitigations were in place. In sensitivity analyses, we considered $R_0$ values of 1.2, 2.0, and 3.0. 
 
 **Joint distribution of household size and crowding.** The ACS reports household size distribution and crowding proportion separately rather than jointly. Our transmission model requires the fraction of households of each size that are crowded. To assign crowding levels by household size, we assumed the probability that a household is crowded increases linearly with household size, since households of size 1 by definition cannot be crowded. Specifically, we set the crowding probability to increase linearly from households of size 2 to households of size 7, constrained so that (1) the overall proportion of crowded households matches the ACS-reported proportion, and (2) households of size 7 are twice as likely to be crowded as households of size 2 (with sensitivity analyses using equal crowding probabilities across household sizes).
 
-**Recovery rate:** We fixed the recovery rate at $\gamma$ = 1/5 day^-1, corresponding to a mean infectious period of 5 days [x]. 
-
-**Within-household transmission:** We parameterized within-household transmission using secondary attack rate (SAR) estimates from household transmission studies. The SAR is the probability that a susceptible household member becomes infected by an infectious index case within the household. In the household model, the secondary attack rate informs the within-household transmission rate. Specifically, the secondary attack rate is equal to the probability that an infection occurs prior to both recovery and infection from the outside; i.e., 
-
 **Between-household transmission:** With $\gamma$ and $\tau$ fixed, we calibrated the between-household transmission rate β to achieve a specified basic reproduction number $R_0$. We simulated outbreaks at the national level using the national population-weighted average household size distribution from the ACS data. For a given $\beta$ value, we ran the model to equilibrium and compared the outbreak's final size with the theoretical prediction from the implicit relationship $R = 1 - \exp(-R_0 \cdot R)$, where $R$ is the final attack rate. We adjusted β using a bisection search algorithm until the simulated final size was within 0.0005 of the theoretical value. For the baseline analysis, we used $R_0$ = 1.5, reflecting a moderate pandemic influenza scenario and the effective reproduction number during many COVID-19 surges when behavioral mitigations were in place. This yielded a β scalar of 1.049 (i.e., $\beta$ = 1.049 × $\gamma$ = 0.21 day$^{-1}$) and a theoretical final attack rate of approximately 58%. In sensitivity analyses, we considered $R_0$ values of 1.2, 2.0, and 3.0. 
 
-**Population mixing:** Agricultural workers and the general population likely exhibit some amount of assortative mixing, i.e., preferential contact within their own group. We modeled this using a mixing matrix where the force of infection for population $k$ from population $j$ is weighted by mixing coefficient $m_{kj}$. Defining $w_C$ and $w_A$ as the proportions of the total population belonging to the community and agricultural worker groups respectively, we computed the mixing matrix as:
+For the baseline analysis, we used $\varepsilon = 0.33$, reflecting moderate assortativity where agricultural workers have preferential within-group contact but still interact with the general population. 
 
-$$m_{CC} = (1-\varepsilon) + \varepsilon w_C, \quad m_{CA} = \varepsilon w_A$$
-$$m_{AC} = \varepsilon w_C, \quad m_{AA} = (1-\varepsilon) + \varepsilon w_A$$
-
-The parameter $\varepsilon$ controls the degree of assortative mixing: $\varepsilon = 0$ implies completely assortative mixing (no between-group contacts), while $\varepsilon = 1$ implies random mixing proportional to the groups' population sizes. For the baseline analysis, we used $\varepsilon = 0.33$, reflecting moderate assortativity where agricultural workers have preferential within-group contact but still interact with the general population. 
+**clearly define baselines here; maybe include table** 
 
 #### Model simulation
 
@@ -187,6 +180,8 @@ Agricultural workers were defined as individuals employed in “farming, fishing
 To enable region-level analysis, we aggregated the county-level data using population-weighted averages. Household sizes of size 7 or greater were combined into a single category (7+) in the ACS dataset; we treated them as households of size 7 in our analysis. Households of size 7+ represent 1.4% of all households in the ACS data.
 
 #### Mathematical model formulation
+
+Deriving $\tau$ and $\tau_{boost}$ from the SAR. 
 
 The household-structured SIR model tracks the distribution of households across disease states. Let $H_k(x,y,z,c)$ denote the number of households in population $k$ (where $k \in \{C, A\}$ for community and agricultural populations) with $x$ susceptible, $y$ infected, and $z$ recovered members, and crowding status $c \in \{0,1\}$. The total household size is $n = x + y + z$.
 
