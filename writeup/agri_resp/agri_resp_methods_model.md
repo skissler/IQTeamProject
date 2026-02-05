@@ -27,7 +27,7 @@ The transmission model requires knowing the fraction of households of each size 
 
 For the baseline analysis, we used $\varepsilon = 0.33$, reflecting moderate assortativity where agricultural workers have preferential within-group contact but still interact with the general population. [Something about what fraction of contacts happen within-group vs. outside-of-group for agricultural workers and general community members, with ranges.]
 
-#### Model simulation
+#### Model implementation
 
 We implemented the transmission model in `R` (version xxx) using `odin` (version xxx). We initialized outbreaks by setting 0.1% of individuals in each sub-population as infectious. We distributed the initial infectious individuals proportionally across household types, equivalent to uniform-randomly choosing the initial infected individuals. We simulated outbreaks over 365 days. 
 
