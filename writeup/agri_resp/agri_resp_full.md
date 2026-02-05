@@ -55,7 +55,7 @@ We obtained county-level data on overall population size, household size distrib
 
 #### Crop harvest calendars and labor requirements
 
-To approximate daily harvest volumes, we obtained data on specialty crop movements (point-to-point shipments) for strawberries, iceberg lettuce, and oranges from the United States Department of Agriculture's (USDA's) Agricultural Marketing Services. We extracted the total weekly weight of shipments originating in California for each of these crops between 1 Jan 2018 and 1 Jan 2025. California produces approximately xx% of U.S. strawberries, xx% of U.S. iceberg lettuce, and xx% of U.S. oranges. We averaged the weekly shipment volumes for each crop across the seven available years to mitigate the impact of inter-anual variation. Then, we interpolated daily shipment volumes by assuming equal shipment volumes across each day of the week. We cross-referenced the resulting production curves with independent reports on each crop's production timing (Supplementary Methods, Supplementary Figure XX). 
+To approximate daily harvest volumes, we obtained data on specialty crop movements (point-to-point shipments) for strawberries, iceberg lettuce, and oranges from the United States Department of Agriculture's (USDA's) Agricultural Marketing Services. We extracted the total weekly weight of shipments originating in California for each of these crops between 1 Jan 2018 and 1 Jan 2025. California produces approximately xx% of U.S. strawberries, xx% of U.S. iceberg lettuce, and xx% of U.S. oranges. We averaged the weekly shipment volumes for each crop across the seven available years to mitigate the impact of inter-anual variation. Then, we interpolated daily shipment volumes by assuming equal shipment volumes across each day of the week. We normalized these shipment volumes by the total mean annual shipment volume, so that the daily values reflected the proportion of the total harvest normally collected on that day. We cross-referenced the resulting production curves with independent reports on each crop's production timing (Supplementary Methods, Supplementary Figure XX). 
 
 <!--- UCLA: "Navels are normally harvested from November to June." And: 
 
@@ -92,6 +92,8 @@ We assumed that the household secondary attack rate (the probability of infectio
 
 The transmission model has three main epidemiological parameters: the transmission rate for non-houshold contacts ($\beta$), the within-household transmission rate ($\tau$), and the recovery rate ($\gamma$). Following previous methods [x], we began by fixing the recovery rate $\gamma = 1/5$, which corresponds to a mean infectious period of 5 days. Then, given $\gamma$ and the household secondary attack rate (SAR), we derived $\tau$ (**Supplemental Methods**). We set the SAR for uncrowded households at 20%, following estimates for influenza [x]. For crowded households, we set the baseline SAR at 40% [x]. In sensitivity analyses, we considered crowded-household SARs of xx - xx. Last, given values for $\gamma$ and $\tau$, we numerically identified the value of $\beta$ that would achieve a desired basic reproduction number ($\mathcal{R_0}$) when simulating outbreaks at the national level. Specifically, for a candidate $\beta$ value, we ran the model with a single sub-population to equilibrium; then, we compared the outbreak's final size with the theoretical prediction from the implicit relationship $R(\infty) = 1 - \exp(-\mathcal{R_0} \cdot R(\infty))$, where $R(\infty)$ is the final size of the outbreak. [x] We adjusted $\beta$ using a bisection search algorithm until the simulated final size was within 0.0005 of the theoretical value. For the baseline analysis, we used $\mathcal{R_0}$ = 1.5, reflecting a moderate pandemic influenza scenario and the effective reproduction number during many COVID-19 surges when behavioral mitigations were in place. In sensitivity analyses, we considered $\mathcal{R_0}$ values of 1.2, 2.0, and 3.0. Baseline and sensitivity parameter values are listed in **Supplementary Table XX**. 
 
+We assumed that infections were symptomatic with probability $p_{symp}$ = xx at baseline, and we considered $p_{symp} \in \{xx, xx, xx, xx\}$ in sensitivity analyses. We assumed symptoms began one day after infection and lasted for three days. 
+
 The transmission model requires knowing the fraction of households of each size are crowded, but the ACS and NAWS data report household size distribution and crowding proportion separately. To assign crowding levels by household size, we assumed that the crowding probability increased linearly from households of size 2 to households of size 7+ (since households of size 1 by definition cannot be crowded). We obeyed the constraints that (1) the overall proportion of crowded households must match the ACS- or NAWS-reported proportion, and (2) households of size 7+ are $p$ times as likely to be crowded as households of size 2 (**Supplementary Methods**). We used a baseline of $p = 2$ (i.e. households of size 7+ are twice as likely to be crowded as households of size 1). In sensitivity analyses, we considered $p = 1$ and $p = 3$. 
 
 For the baseline analysis, we used $\varepsilon = 0.33$, reflecting moderate assortativity where agricultural workers have preferential within-group contact but still interact with the general population. [Something about what fraction of contacts happen within-group vs. outside-of-group for agricultural workers and general community members, with ranges.]
@@ -104,20 +106,11 @@ In addition to the main regional simulations, we also generated county-level sim
 
 
 
-### Assessing impact on agricultural productivity
+### Outcomes and measurements
 
-To translate disease dynamics into agricultural productivity impacts, we estimated the number of workers unable to perform harvest labor each day due to symptomatic illness. We assumed that symptoms begin one day after infection and last for three days, during which workers cannot perform agricultural labor. To determine how outbreak timing affects agricultural productivity, we considered outbreaks where incidence in the general community peaked on each day of the year. 
+We compared the difference in household size distribution (mean household size, proportion of households with 4 or more people) and the difference in household crowding rates between agricultural workers and the general community at the region level. For the outbreak simulations, we measured differences in peak prevalence, time to peak, final size, and maximum incidence deviation between agricultural workers and the general community. 
 
-We obtained weekly crop movement data for California strawberries, iceberg lettuce, and oranges from the USDA Agricultural Marketing Service. These movement metrics serve as a proxy for harvest timing and volume. We averaged movements across multiple years (2018-2024) to create representative seasonal patterns, then converted daily estimates by dividing weekly volumes equally across days. 
-
-For each crop and outbreak timing scenario, we calculated the total seasonal productivity loss as 
-
-xxxx
-
-where xx is the average harvest volume for day t and xx is the amount of available labor accounting for illness. 
-
-**[make table of parameters; possibly for supplement]** 
-
+To translate disease dynamics into agricultural productivity impacts, we estimated the number of workers unable to perform harvest labor each day due to symptomatic illness. We assumed that symptomatic individuals could not perform agricultural labor. This allowed us to calculate a daily "workforce strength", consisting of the fraction of agricultural workers still healthy. We multiplied this workforce strength by the daily harvest fraction for each crop to obtain an outbreak-adjusted harvest volume and summed this adjusted volume over the full year to measure the agricultural impact of the outbreak. We did this for outbreaks peaking on each day of the year to assess the impact of outbreak timing on agricultural productivity for each crop. 
 
 
 ## Results

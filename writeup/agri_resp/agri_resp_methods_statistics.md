@@ -1,13 +1,5 @@
-### Assessing impact on agricultural productivity
+### Outcomes and measurements
 
-To translate disease dynamics into agricultural productivity impacts, we estimated the number of workers unable to perform harvest labor each day due to symptomatic illness. We assumed that symptoms begin one day after infection and last for three days, during which workers cannot perform agricultural labor. To determine how outbreak timing affects agricultural productivity, we considered outbreaks where incidence in the general community peaked on each day of the year. 
+We compared the difference in household size distribution (mean household size, proportion of households with 4 or more people) and the difference in household crowding rates between agricultural workers and the general community at the region level. For the outbreak simulations, we measured differences in peak prevalence, time to peak, final size, and maximum incidence deviation between agricultural workers and the general community. 
 
-We obtained weekly crop movement data for California strawberries, iceberg lettuce, and oranges from the USDA Agricultural Marketing Service. These movement metrics serve as a proxy for harvest timing and volume. We averaged movements across multiple years (2018-2024) to create representative seasonal patterns, then converted daily estimates by dividing weekly volumes equally across days. 
-
-For each crop and outbreak timing scenario, we calculated the total seasonal productivity loss as 
-
-xxxx
-
-where xx is the average harvest volume for day t and xx is the amount of available labor accounting for illness. 
-
-**[make table of parameters; possibly for supplement]** 
+To translate disease dynamics into agricultural productivity impacts, we estimated the number of workers unable to perform harvest labor each day due to symptomatic illness. We assumed that symptomatic individuals could not perform agricultural labor. This allowed us to calculate a daily "workforce strength", consisting of the fraction of agricultural workers still healthy. We multiplied this workforce strength by the daily harvest fraction for each crop to obtain an outbreak-adjusted harvest volume and summed this adjusted volume over the full year to measure the agricultural impact of the outbreak. We did this for outbreaks peaking on each day of the year to assess the impact of outbreak timing on agricultural productivity for each crop. 
