@@ -96,11 +96,11 @@ The transmission model requires knowing the fraction of households of each size 
 
 For the baseline analysis, we used $\varepsilon = 0.33$, reflecting moderate assortativity where agricultural workers have preferential within-group contact but still interact with the general population. [Something about what fraction of contacts happen within-group vs. outside-of-group for agricultural workers and general community members, with ranges.]
 
-#### Model simulation
+#### Model implementation
 
-We implemented the transmission model in `R` (version xxx) using `odin` (version xxx). We initialized outbreaks by setting 0.1% of individuals in each sub-population as infectious. We distributed the initial infectious individuals proportionally across household types, equivalent to uniform-randomly choosing the initial infected individuals. We simulated outbreaks over 365 days. 
+We implemented the transmission model in `R` (version 4.5.0) using `odin` (version 1.2.7). We initialized outbreaks by setting 0.1% of individuals in each sub-population as infectious. We distributed the initial infectious individuals proportionally across household types, equivalent to uniform-randomly choosing the initial infected individuals from each sub-population. We simulated outbreaks over 365 days. 
 
-In addition to the main regional simulations, we also generated county-level simulations to explore transmission among agricultural workers at a finer geographic scale. Since the NAWS dataset does not report at the county level, we imputed county-level household size distributions and crowding proportions for agricultural workers using three different methods: and "additive" method, where xxx; a "multiplicative" method, where xxx; and a "null" method, where xxx. Due to the high uncertainty in these imputation methods, we emphasize that these county-level analyses have a low level of confidence. 
+In addition to the main regional simulations, we also generated county-level simulations to explore transmission among agricultural workers at a finer geographic scale. Since the NAWS dataset does not report at the county level, we imputed county-level household size distributions and crowding proportions for agricultural workers using three different methods: an "additive" method, where the difference between county-level and regional mean ACS values was added to regional NAWS values; a "multiplicative" method, where regional NAWS values were scaled by the ratio of county-level to regional mean ACS values; and a "null" method, where regional NAWS values were used without adjustment. Due to the high uncertainty in these imputation methods, we emphasize that these county-level analyses have a low level of confidence. 
 
 
 ### Assessing impact on agricultural productivity
@@ -225,11 +225,33 @@ $p_{\text{crowded}}(n) = \begin{cases} 0 & n = 1 \\ c \cdot (n-1) & n \geq 2 \en
 
 where the constant $c$ is chosen such that the weighted average across all household sizes equals the observed aggregate crowding proportion. With a crowding fold difference parameter $d = 2$, households of size 7 are twice as likely to be crowded as households of size 2.
 
-**County-level NAWS adjustment:** For county-level simulations, we adjusted regional NAWS household distributions to match county-specific ACS data. For each county, we calculated adjustment factors for household size distribution and crowding proportion:
-$f_{\text{size}}(n) = \frac{p_{\text{ACS}}(n)}{p_{\text{NAWS,region}}(n)}$
-$f_{\text{crowd}} = \frac{p_{\text{crowded,ACS}}}{p_{\text{crowded,NAWS,region}}}$
+**County-level NAWS imputation:** The NAWS dataset reports household characteristics for agricultural workers at the regional level only, while the ACS provides county-level data for the general population. To generate county-level estimates for agricultural workers, we used county-level ACS variation to adjust the regional NAWS values. The underlying assumption is that county-level variation among agricultural workers follows a similar pattern to county-level variation in the general population—i.e., if a county's general population has larger households than the regional average, agricultural workers in that county likely also have larger households than the regional average for agricultural workers.
 
-We then applied these factors to the NAWS regional distributions and renormalized to ensure valid probability distributions, allowing us to capture county-level heterogeneity while maintaining the regional NAWS characterization of agricultural worker households.
+For each county $i$ in region $r$, we first computed the regional mean of the county-level ACS values:
+$$\bar{p}_{\text{ACS},r}(n) = \frac{1}{|r|} \sum_{i \in r} p_{\text{ACS},i}(n)$$
+$$\bar{q}_{\text{ACS},r} = \frac{1}{|r|} \sum_{i \in r} q_{\text{ACS},i}$$
+
+where $p_{\text{ACS},i}(n)$ is the proportion of households with size $n$ in county $i$ according to ACS data, and $q_{\text{ACS},i}$ is the proportion of crowded households in county $i$.
+
+We then imputed county-level NAWS values using one of three methods:
+
+*Multiplicative method.* We scaled regional NAWS values by the ratio of county-level to regional mean ACS values:
+$$\tilde{p}_{\text{NAWS},i}(n) \propto p_{\text{NAWS},r}(n) \times \frac{p_{\text{ACS},i}(n)}{\bar{p}_{\text{ACS},r}(n)}$$
+$$\tilde{q}_{\text{NAWS},i} = q_{\text{NAWS},r} \times \frac{q_{\text{ACS},i}}{\bar{q}_{\text{ACS},r}}$$
+
+The household size distribution was renormalized to sum to 1, and the crowding proportion was clamped to the interval $[0, 1]$.
+
+*Additive method.* We shifted regional NAWS values by the difference between county-level and regional mean ACS values:
+$$\tilde{p}_{\text{NAWS},i}(n) \propto \max\left(0, \; p_{\text{NAWS},r}(n) + \left[ p_{\text{ACS},i}(n) - \bar{p}_{\text{ACS},r}(n) \right] \right)$$
+$$\tilde{q}_{\text{NAWS},i} = q_{\text{NAWS},r} + \left[ q_{\text{ACS},i} - \bar{q}_{\text{ACS},r} \right]$$
+
+Household size proportions were clamped to be non-negative before renormalization, and the crowding proportion was clamped to $[0, 1]$.
+
+*Null method.* We used regional NAWS values directly without adjustment:
+$$\tilde{p}_{\text{NAWS},i}(n) = p_{\text{NAWS},r}(n)$$
+$$\tilde{q}_{\text{NAWS},i} = q_{\text{NAWS},r}$$
+
+This method assumes no county-level variation in agricultural worker household characteristics within a region.
 
 ### Supplementary Figures
 
