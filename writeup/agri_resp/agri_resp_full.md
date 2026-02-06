@@ -75,7 +75,7 @@ We simulated respiratory disease transmission using a deterministic household-st
 
 We assumed that mixing among agricultural workers (A) and the general community (C) was assortative, governed by parameter $\epsilon$. We modeled this using the mixing matrix 
 
-$$ M = \begin{pmatrix} m_{CC} & m_{CA} \\ m_{AC} & m_{AA} \end{pmatrix} $$
+\[ M = \begin{pmatrix} m_{CC} & m_{CA} \\ m_{AC} & m_{AA} \end{pmatrix} \]
 $$ M = m_{CC}, m_{CA}, m_{AC}, m_{AA} = $$
 $$ (1-\epsilon) + \epsilon w_C, \epsilon w_A$$
 $$ \epsilon w_C, (1-\epsilon) + \epsilon w_A$$
