@@ -51,7 +51,7 @@ This study addresses these gaps by developing a disease transmission model speci
 
 #### Population characteristics
 
-We obtained county-level data on overall population size, household size distribution (proportion of households of size 1, 2, 3, 4, 5, 6, or 7+), proportion of crowded households (i.e., with more than one individual per room), and proportion of agricultural workers from the U.S. Census Bureau’s 2022 American Community Survey (ACS) 5-year estimates. We obtained regional data on household size distribution and proprtion of crowded households for agricultural workers from the 2018-2022 National Agricultural Workers Survey (NAWS). The NAWS data are stratified geographically into six regions: East, Southeast, Midwest, Southwest, Northwest, and California. To enable region-level analysis, we aggregated the county-level ACS data into the corresponding NAWS regions using population-weighted averages. 
+We obtained county-level data on overall population size, household size distribution (proportion of households of size 1, 2, 3, 4, 5, 6, or 7+), proportion of crowded households (i.e., with more than one individual per room), and proportion of agricultural workers from the U.S. Census Bureau’s 2022 American Community Survey (ACS) 5-year estimates. We obtained regional data on household size distribution and proprtion of crowded households for agricultural workers from the 2018-2022 National Agricultural Workers Survey (NAWS). The NAWS data are stratified geographically into six regions: East, Southeast, Midwest, Southwest, Northwest, and California. To enable region-level analysis, we aggregated the county-level ACS data into the corresponding NAWS regions using population-weighted averages. Full details on the data extraction are given in the **Supplementary Information.** 
 
 #### Crop harvest calendars and labor requirements
 
@@ -75,6 +75,7 @@ We simulated respiratory disease transmission using a deterministic household-st
 
 We assumed that mixing among agricultural workers (A) and the general community (C) was assortative, governed by parameter $\epsilon$. We modeled this using the mixing matrix 
 
+$$ M = \begin{pmatrix} m_{CC} & m_{CA} \\ m_{AC} & m_{AA} \end{pmatrix} $$
 $$ M = m_{CC}, m_{CA}, m_{AC}, m_{AA} = $$
 $$ (1-\epsilon) + \epsilon w_C, \epsilon w_A$$
 $$ \epsilon w_C, (1-\epsilon) + \epsilon w_A$$
@@ -163,9 +164,11 @@ We assess region-level impacts; farm-specific impacts may differ substantially (
 
 #### Data 
 
-Agricultural workers were defined as individuals employed in “farming, fishing, and forestry occupations” (ACS occupation codes xxx, xxx, and xxx). 
+Agricultural workers were defined as individuals employed in “farming, fishing, and forestry occupations” (ACS occupation codes C24030_004 [males] and C24030_031 [females]). 
 
-To enable region-level analysis, we aggregated the county-level data using population-weighted averages. Household sizes of size 7 or greater were combined into a single category (7+) in the ACS dataset; we treated them as households of size 7 in our analysis. Households of size 7+ represent 1.4% of all households in the ACS data.
+To enable region-level analysis, we aggregated the county-level data using population-weighted averages. [methods here]
+
+Cross-referencing of crop movement data with UCDavis information, with figure. 
 
 #### Mathematical model formulation
 

@@ -17,9 +17,11 @@
 
 #### Data 
 
-Agricultural workers were defined as individuals employed in “farming, fishing, and forestry occupations” (ACS occupation codes xxx, xxx, and xxx). 
+Agricultural workers were defined as individuals employed in “farming, fishing, and forestry occupations” (ACS occupation codes C24030_004 [males] and C24030_031 [females]). 
 
-To enable region-level analysis, we aggregated the county-level data using population-weighted averages. Household sizes of size 7 or greater were combined into a single category (7+) in the ACS dataset; we treated them as households of size 7 in our analysis. Households of size 7+ represent 1.4% of all households in the ACS data.
+To enable region-level analysis, we aggregated the county-level data using population-weighted averages. [methods here]
+
+Cross-referencing of crop movement data with UCDavis information, with figure. 
 
 #### Mathematical model formulation
 
