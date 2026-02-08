@@ -83,7 +83,11 @@ where $w_k = \frac{N_k}{N_C + N_A}$ is the population fraction in group $k$.
 The complete system of ordinary differential equations is:
 $\frac{dH_k(x,y,z,c)}{dt} = \text{inflow} - \text{outflow}$
 
-where inflow includes households transitioning into this state via infection (from state $(x+1,y-1,z,c)$) or recovery (from state $(x,y+1,z-1,c)$), and outflow includes households leaving this state through infection or recovery transitions.
+where inflow includes households transitioning into this state via infection (from state 
+$(x+1,y-1,z,c)$
+) or recovery (from state 
+$(x,y+1,z-1,c)$
+), and outflow includes households leaving this state through infection or recovery transitions.
 
 We implemented this system using the `odin` package in R, which provides efficient numerical integration of large ODE systems. The state space includes all possible combinations of $(x,y,z,c)$ for household sizes from 1 to 7, with separate state variables for the community and agricultural populations.
 
