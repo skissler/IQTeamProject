@@ -99,7 +99,7 @@ default_pars <- list(
   #   "none"           - Use regional NAWS data directly (no county variation)
   #   "multiplicative" - Multiply NAWS by (county_ACS / regional_ACS_mean)
   #   "additive"       - Add (county_ACS - regional_ACS_mean) to NAWS
-  adjust_hhvars = "multiplicative",
+  adjust_hhvars = "additive",
   init_prev = 0.001             # Initial prevalence (0.1% of population infected)
 )
 
