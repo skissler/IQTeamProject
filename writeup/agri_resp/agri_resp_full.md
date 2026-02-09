@@ -323,9 +323,11 @@ To assess the impact of epidemic timing on crop production, we shifted the epide
 
 **Figure SXX.** Model structure.
 
-![Model structure](../../figures/hh_white.png)
+![Model structure](../../figures/model_structure.png)
 
 **Figure SXX.** Household size and crowding distributions by population and region
+
+![Household structure](../../figures/hh_white.png)
 
 **Figure SXX.** Sensitivity of attack rates to reproduction number (R₀). Attack rates for agricultural workers (red) and general population (blue) across regions for R₀ = 1.2, 1.5, 2.0, and 3.0.
 
