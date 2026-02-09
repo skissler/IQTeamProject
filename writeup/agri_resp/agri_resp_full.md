@@ -292,7 +292,7 @@ We initialized outbreaks by setting 0.1% of individuals in each sub-population a
 
 To translate epidemic dynamics into agricultural workforce availability, we computed the proportion of the agricultural workforce experiencing symptoms on each day. We first calculated the number of new daily infections for each day as $i_t = S(t-1) - S(t)$, where $S(t)$ is the proportion susceptible at time $t$. We assumed symptoms began one day after infection onset and lasted for three days, so that individuals infected on day $t$ were symptomatic on days $t+1$, $t+2$, and $t+3$. The proportion of symptomatic individuals on day $t$ was then:
 
-$$\text{symp}_t_ = p_{\text{symp}} \sum_{d=1}^{3} i_{t-d}$$
+$$\text{symp}_t = p_{\text{symp}} \sum_{d=1}^{3} i_{t-d}$$
 
 where $p_{\text{symp}}$ is the probability that an infection is symptomatic. Daily workforce strength was defined as $\text{wf}(t) = 1 - \text{symp}(t)$. 
 
