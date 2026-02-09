@@ -191,7 +191,9 @@ where the constant $c$ is chosen so that the weighted average across all househo
 
 $$c = \frac{P_{\text{crowded}}}{\sum_n p(n) \cdot w(n)}$$
 
-Here $P_{\text{crowded}}$ is the overall proportion of crowded households and $p(n)$ is the proportion of households of size $n$. With the baseline $d = 2$, households of size 7+ are twice as likely to be crowded as households of size 2, with a linear gradient in between; and the constant $c$ ensures that the total fraction of crowded households in the region ($\sum_n p_{\text{crowded}}(n)$) matches the proportion of crowded households from the ACS/NAWS data ($P_{\text{crowded}}$). 
+Here $P_{\text{crowded}}$ is the overall proportion of crowded households and $p(n)$ is the proportion of households of size $n$. With the baseline $d = 2$, households of size 7+ are twice as likely to be crowded as households of size 2, with a linear gradient in between; and the constant $c$ ensures that the total fraction of crowded households in the region (
+$\sum_n p_{\text{crowded}}(n)$
+) matches the proportion of crowded households from the ACS/NAWS data ($P_{\text{crowded}}$). 
 
 The household-structured SIR model tracks the distribution of households across disease states. Let $H_k(x,y,z,c)$ denote the number of households in population $k$ (where $k \in \{C, A\}$ for community and agricultural populations) with $x$ susceptible, $y$ infected, and $z$ recovered members, and crowding status $c \in \{0,1\}$. The total household size is $n = x + y + z$.
 
