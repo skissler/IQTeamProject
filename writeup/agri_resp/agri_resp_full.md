@@ -277,19 +277,25 @@ where $p_{\text{ACS},i}(n)$ is the proportion of households with size $n$ in cou
 We then imputed county-level NAWS values using one of three methods:
 
 *Multiplicative method.* We scaled regional NAWS values by the ratio of county-level to regional mean ACS values:
+
 $$\tilde{p}_{\text{NAWS},i}(n) \propto p_{\text{NAWS},r}(n) \times \frac{p_{\text{ACS},i}(n)}{\bar{p}_{\text{ACS},r}(n)}$$
+
 $$\tilde{q}_{\text{NAWS},i} = q_{\text{NAWS},r} \times \frac{q_{\text{ACS},i}}{\bar{q}_{\text{ACS},r}}$$
 
 The household size distribution was renormalized to sum to 1, and the crowding proportion was clamped to the interval $[0, 1]$.
 
 *Additive method.* We shifted regional NAWS values by the difference between county-level and regional mean ACS values:
+
 $$\tilde{p}_{\text{NAWS},i}(n) \propto \max\left(0, \; p_{\text{NAWS},r}(n) + \left[ p_{\text{ACS},i}(n) - \bar{p}_{\text{ACS},r}(n) \right] \right)$$
+
 $$\tilde{q}_{\text{NAWS},i} = q_{\text{NAWS},r} + \left[ q_{\text{ACS},i} - \bar{q}_{\text{ACS},r} \right]$$
 
 Household size proportions were clamped to be non-negative before renormalization, and the crowding proportion was clamped to $[0, 1]$.
 
 *Null method.* We used regional NAWS values directly without adjustment:
+
 $$\tilde{p}_{\text{NAWS},i}(n) = p_{\text{NAWS},r}(n)$$
+
 $$\tilde{q}_{\text{NAWS},i} = q_{\text{NAWS},r}$$
 
 This method assumes no county-level variation in agricultural worker household characteristics within a region.
