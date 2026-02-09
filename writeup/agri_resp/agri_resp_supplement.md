@@ -43,7 +43,7 @@ For crowded households, we computed $\tau_{\text{crowded}}$ using the same formu
 
 **Crowding probability by household size.** To assign crowding probabilities by household size given only aggregate crowding data, we used a linear relationship where larger households are progressively more likely to be crowded. For a household of size $n$, the crowding multiplier is:
 
-$$w(n) = \begin{cases} 0 & n = 1 \\ 1 + (d - 1) \cdot \frac{n - 2}{5} & n \geq 2 \end{cases}$$
+$$w(n) = \begin{cases} 0 & n = 1 \\\ 1 + (d - 1) \cdot \frac{n - 2}{5} & n \geq 2 \end{cases}$$
 
 where $d$ is the crowding fold difference parameter (the ratio of crowding probability for size-7 households to size-2 households). The crowding probability for each household size is then:
 
