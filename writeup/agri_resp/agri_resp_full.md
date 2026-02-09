@@ -323,7 +323,7 @@ To assess the impact of epidemic timing on crop production, we shifted the epide
 
 **Figure SXX.** Model structure.
 
-![Model structure](../../figures/model_structure.png)
+![Model structure](../../figures/modelstructure.png)
 
 **Figure SXX.** Household size and crowding distributions by population and region
 
