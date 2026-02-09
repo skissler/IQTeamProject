@@ -19,27 +19,15 @@
 
 Agricultural workers were defined as individuals employed in "farming, fishing, and forestry occupations" (ACS occupation codes C24030_004 [males] and C24030_031 [females]) as a proportion of total employed individuals (C24030_001).
 
-**ACS variables.** County-level household size distributions were obtained from ACS table B11016 (Household Type by Household Size), which reports counts of family and non-family households by size. We combined family and non-family counts for each household size (1 through 7+). County-level household crowding was obtained from ACS table B25014 (Tenure by Occupants per Room), where crowded households were defined as those with more than 1.00 occupants per room, summing across owner- and renter-occupied units and all crowding levels (1.01–1.50, 1.51–2.00, and >2.00 persons per room). Total population was obtained from ACS table B01003. Urban/rural classification was obtained from the 2020 Decennial Census table P2.
+County-level household size distributions were obtained from ACS table B11016 (Household Type by Household Size), which reports counts of family and non-family households by size. We combined family and non-family counts for each household size (1 through 7+). County-level household crowding was obtained from ACS table B25014 (Tenure by Occupants per Room), where crowded households were defined as those with more than 1.00 occupants per room, summing across owner- and renter-occupied units and all crowding levels (1.01–1.50, 1.51–2.00, and >2.00 persons per room). Total population was obtained from ACS table B01003.
 
-**Regional aggregation.** To enable region-level analysis, we aggregated the county-level ACS data into the corresponding NAWS regions using population-weighted averages. For each variable (household size proportions, crowding proportions, and proportion of agricultural workers), we multiplied each county's value by its population, summed within each region, then divided by the total regional population. This ensures that larger counties contribute proportionally more to the regional estimate.
+To enable region-level analysis, we aggregated the county-level ACS data into the corresponding NAWS regions using population-weighted averages. For each variable (household size proportions, crowding proportions, and proportion of agricultural workers), we multiplied each county's value by its population, summed within each region, then divided by the total regional population. This ensures that larger counties contribute proportionally more to the regional estimate.
 
-**NAWS data processing.** Household sizes in the NAWS data were derived from the HHFAMGRD variable (number of relatives on the household grid). Households of size 7 or greater were grouped into a single "7+" category for consistency with the ACS data. Crowding status was derived from the CROWDED1 variable. Both household size and crowding data were weighted using the NAWS survey weights (PWTYCRD) and summarized by NAWS region.
+Household sizes in the NAWS data were derived from the HHFAMGRD variable (number of relatives on the household grid). Households of size 7 or greater were grouped into a single "7+" category for consistency with the ACS data. Crowding status was derived from the CROWDED1 variable. Both household size and crowding data were weighted using the NAWS survey weights (PWTYCRD) and summarized by NAWS region.
 
-**Crop movement data.** Cross-referencing of crop movement data with UCDavis information, with figure.
+**Crop movement data.** **TO FILL IN: Cross-referencing of crop movement data with UCDavis information, with figure.** 
 
 #### Mathematical model formulation
-
-**Deriving $\tau$ and $\tau_{\text{boost}}$ from the SAR.** In the House & Keeling household model with exponentially distributed infectious periods, the secondary attack rate (SAR) for a household of size 2 is determined by the competing rates of within-household infection ($\tau$) and recovery ($\gamma$). The probability that the susceptible individual is infected before the infectious individual recovers is:
-
-$$\text{SAR} = \frac{\tau}{\tau + \gamma}$$
-
-Solving for $\tau$:
-
-$$\tau = \frac{\text{SAR} \cdot \gamma}{1 - \text{SAR}}$$
-
-For the baseline uncrowded SAR of 20% and $\gamma = 1/5$: $\tau = 0.20 \times 0.2 / 0.80 = 0.05$.
-
-For crowded households, we computed $\tau_{\text{crowded}}$ using the same formula with the crowded SAR, then defined $\tau_{\text{boost}} = \tau_{\text{crowded}} - \tau$. For the baseline crowded SAR of 40%: $\tau_{\text{crowded}} = 0.40 \times 0.2 / 0.60 \approx 0.133$ and $\tau_{\text{boost}} \approx 0.083$. In the model, the effective within-household transmission rate is $\tau$ for uncrowded households and $\tau + \tau_{\text{boost}}$ for crowded households.
 
 **Crowding probability by household size.** To assign crowding probabilities by household size given only aggregate crowding data, we used a linear relationship where larger households are progressively more likely to be crowded. For a household of size $n$, the crowding multiplier is:
 
@@ -91,7 +79,19 @@ $(x,y+1,z-1,c)$
 
 We implemented this system using the `odin` package in R, which provides efficient numerical integration of large ODE systems. The state space includes all possible combinations of $(x,y,z,c)$ for household sizes from 1 to 7, with separate state variables for the community and agricultural populations.
 
-#### Calculation of basic reproduction number
+**Deriving $\tau$ and $\tau_{\text{boost}}$ from the SAR.** In the House & Keeling household model with exponentially distributed infectious periods, the secondary attack rate (SAR) for a household of size 2 is determined by the competing rates of within-household infection ($\tau$) and recovery ($\gamma$). The probability that the susceptible individual is infected before the infectious individual recovers is:
+
+$$\text{SAR} = \frac{\tau}{\tau + \gamma}$$
+
+Solving for $\tau$:
+
+$$\tau = \frac{\text{SAR} \cdot \gamma}{1 - \text{SAR}}$$
+
+For the baseline uncrowded SAR of 20% and $\gamma = 1/5$: $\tau = 0.20 \times 0.2 / 0.80 = 0.05$.
+
+For crowded households, we computed $\tau_{\text{crowded}}$ using the same formula with the crowded SAR, then defined $\tau_{\text{boost}} = \tau_{\text{crowded}} - \tau$. For the baseline crowded SAR of 40%: $\tau_{\text{crowded}} = 0.40 \times 0.2 / 0.60 \approx 0.133$ and $\tau_{\text{boost}} \approx 0.083$. In the model, the effective within-household transmission rate is $\tau$ for uncrowded households and $\tau + \tau_{\text{boost}}$ for crowded households.
+
+#### Calculation of the transmission constant
 
 We calibrated the between-household transmission rate $\beta$ to achieve target $R_0$ values by running the model at the national level with aggregated ACS household data and systematically varying $\beta$ until the final attack rate matched theoretical predictions for the desired $R_0$. For an SIR model, the relationship between $R_0$ and final attack rate $R_\infty$ is given implicitly by:
 $R_\infty = 1 - e^{-R_0 R_\infty}$
