@@ -17,3 +17,25 @@ cat writeup/agri_resp/agri_resp_supplement.md;
 
 # Modeling the impact of respiratory illness outbreaks on the agricultural workforce and food production in the United States
 
+<!---
+FIGURE LIST: 
+Main: 
+- [ ] Household size and crowding (histograms, maps) 
+- [ ] Disease simulations 
+- [ ] Crop impacts 
+
+
+Supplementary: 
+- [ ] Crop movements over time and averaged 
+- [ ] Table of baseline and sensitivity parameter values 
+- [ ] Three methods for county imputation 
+- [ ] Model structure 
+- [ ] Sensitivity to R0
+- [ ] Sensitivity to epsilon 
+- [ ] Sensitivity to SAR 
+- [ ] Sensitivity to crowding fold difference 
+- [ ] Sensitivity to county imputation method 
+
+
+
+--->

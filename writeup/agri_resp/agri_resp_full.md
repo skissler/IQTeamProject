@@ -17,7 +17,28 @@ cat writeup/agri_resp/agri_resp_supplement.md;
 
 # Modeling the impact of respiratory illness outbreaks on the agricultural workforce and food production in the United States
 
+<!---
+FIGURE LIST: 
+Main: 
+- [ ] Household size and crowding (histograms, maps) 
+- [ ] Disease simulations 
+- [ ] Crop impacts 
 
+
+Supplementary: 
+- [ ] Crop movements over time and averaged 
+- [ ] Table of baseline and sensitivity parameter values 
+- [ ] Three methods for county imputation 
+- [ ] Model structure 
+- [ ] Sensitivity to R0
+- [ ] Sensitivity to epsilon 
+- [ ] Sensitivity to SAR 
+- [ ] Sensitivity to crowding fold difference 
+- [ ] Sensitivity to county imputation method 
+
+
+
+--->
 
 ## Abstract
 
@@ -277,7 +298,7 @@ $$\tau = \frac{\text{SAR} \cdot \gamma}{1 - \text{SAR}}$$
 
 For the baseline uncrowded SAR of 20% and $\gamma = 1/5$: 
 
-$$\tau = \frac{(0.2)(0.2)}{1 - 0.2} = 0.05$.
+$$\tau = \frac{(0.2)(0.2)}{1 - 0.2} = 0.05$$
 
 For crowded households, we computed $\tau_{\text{crowded}}$ using the same formula with the crowded SAR, then defined $\tau_{\text{boost}} = \tau_{\text{crowded}} - \tau$. For the baseline crowded SAR of 40%: $\tau_{\text{crowded}} = 0.40 \times 0.2 / 0.60 \approx 0.133$ and thus $\tau_{\text{boost}} \approx 0.083$. 
 
