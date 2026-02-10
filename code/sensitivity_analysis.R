@@ -46,10 +46,16 @@ load_all_regional_outputs <- function(output_dir = paths$output_dir,
 
   cat("Found", length(files), "regional output files\n")
 
-  # Load and combine all files
+  # Load and combine files, skipping any that lack metadata columns
+  required_cols <- c("parset", "parset_name", "sens_type", "sens_value")
   all_data <- lapply(files, function(f) {
+    df <- read_csv(f, show_col_types = FALSE)
+    if (!all(required_cols %in% names(df))) {
+      cat("  Skipping (no metadata):", basename(f), "\n")
+      return(NULL)
+    }
     cat("  Loading:", basename(f), "\n")
-    read_csv(f, show_col_types = FALSE)
+    df
   }) %>%
     bind_rows()
 
@@ -121,6 +127,26 @@ calculate_differential_stats <- function(summary_df) {
     )
 
   return(diff_df)
+}
+
+#' Calculate peak relative infection rate (max A/C ratio over time) from time series
+#' @param all_data Combined simulation output with t, subpop, I_indiv, REGION6, parset_name, etc.
+#' @return Tibble with max_relative_infection per (parset_name, REGION6)
+calculate_max_relative_infection <- function(all_data) {
+  # Pivot A and C into separate columns; use t, REGION6, parset_name as unique ID
+  wide <- all_data %>%
+    select(t, subpop, I_indiv, REGION6, parset, parset_name, sens_type, sens_value) %>%
+    pivot_wider(
+      id_cols = c(t, REGION6, parset, parset_name, sens_type, sens_value),
+      names_from = subpop,
+      values_from = I_indiv
+    ) %>%
+    filter(C > 0) %>%
+    mutate(rel_inf = A / C)
+
+  wide %>%
+    group_by(parset, parset_name, sens_type, sens_value, REGION6) %>%
+    summarise(max_relative_infection = max(rel_inf, na.rm = TRUE), .groups = "drop")
 }
 
 # ==============================================================================
@@ -212,6 +238,8 @@ plot_sensitivity_overview <- function(diff_df, metric = "attack_rate_diff") {
   metric_labels <- c(
     "attack_rate_diff" = "Attack Rate Difference\n(Agricultural - Community)",
     "peak_prevalence_diff" = "Peak Prevalence Difference\n(Agricultural - Community)",
+    "time_to_peak_diff" = "Peak Timing Difference in Days\n(Agricultural - Community)",
+    "max_relative_infection" = "Peak Relative Infection Rate\n(Agricultural / Community)",
     "final_attack_rate_A" = "Final Attack Rate\n(Agricultural Workers)"
   )
 
@@ -234,6 +262,8 @@ plot_sensitivity_overview <- function(diff_df, metric = "attack_rate_diff") {
 
   if (grepl("diff", metric)) {
     p <- p + geom_hline(yintercept = 0, linetype = "dashed", color = "gray50", alpha = 0.5)
+  } else if (grepl("relative|ratio", metric)) {
+    p <- p + geom_hline(yintercept = 1, linetype = "dashed", color = "gray50", alpha = 0.5)
   }
 
   return(p)
@@ -398,6 +428,11 @@ run_sensitivity_analysis <- function() {
   summary_stats <- calculate_summary_stats(all_data)
   diff_stats <- calculate_differential_stats(summary_stats)
 
+  # Calculate max relative infection (peak A/C ratio) from time series
+  max_rel_inf <- calculate_max_relative_infection(all_data)
+  diff_stats <- diff_stats %>%
+    left_join(max_rel_inf, by = c("parset", "parset_name", "sens_type", "sens_value", "REGION6"))
+
   # Save summary tables
   write_csv(summary_stats, file.path(paths$output_dir, "sensitivity_summary.csv"))
   write_csv(diff_stats, file.path(paths$output_dir, "sensitivity_differential.csv"))
@@ -413,6 +448,30 @@ run_sensitivity_analysis <- function() {
   ggsave(file.path(paths$figures_dir, "sensitivity_overview_attackrate.png"),
          fig_overview, width = 12, height = 5, dpi = 300)
   cat("  Saved: sensitivity_overview_attackrate.pdf/.png\n")
+
+  # Overview figure - peak prevalence differential across all dimensions
+  fig_overview_peak <- plot_sensitivity_overview(diff_stats, "peak_prevalence_diff")
+  ggsave(file.path(paths$figures_dir, "sensitivity_overview_peaksize.pdf"),
+         fig_overview_peak, width = 12, height = 5)
+  ggsave(file.path(paths$figures_dir, "sensitivity_overview_peaksize.png"),
+         fig_overview_peak, width = 12, height = 5, dpi = 300)
+  cat("  Saved: sensitivity_overview_peaksize.pdf/.png\n")
+
+  # Overview figure - peak timing differential across all dimensions
+  fig_overview_timing <- plot_sensitivity_overview(diff_stats, "time_to_peak_diff")
+  ggsave(file.path(paths$figures_dir, "sensitivity_overview_peaktiming.pdf"),
+         fig_overview_timing, width = 12, height = 5)
+  ggsave(file.path(paths$figures_dir, "sensitivity_overview_peaktiming.png"),
+         fig_overview_timing, width = 12, height = 5, dpi = 300)
+  cat("  Saved: sensitivity_overview_peaktiming.pdf/.png\n")
+
+  # Overview figure - max relative infection rate across all dimensions
+  fig_overview_relinf <- plot_sensitivity_overview(diff_stats, "max_relative_infection")
+  ggsave(file.path(paths$figures_dir, "sensitivity_overview_max_relative_infection.pdf"),
+         fig_overview_relinf, width = 12, height = 5)
+  ggsave(file.path(paths$figures_dir, "sensitivity_overview_max_relative_infection.png"),
+         fig_overview_relinf, width = 12, height = 5, dpi = 300)
+  cat("  Saved: sensitivity_overview_max_relative_infection.pdf/.png\n")
 
   # Individual sensitivity dimension plots
   sens_dimensions <- c("r0", "eps", "sar", "fold")

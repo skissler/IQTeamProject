@@ -29,7 +29,7 @@ Supplementary:
 - [ ] Crop movements over time and averaged 
 - [ ] Table of baseline and sensitivity parameter values 
 - [ ] Three methods for county imputation 
-- [ ] Model structure 
+- [x] Model structure 
 - [ ] Sensitivity to R0
 - [ ] Sensitivity to epsilon 
 - [ ] Sensitivity to SAR 
