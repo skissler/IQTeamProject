@@ -337,6 +337,7 @@ plot_epidemic_curves_all_regions <- function(all_data, sens_dimension, metric = 
     ggplot(aes(x = t, y = .data[[metric]], color = factor(sens_value), linetype = subpop)) +
     geom_line(linewidth = 0.6, alpha = 0.8) +
     facet_wrap(~region_label, ncol = 3) +
+    {if (metric == "R_indiv") scale_y_continuous(limits = c(0, 1))} +
     labs(
       x = "Time (days)",
       y = metric_labels[metric],

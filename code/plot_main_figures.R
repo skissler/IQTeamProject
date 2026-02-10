@@ -82,11 +82,11 @@ create_overlay_plot <- function(county_plot, regional_plot, adjust_method) {
       linewidth = 0.15,
       alpha = 0.3
     ) +
-    # Regional curves: white outline for visibility
+    # Regional curves: black outline for visibility
     geom_line(
       data = regional_plot,
       aes(x = t, y = I_indiv, group = subpop),
-      color = "white",
+      color = "black",
       linewidth = 2.5,
       alpha = 1
     ) +
@@ -98,6 +98,7 @@ create_overlay_plot <- function(county_plot, regional_plot, adjust_method) {
       alpha = 1
     ) +
     facet_wrap(~region_label, ncol = 3) +
+    scale_x_continuous(limits = c(0, 150), breaks = seq(0, 150, 30)) +
     scale_color_manual(
       values = pop_colors,
       labels = pop_labels,
@@ -135,11 +136,11 @@ create_cumulative_plot <- function(county_plot, regional_plot, adjust_method) {
       linewidth = 0.15,
       alpha = 0.3
     ) +
-    # Regional curves: white outline for visibility
+    # Regional curves: black outline for visibility
     geom_line(
       data = regional_plot,
       aes(x = t, y = R_indiv, group = subpop),
-      color = "white",
+      color = "black",
       linewidth = 2.5,
       alpha = 1
     ) +
@@ -151,6 +152,8 @@ create_cumulative_plot <- function(county_plot, regional_plot, adjust_method) {
       alpha = 1
     ) +
     facet_wrap(~region_label, ncol = 3) +
+    scale_x_continuous(limits = c(0, 150), breaks = seq(0, 150, 30)) +
+    scale_y_continuous(limits = c(0, 1)) +
     scale_color_manual(
       values = pop_colors,
       labels = pop_labels,
@@ -216,4 +219,215 @@ for (method in adjust_methods) {
   cat("  Saved: main_cumulative_", method, ".pdf/.png\n", sep = "")
 }
 
-cat("\nMain figures complete.\n")
+cat("\nMain overlay/cumulative figures complete.\n")
+
+# ==============================================================================
+# 5. County-Level Household Characteristic Histograms
+# ==============================================================================
+
+cat("\n", rep("=", 60), "\n", sep = "")
+cat("Generating County-Level Household Characteristic Histograms\n")
+cat(rep("=", 60), "\n\n", sep = "")
+
+# --- Check that acs_data and naws_data are loaded ---
+if (!exists("acs_data") || !exists("naws_data")) {
+  cat("  Loading ACS and NAWS data...\n")
+  source('code/import_acs.R')
+  source('code/import_naws.R')
+}
+
+# --- Community stats: summarize acs_data per county ---
+community_stats <- acs_data %>%
+  group_by(GEOID, REGION6) %>%
+  summarise(
+    mean_hhsize = sum(hhSize * prop),
+    prop_hhsize4plus = sum(prop[hhSize >= 4]),
+    prop_crowded = first(prop_crowded),
+    .groups = "drop"
+  ) %>%
+  mutate(subpop = "C")
+
+# --- Pre-split NAWS data by region ---
+naws_by_region <- lapply(1:6, function(r) {
+  naws_data %>% filter(REGION6 == r)
+})
+
+# --- Function to compute imputed ag worker stats for one county ---
+compute_ag_stats <- function(geoid, region, hhSize_factor, hhSize_diff,
+                             crowded_factor, crowded_diff, method) {
+  naws_regional <- naws_by_region[[region]]
+
+  if (method == "multiplicative") {
+    processed <- naws_regional %>%
+      mutate(prop = prop * hhSize_factor,
+             prop = prop / sum(prop),
+             prop_crowded = prop_crowded * crowded_factor,
+             prop_crowded = case_when(prop_crowded > 1 ~ 1,
+                                      prop_crowded < 0 ~ 0,
+                                      TRUE ~ prop_crowded))
+  } else if (method == "additive") {
+    processed <- naws_regional %>%
+      mutate(prop = prop + hhSize_diff,
+             prop = case_when(prop < 0 ~ 0, TRUE ~ prop),
+             prop = prop / sum(prop),
+             prop_crowded = prop_crowded + crowded_diff,
+             prop_crowded = case_when(prop_crowded > 1 ~ 1,
+                                      prop_crowded < 0 ~ 0,
+                                      TRUE ~ prop_crowded))
+  } else {
+    processed <- naws_regional
+  }
+
+  tibble(
+    GEOID = geoid,
+    REGION6 = region,
+    mean_hhsize = sum(processed$hhSize * processed$prop),
+    prop_hhsize4plus = sum(processed$prop[processed$hhSize >= 4]),
+    prop_crowded = first(processed$prop_crowded)
+  )
+}
+
+# --- Pre-extract county-level adjustment factors ---
+county_factors <- acs_data %>%
+  arrange(GEOID, hhSize) %>%
+  group_by(GEOID, REGION6) %>%
+  summarise(
+    hhSize_factor = list(hhSize_factor),
+    hhSize_diff = list(hhSize_diff),
+    crowded_factor = first(crowded_factor),
+    crowded_diff = first(crowded_diff),
+    .groups = "drop"
+  )
+
+# --- Compute ag worker stats for all counties × all methods ---
+all_hist_data <- list()
+
+for (method in adjust_methods) {
+  cat("  Computing ag worker household stats for method:", method, "\n")
+
+  ag_stats <- purrr::pmap_dfr(
+    list(
+      geoid = county_factors$GEOID,
+      region = county_factors$REGION6,
+      hhSize_factor = county_factors$hhSize_factor,
+      hhSize_diff = county_factors$hhSize_diff,
+      crowded_factor = county_factors$crowded_factor,
+      crowded_diff = county_factors$crowded_diff
+    ),
+    function(geoid, region, hhSize_factor, hhSize_diff,
+             crowded_factor, crowded_diff) {
+      compute_ag_stats(geoid, region, hhSize_factor, hhSize_diff,
+                       crowded_factor, crowded_diff, method)
+    }
+  ) %>%
+    mutate(subpop = "A")
+
+  method_data <- bind_rows(
+    community_stats %>% mutate(method = method),
+    ag_stats %>% mutate(method = method)
+  )
+  all_hist_data[[method]] <- method_data
+}
+
+hist_data <- bind_rows(all_hist_data) %>%
+  left_join(region_map, by = "REGION6") %>%
+  mutate(region_label = factor(paste0(REGION_NAME, " (", REGION_ABBREV, ")"),
+                               levels = region_order))
+
+# --- Compute NAWS regional reference values for vlines ---
+naws_reference <- naws_data %>%
+  group_by(REGION6) %>%
+  summarise(
+    naws_mean_hhsize = sum(hhSize * prop),
+    naws_prop_hhsize4plus = sum(prop[hhSize >= 4]),
+    naws_prop_crowded = first(prop_crowded),
+    .groups = "drop"
+  ) %>%
+  left_join(region_map, by = "REGION6") %>%
+  mutate(region_label = factor(paste0(REGION_NAME, " (", REGION_ABBREV, ")"),
+                               levels = region_order))
+
+# --- Plotting functions ---
+
+#' Create household size distribution histograms
+#' @param data Combined data frame with method column
+#' @param method Adjustment method to filter on
+#' @return ggplot object
+plot_hhsize_histograms <- function(data, method) {
+  df <- data %>% filter(.data$method == .env$method)
+
+  p1 <- ggplot(df, aes(x = mean_hhsize, fill = subpop)) +
+    geom_histogram(position = "identity", alpha = 0.5, bins = 30) +
+    geom_vline(data = naws_reference, aes(xintercept = naws_mean_hhsize),
+               linetype = "dashed", color = "black", linewidth = 0.6) +
+    facet_wrap(~region_label, ncol = 3, scales = "free_y") +
+    scale_fill_manual(values = pop_colors, labels = pop_labels, name = "Population") +
+    labs(x = "Mean Household Size", y = "Number of Counties") +
+    theme_classic() +
+    theme(legend.position = "none",
+          strip.text = element_text(face = "bold", size = 9))
+
+  p2 <- ggplot(df, aes(x = prop_hhsize4plus, fill = subpop)) +
+    geom_histogram(position = "identity", alpha = 0.5, binwidth = 0.01) +
+    geom_vline(data = naws_reference, aes(xintercept = naws_prop_hhsize4plus),
+               linetype = "dashed", color = "black", linewidth = 0.6) +
+    facet_wrap(~region_label, ncol = 3, scales = "free_y") +
+    scale_x_continuous(limits = c(0, 1)) +
+    scale_fill_manual(values = pop_colors, labels = pop_labels, name = "Population") +
+    labs(x = "Proportion of Households Size 4+", y = "Number of Counties") +
+    theme_classic() +
+    theme(legend.position = "bottom",
+          strip.text = element_text(face = "bold", size = 9))
+
+  patchwork::wrap_plots(p1, p2, ncol = 1) +
+    patchwork::plot_annotation(
+      title = paste0("Household Size Distributions: ", adjust_labels[method]),
+      theme = theme(plot.title = element_text(face = "bold", size = 13))
+    )
+}
+
+#' Create crowding distribution histograms
+#' @param data Combined data frame with method column
+#' @param method Adjustment method to filter on
+#' @return ggplot object
+plot_crowding_histograms <- function(data, method) {
+  df <- data %>% filter(.data$method == .env$method)
+
+  ggplot(df, aes(x = prop_crowded, fill = subpop)) +
+    geom_histogram(position = "identity", alpha = 0.5, binwidth = 0.01) +
+    geom_vline(data = naws_reference, aes(xintercept = naws_prop_crowded),
+               linetype = "dashed", color = "black", linewidth = 0.6) +
+    facet_wrap(~region_label, ncol = 3, scales = "free_y") +
+    scale_x_continuous(limits = c(0, 1)) +
+    scale_fill_manual(values = pop_colors, labels = pop_labels, name = "Population") +
+    labs(
+      x = "Proportion of Households Crowded",
+      y = "Number of Counties",
+      title = paste0("Crowding Distributions: ", adjust_labels[method])
+    ) +
+    theme_classic() +
+    theme(
+      legend.position = "bottom",
+      strip.text = element_text(face = "bold", size = 10),
+      plot.title = element_text(face = "bold", size = 13)
+    )
+}
+
+# --- Generate and save figures ---
+for (method in adjust_methods) {
+  cat("  Saving histogram figures for method:", method, "\n")
+
+  fig_hh <- plot_hhsize_histograms(hist_data, method)
+  ggsave(file.path(paths$figures_dir, paste0("hhsize_distribution_", method, ".pdf")),
+         fig_hh, width = 12, height = 10)
+  ggsave(file.path(paths$figures_dir, paste0("hhsize_distribution_", method, ".png")),
+         fig_hh, width = 12, height = 10, dpi = 300)
+
+  fig_crowd <- plot_crowding_histograms(hist_data, method)
+  ggsave(file.path(paths$figures_dir, paste0("crowding_distribution_", method, ".pdf")),
+         fig_crowd, width = 12, height = 6)
+  ggsave(file.path(paths$figures_dir, paste0("crowding_distribution_", method, ".png")),
+         fig_crowd, width = 12, height = 6, dpi = 300)
+}
+
+cat("\nAll figures complete.\n")
