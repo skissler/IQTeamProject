@@ -30,10 +30,10 @@ Supplementary:
 - [ ] Table of baseline and sensitivity parameter values 
 - [ ] Three methods for county imputation 
 - [x] Model structure 
-- [ ] Sensitivity to R0
-- [ ] Sensitivity to epsilon 
-- [ ] Sensitivity to SAR 
-- [ ] Sensitivity to crowding fold difference 
+- [x] Sensitivity to R0
+- [x] Sensitivity to epsilon 
+- [x] Sensitivity to SAR 
+- [x] Sensitivity to crowding fold difference 
 - [ ] Sensitivity to county imputation method 
 
 
@@ -346,10 +346,6 @@ To assess the impact of epidemic timing on crop production, we shifted the epide
 ![Sensitivity overview final size](../../figures/sensitivity_overview_max_relative_infection.png)
 
 **Figure SXX.** Sensitivity to county-level NAWS adjustment approach. Comparison of attack rate differentials under three approaches: (A) Null method (regional NAWS values used directly), (B) Additive method (baseline; county-level deviations from regional ACS means added to regional NAWS values), (C) Multiplicative method (regional NAWS values scaled by ratio of county-level to regional mean ACS values).
-
-**Figure SXX.** Regional heterogeneity in baseline results. Attack rate differentials by region, with inset showing relationship to regional agricultural worker proportion and crowding levels.
-
-**Figure SXX.** Productivity impacts by outbreak timing. Seasonal productivity losses for strawberries, lettuce, and oranges as a function of outbreak peak timing (day of year).
 
 ### Supplementary Tables
 

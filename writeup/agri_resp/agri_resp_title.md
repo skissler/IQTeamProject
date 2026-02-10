@@ -30,10 +30,10 @@ Supplementary:
 - [ ] Table of baseline and sensitivity parameter values 
 - [ ] Three methods for county imputation 
 - [x] Model structure 
-- [ ] Sensitivity to R0
-- [ ] Sensitivity to epsilon 
-- [ ] Sensitivity to SAR 
-- [ ] Sensitivity to crowding fold difference 
+- [x] Sensitivity to R0
+- [x] Sensitivity to epsilon 
+- [x] Sensitivity to SAR 
+- [x] Sensitivity to crowding fold difference 
 - [ ] Sensitivity to county imputation method 
 
 
