@@ -158,13 +158,21 @@ To assess the impact of epidemic timing on crop production, we shifted the epide
 
 ![Household structure](../../figures/hh_white.png)
 
-**Figure SXX.** Sensitivity of attack rates to reproduction number (R₀). Attack rates for agricultural workers (red) and general population (blue) across regions for R₀ = 1.2, 1.5, 2.0, and 3.0.
+**Figure SXX.** Sensitivity of outbreak final size to reproduction number, assortative mixing, secondary attack rate in crowded households, and crowding fold difference. 
 
-**Figure SXX.** Sensitivity to assortative mixing parameter (ε). Attack rate differentials (agricultural workers minus general population) for ε = 0, 0.33, 0.5, and 0.7.
+![Sensitivity overview final size](../../figures/sensitivity_overview_attackrate.png)
 
-**Figure SXX.** Sensitivity to secondary attack rate in crowded households. Attack rates by population for crowded household SAR = 30%, 40%, 50%, and 60%.
+**Figure SXX.** Sensitivity of outbreak peak size size to reproduction number, assortative mixing, secondary attack rate in crowded households, and crowding fold difference.
 
-**Figure SXX.** Sensitivity to crowding fold difference. Impact of varying the relationship between household size and crowding probability (fold difference = 1, 2, 3).
+![Sensitivity overview final size](../../figures/sensitivity_overview_peaksize.png)
+
+**Figure SXX.** Sensitivity of outbreak peak timing size to reproduction number, assortative mixing, secondary attack rate in crowded households, and crowding fold difference.
+
+![Sensitivity overview final size](../../figures/sensitivity_overview_peaktiming.png)
+
+**Figure SXX.** Sensitivity of the maximum infection disparity to reproduction number, assortative mixing, secondary attack rate in crowded households, and crowding fold difference.
+
+![Sensitivity overview final size](../../figures/sensitivity_overview_max_relative_infection.png)
 
 **Figure SXX.** Sensitivity to county-level NAWS adjustment approach. Comparison of attack rate differentials under three approaches: (A) Null method (regional NAWS values used directly), (B) Additive method (baseline; county-level deviations from regional ACS means added to regional NAWS values), (C) Multiplicative method (regional NAWS values scaled by ratio of county-level to regional mean ACS values).
 
