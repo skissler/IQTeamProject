@@ -60,7 +60,7 @@ run_single_parset <- function(pars, household_states, acs_data_regional, naws_da
   # (compiled odin models can't be passed between R processes)
   library(tidyverse)
   library(odin)
-  source('code/utils_documented.R')
+  source('code/utils.R')
   source('code/epimodels.R')
 
   n_states <- nrow(household_states)

@@ -42,29 +42,29 @@ naws_hh <- naws %>%
   mutate(PWTYCRD_TOT=sum(PWTYCRD)) %>% 
   mutate(HHFAMGRD_PROP=PWTYCRD/PWTYCRD_TOT) %>% 
   arrange(REGION6, HHFAMGRD) %>% 
-  select(REGION=REGION6, hhSize=HHFAMGRD, prop=HHFAMGRD_PROP) %>% 
-  left_join(region_map, by=c("REGION"="REGION6")) %>% 
-  mutate(hhSize_agg = case_when(hhSize<=6 ~ hhSize, TRUE~7)) %>% 
-  group_by(REGION, REGION_NAME, REGION_ABBREV, hhSize_agg) %>% 
-  summarise(prop=sum(prop)) %>% 
+  select(REGION6, hhSize=HHFAMGRD, prop=HHFAMGRD_PROP) %>%
+  left_join(region_map, by="REGION6") %>%
+  mutate(hhSize_agg = case_when(hhSize<=6 ~ hhSize, TRUE~7)) %>%
+  group_by(REGION6, REGION_NAME, REGION_ABBREV, hhSize_agg) %>%
+  summarise(prop=sum(prop)) %>%
   rename(hhSize=hhSize_agg)
 
 
 # variance?
 temp <- naws %>%
   select(FY, REGION6, HHFAMGRD, PWTYCRD) %>%
-  filter(FY >= data_settings$naws_start_year & FY <= data_settings$naws_end_year) %>% 
-  group_by(HHFAMGRD, REGION6) %>% 
-  summarise(PWTYCRD=sum(PWTYCRD)) %>% 
-  group_by(REGION6) %>% 
-  mutate(PWTYCRD_TOT=sum(PWTYCRD)) %>% 
-  mutate(HHFAMGRD_PROP=PWTYCRD/PWTYCRD_TOT) %>% 
-  arrange(REGION6, HHFAMGRD) %>% 
-  select(REGION=REGION6, hhSize=HHFAMGRD, prop=HHFAMGRD_PROP) %>% 
-  left_join(region_map, by=c("REGION"="REGION6")) %>% 
-  mutate(hhSize_agg = case_when(hhSize<=6 ~ hhSize, TRUE~7)) %>% 
-  group_by(REGION, REGION_NAME, REGION_ABBREV, hhSize_agg) %>% 
-  summarise(prop=sum(prop)) %>% 
+  filter(FY >= data_settings$naws_start_year & FY <= data_settings$naws_end_year) %>%
+  group_by(HHFAMGRD, REGION6) %>%
+  summarise(PWTYCRD=sum(PWTYCRD)) %>%
+  group_by(REGION6) %>%
+  mutate(PWTYCRD_TOT=sum(PWTYCRD)) %>%
+  mutate(HHFAMGRD_PROP=PWTYCRD/PWTYCRD_TOT) %>%
+  arrange(REGION6, HHFAMGRD) %>%
+  select(REGION6, hhSize=HHFAMGRD, prop=HHFAMGRD_PROP) %>%
+  left_join(region_map, by="REGION6") %>%
+  mutate(hhSize_agg = case_when(hhSize<=6 ~ hhSize, TRUE~7)) %>%
+  group_by(REGION6, REGION_NAME, REGION_ABBREV, hhSize_agg) %>%
+  summarise(prop=sum(prop)) %>%
   rename(hhSize=hhSize_agg)
 
 
@@ -82,9 +82,9 @@ naws_crowding <- naws %>%
   mutate(CROWDED1_PROP=PWTYCRD/PWTYCRD_TOT) %>% 
   arrange(REGION6, CROWDED1) %>% 
   filter(CROWDED1==1) %>% 
-  select(REGION=REGION6, Crowded=CROWDED1, prop=CROWDED1_PROP) %>% 
-  left_join(region_map, by=c("REGION"="REGION6")) %>% 
-  select(REGION, REGION_NAME, REGION_ABBREV, Crowded, prop_crowded=prop) %>% 
+  select(REGION6, Crowded=CROWDED1, prop=CROWDED1_PROP) %>%
+  left_join(region_map, by="REGION6") %>%
+  select(REGION6, REGION_NAME, REGION_ABBREV, Crowded, prop_crowded=prop) %>%
   ungroup() 
 
 # //////////////////////////////////////////////////////////////////////////////
@@ -92,14 +92,13 @@ naws_crowding <- naws %>%
 # //////////////////////////////////////////////////////////////////////////////
 
 # The following data frame contains: 
-# REGION: numeric NAWS region identifier (1-6)
+# REGION6: numeric NAWS region identifier (1-6)
 # REGION_NAME: name of the region
 # REGION_ABBREV: abbreviated name of the region
 # hhSize: the household size reflected in the 'prop' column
-# prop: proportion of households in region of size "hhSize" 
+# prop: proportion of households in region of size "hhSize"
 # prop_crowded: proportion of households in region that have >1 occupant/room
 
-naws_data <- naws_hh %>% 
-  left_join(select(naws_crowding, REGION, REGION_NAME, REGION_ABBREV, prop_crowded), by=c("REGION","REGION_NAME","REGION_ABBREV")) %>% 
-  rename(REGION6=REGION) %>% 
+naws_data <- naws_hh %>%
+  left_join(select(naws_crowding, REGION6, REGION_NAME, REGION_ABBREV, prop_crowded), by=c("REGION6","REGION_NAME","REGION_ABBREV")) %>%
   ungroup() 

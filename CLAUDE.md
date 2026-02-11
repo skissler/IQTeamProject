@@ -48,7 +48,7 @@ Central configuration file containing all paths, parameters, and settings:
 ### Setup Files
 - **`setup.R`** - Consolidated dependency loader; source this once at session start
 - **`setup_check.R`** - Environment validation; run `check_setup()` to verify prerequisites
-- **`utils_documented.R`** - Helper functions with roxygen documentation
+- **`utils.R`** - Helper functions with roxygen documentation
 
 ### Disease Models (`code/epimodels.R`)
 Uses the `odin` package to define four progressively complex compartmental models:
