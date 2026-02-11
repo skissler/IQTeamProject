@@ -13,45 +13,17 @@
 # ==============================================================================
 
 # ==============================================================================
-# Helper Functions
+# Guard: calibrated_betas must be available
 # ==============================================================================
 
-#' Calculate tau from SAR
-#'
-#' Derives the within-household transmission rate (tau) needed to achieve a
-#' target secondary attack rate (SAR).
-#'
-#' @param sar Target secondary attack rate (proportion, e.g., 0.20)
-#' @param gamma Recovery rate
-#' @return tau value (within-household transmission rate)
-#'
-#' @details
-#' In the House & Keeling household model with exponentially distributed
-#' infectious periods, the SAR for a 2-person household is derived from
-#' competing exponentials (infection at rate tau vs recovery at rate gamma):
-#'
-#'   SAR = tau / (tau + gamma)
-#'
-#' Solving for tau:
-#'   tau = SAR * gamma / (1 - SAR)
-calculate_tau <- function(sar, gamma) {
-  sar * gamma / (1 - sar)
+if (!exists("calibrated_betas")) {
+  stop("calibrated_betas not found. Run calibrate_model.R first.")
 }
 
-#' Calculate tau_boost for a target SAR in crowded households
-#'
-#' Derives the additional transmission rate needed to boost from the uncrowded
-#' SAR to the crowded SAR.
-#'
-#' @param sar_crowded Target SAR for crowded households (proportion, e.g., 0.40)
-#' @param gamma Recovery rate
-#' @param tau Baseline tau for uncrowded households
-#' @return tau_boost value to add to tau for crowded households
-calculate_tau_boost <- function(sar_crowded, gamma, tau) {
-  tau_crowded <- calculate_tau(sar_crowded, gamma)
-  tau_boost <- tau_crowded - tau
-  return(tau_boost)
-}
+# ==============================================================================
+# Helper Functions
+# ==============================================================================
+# Note: calculate_tau() and calculate_tau_boost() are defined in utils.R
 
 #' Create a parameter set with descriptive naming
 #' @param sens_type Character. Sensitivity dimension: "r0", "eps", "sar", "fold"
@@ -60,7 +32,7 @@ calculate_tau_boost <- function(sar_crowded, gamma, tau) {
 #' @param gamma Recovery rate (1/infectious period)
 #' @param sar_uncrowded SAR for uncrowded households (used to compute tau)
 #' @param sar_crowded Target SAR for crowded households (used to compute tau_boost)
-#' @param beta_scalar Beta scalar for target R0 (calibrated values below)
+#' @param beta Between-household transmission rate (calibrated by calibrate_model.R)
 #' @param eps Assortativity parameter
 #' @param crowding_fold_diff Crowding fold difference
 #' @param max_hh_size Maximum household size modeled
@@ -69,7 +41,7 @@ calculate_tau_boost <- function(sar_crowded, gamma, tau) {
 #' @return Named list with all parameters and metadata
 create_parset <- function(sens_type, sens_value, parset,
                           gamma, sar_uncrowded, sar_crowded,
-                          beta_scalar, eps, crowding_fold_diff,
+                          beta, eps, crowding_fold_diff,
                           max_hh_size, adjust_hhvars, init_prev) {
 
   # Compute tau and tau_boost from SAR values
@@ -89,7 +61,7 @@ create_parset <- function(sens_type, sens_value, parset,
     sar_crowded = sar_crowded,       # Primary parameter
     tau = tau,                       # Derived from sar_uncrowded
     tau_boost = tau_boost,           # Derived from sar_crowded - sar_uncrowded
-    beta = beta_scalar * gamma,
+    beta = beta,
     eps = eps,
 
     # Household structure
@@ -105,7 +77,7 @@ create_parset <- function(sens_type, sens_value, parset,
 # ==============================================================================
 # Sensitivity Parameter Values
 # ==============================================================================
-# Note: beta_scalars_vec and get_beta_scalar() are defined in config.R
+# Note: calibrated_betas is produced by calibrate_model.R
 # Baseline values are defined in config.R (default_pars)
 
 r0_values <- c(1.2, 1.5, 2.0, 3.0)
@@ -130,7 +102,7 @@ for (r0 in r0_values) {
     gamma = default_pars$gamma,
     sar_uncrowded = default_pars$sar_uncrowded,
     sar_crowded = default_pars$sar_crowded,
-    beta_scalar = get_beta_scalar(r0),
+    beta = calibrated_betas[as.character(r0)],
     eps = default_pars$eps,
     crowding_fold_diff = default_pars$crowding_fold_diff,
     max_hh_size = default_pars$max_hh_size,
@@ -150,7 +122,7 @@ for (eps in eps_values[eps_values != default_pars$eps]) {
     gamma = default_pars$gamma,
     sar_uncrowded = default_pars$sar_uncrowded,
     sar_crowded = default_pars$sar_crowded,
-    beta_scalar = get_beta_scalar(default_pars$r0),
+    beta = calibrated_betas[as.character(default_pars$r0)],
     eps = eps,
     crowding_fold_diff = default_pars$crowding_fold_diff,
     max_hh_size = default_pars$max_hh_size,
@@ -170,7 +142,7 @@ for (sar in sar_crowded_values[sar_crowded_values != default_pars$sar_crowded]) 
     gamma = default_pars$gamma,
     sar_uncrowded = default_pars$sar_uncrowded,
     sar_crowded = sar,
-    beta_scalar = get_beta_scalar(default_pars$r0),
+    beta = calibrated_betas[as.character(default_pars$r0)],
     eps = default_pars$eps,
     crowding_fold_diff = default_pars$crowding_fold_diff,
     max_hh_size = default_pars$max_hh_size,
@@ -190,7 +162,7 @@ for (fold in fold_diff_values[fold_diff_values != default_pars$crowding_fold_dif
     gamma = default_pars$gamma,
     sar_uncrowded = default_pars$sar_uncrowded,
     sar_crowded = default_pars$sar_crowded,
-    beta_scalar = get_beta_scalar(default_pars$r0),
+    beta = calibrated_betas[as.character(default_pars$r0)],
     eps = default_pars$eps,
     crowding_fold_diff = fold,
     max_hh_size = default_pars$max_hh_size,

@@ -34,7 +34,7 @@ n_states <- nrow(household_states)
 
 epidf_indiv_full <- tibble()
 
-for(region in 1:6){
+for(region in 1:n_regions){
 
 	# Create the ic joiners:
 	ic_joiner_C <- acs_data_regional %>%

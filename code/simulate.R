@@ -48,8 +48,8 @@ n_states <- nrow(household_states)
 # Pre-compute lookups to avoid repeated filtering inside the loop
 # //////////////////////////////////////////////////////////////////////////////
 
-# Pre-filter NAWS data by region (6 times instead of ~3000)
-naws_by_region <- lapply(1:6, function(r) {
+# Pre-filter NAWS data by region (n_regions times instead of ~3000)
+naws_by_region <- lapply(1:n_regions, function(r) {
   naws_data %>% filter(REGION6 == r)
 })
 

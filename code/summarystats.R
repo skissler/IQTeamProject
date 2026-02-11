@@ -53,7 +53,7 @@ fig_hhsize_pyramid <- ggplot(data_modified, aes(x = hhSize, y = plot_prop, fill 
   facet_wrap(~REGION6, labeller = label_both) +
   scale_y_continuous(
     labels = function(x) paste0(abs(x) * 100, "%"),
-    breaks = pretty_breaks(n = 5)
+    breaks = scales::pretty_breaks(n = 5)
   ) +
   scale_fill_manual(values = source_colors) +
   scale_color_manual(values = source_colors) +

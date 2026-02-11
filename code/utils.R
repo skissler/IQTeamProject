@@ -327,7 +327,49 @@ format_output_indiv <- function(model_output, household_states) {
 
 
 # ==============================================================================
-# 5. MISCELLANEOUS
+# 5. EPIDEMIOLOGICAL PARAMETER HELPERS
+# ==============================================================================
+
+#' Calculate tau from SAR
+#'
+#' Derives the within-household transmission rate (tau) needed to achieve a
+#' target secondary attack rate (SAR).
+#'
+#' @param sar Target secondary attack rate (proportion, e.g., 0.20)
+#' @param gamma Recovery rate
+#' @return tau value (within-household transmission rate)
+#'
+#' @details
+#' In the House & Keeling household model with exponentially distributed
+#' infectious periods, the SAR for a 2-person household is derived from
+#' competing exponentials (infection at rate tau vs recovery at rate gamma):
+#'
+#'   SAR = tau / (tau + gamma)
+#'
+#' Solving for tau:
+#'   tau = SAR * gamma / (1 - SAR)
+calculate_tau <- function(sar, gamma) {
+  sar * gamma / (1 - sar)
+}
+
+#' Calculate tau_boost for a target SAR in crowded households
+#'
+#' Derives the additional transmission rate needed to boost from the uncrowded
+#' SAR to the crowded SAR.
+#'
+#' @param sar_crowded Target SAR for crowded households (proportion, e.g., 0.40)
+#' @param gamma Recovery rate
+#' @param tau Baseline tau for uncrowded households
+#' @return tau_boost value to add to tau for crowded households
+calculate_tau_boost <- function(sar_crowded, gamma, tau) {
+  tau_crowded <- calculate_tau(sar_crowded, gamma)
+  tau_boost <- tau_crowded - tau
+  return(tau_boost)
+}
+
+
+# ==============================================================================
+# 6. MISCELLANEOUS
 # ==============================================================================
 
 #' Sinusoidal Time-Varying Transmission Rate

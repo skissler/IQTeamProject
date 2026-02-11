@@ -248,7 +248,7 @@ community_stats <- acs_data %>%
   mutate(subpop = "C")
 
 # --- Pre-split NAWS data by region ---
-naws_by_region <- lapply(1:6, function(r) {
+naws_by_region <- lapply(1:n_regions, function(r) {
   naws_data %>% filter(REGION6 == r)
 })
 

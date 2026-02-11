@@ -29,31 +29,6 @@ paths <- list(
 )
 
 # ==============================================================================
-# Calibrated R0 to Beta Scalar Mapping
-# ==============================================================================
-# These values are calibrated at the national level to achieve target R0 values
-# (see calibrate_model.R for methodology)
-
-beta_scalars_vec <- c(
-  `1.2` = 0.7649,
-  `1.5` = 1.0490,
-  `2` = 1.5344,
-  `3` = 2.5270
-)
-
-#' Get calibrated beta scalar for a target R0
-#' @param r0 Target reproduction number
-#' @return Beta scalar value
-get_beta_scalar <- function(r0) {
-  idx <- which(abs(as.numeric(names(beta_scalars_vec)) - r0) < 0.01)
-  if (length(idx) == 0) {
-    stop("No calibrated beta scalar for R0 = ", r0,
-         "\nAvailable R0 values: ", paste(names(beta_scalars_vec), collapse = ", "))
-  }
-  return(beta_scalars_vec[idx])
-}
-
-# ==============================================================================
 # Data Settings
 # ==============================================================================
 
@@ -78,7 +53,7 @@ default_pars <- list(
   gamma = 1/5,                  # Recovery rate: 1/5 = 5-day infectious period
 
   # Basic reproduction number (R0)
-  # beta_scalar is derived from r0 using get_beta_scalar()
+  # beta is calibrated directly by calibrate_model.R for each target R0
   r0 = 1.5,                     # Baseline R0 value
 
   # Household secondary attack rates (SAR)
@@ -141,3 +116,4 @@ region_map <- tibble::tibble(
   REGION_NAME = c("East", "Southeast", "Midwest", "Southwest", "Northwest", "California"),
   REGION_ABBREV = c("EA", "SE", "MW", "SW", "NW", "CA")
 )
+n_regions <- nrow(region_map)

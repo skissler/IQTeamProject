@@ -41,7 +41,7 @@ source('code/sensitivity_analysis.R') # Compare results across sensitivity dimen
 Central configuration file containing all paths, parameters, and settings:
 - `paths` - File paths for input data and output directories
 - `data_settings` - ACS/Census year settings, NAWS date range
-- `default_pars` - Baseline epidemiological parameters (gamma, sar_uncrowded, sar_crowded, beta, eps)
+- `default_pars` - Baseline epidemiological parameters (gamma, sar_uncrowded, sar_crowded, r0, eps)
 - `sim_settings` - Simulation options (time steps, parallelization)
 - `region_map` - NAWS region name/abbreviation mapping
 
@@ -62,7 +62,7 @@ The models implement House & Keeling (2009) household-structured transmission wi
 ### Data Pipeline
 - **`import_acs.R`** - Downloads county-level ACS data via tidycensus API (household size, crowding)
 - **`import_naws.R`** - Processes National Agricultural Workers Survey (SAS file at `data/naws_all.sas7bdat`)
-- **`calibrate_model.R`** - Tunes beta parameters at national level to achieve target R0 values
+- **`calibrate_model.R`** - Calibrates beta directly for each target R0; outputs `calibrated_betas` named vector
 - **`simulate.R`** / **`simulate_regional.R`** - Runs epidemic simulations across counties/regions
 
 ### Parameter Sets (`code/parameters.R`)
@@ -80,13 +80,13 @@ Defines 12 parameter configurations for one-at-a-time sensitivity analysis acros
 - `sar_uncrowded` - Baseline secondary attack rate for uncrowded households (20%)
 - `sar_crowded` - Secondary attack rate for crowded households (40%)
 
-*Derived transmission parameters (computed in parameters.R):*
+*Derived transmission parameters (computed in parameters.R using helpers from utils.R):*
 - `tau` - Within-household transmission rate, derived from `sar_uncrowded` using: `tau = SAR * gamma / (1 - SAR)`
 - `tau_boost` - Additional transmission rate for crowded households, computed as the difference between tau_crowded and tau
+- `beta` - Between-household transmission rate, calibrated directly by `calibrate_model.R` and passed to `parameters.R` via `calibrated_betas` (a named vector mapping R0 → beta)
 
 *Other epidemiological parameters:*
 - `gamma` - Recovery rate (1/5 = 5-day infectious period)
-- `beta_C`, `beta_A` - Community transmission rates (between-household)
 - `eps` - Assortativity between populations
 - `crowding_fold_diff` - How much more likely large households are to be crowded
 

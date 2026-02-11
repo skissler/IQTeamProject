@@ -55,7 +55,7 @@ start_time <- Sys.time()
 
 # Define function to run a single parameter set
 run_single_parset <- function(pars, household_states, acs_data_regional, naws_data,
-                               sim_settings, paths) {
+                               sim_settings, paths, n_regions) {
   # Each worker needs to load packages and source files to get the odin model
   # (compiled odin models can't be passed between R processes)
   library(tidyverse)
@@ -67,7 +67,7 @@ run_single_parset <- function(pars, household_states, acs_data_regional, naws_da
 
   epidf_indiv_full <- tibble()
 
-  for (region in 1:6) {
+  for (region in 1:n_regions) {
     # Create the ic joiners
     ic_joiner_C <- acs_data_regional %>%
       filter(REGION6 == region) %>%
@@ -166,7 +166,7 @@ run_single_parset <- function(pars, household_states, acs_data_regional, naws_da
 results <- future_lapply(pars_list, function(pars) {
   run_single_parset(
     pars, household_states, acs_data_regional, naws_data,
-    sim_settings, paths
+    sim_settings, paths, n_regions
   )
 }, future.seed = TRUE)
 
@@ -206,7 +206,7 @@ for (parset_name in unlist(results)) {
     facet_wrap(~factor(REGION6), nrow = 2)
 
   # Save the plot
-  fig_file <- paste0(paths$figures_dir, "/regional_I_", parset_name, ".pdf")
+  fig_file <- file.path(paths$figures_dir, paste0("regional_I_", parset_name, ".pdf"))
   ggsave(fig_file, fig, width = 10, height = 6)
   cat("    -", fig_file, "\n")
 }

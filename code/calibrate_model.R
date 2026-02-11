@@ -28,9 +28,8 @@
 #   beta values are then used in the full two-population model.
 #
 # Outputs:
-#   - epidf_indiv_national: National-level simulation results
-#   - fig_indiv_national: Diagnostic plot of epidemic curves
-#   - Prints final attack rate for verification
+#   - calibrated_betas: Named vector (R0 → beta) for use in parameters.R
+#   - fig_calibration_verification: Diagnostic plot of epidemic curves
 #
 # ==============================================================================
 
@@ -81,26 +80,6 @@ nat_data <- acs_data %>%
   )
 
 # ==============================================================================
-# Calibration Parameters
-# ==============================================================================
-#
-# Parameters for calibration run. Key settings:
-#   - Single population only (pop_A=0, eps=0)
-#   - Community transmission uses household-structured model
-#   - Beta value set to test a specific R0 (modify beta to test different R0s)
-#
-# Calibrated beta scalars (multiply by gamma to get beta):
-#   R0 = 1.2 → beta_scalar = 0.765
-#   R0 = 1.5 → beta_scalar = 1.05
-#   R0 = 2.0 → beta_scalar = 1.53
-#   R0 = 3.0 → beta_scalar = 2.52
-
-# Helper function to calculate tau from SAR (duplicated from parameters.R for standalone use)
-calculate_tau_calibrate <- function(sar, gamma) {
-  sar * gamma / (1 - sar)
-}
-
-# ==============================================================================
 # Calibration Helper Functions
 # ==============================================================================
 
@@ -130,16 +109,16 @@ solve_final_size <- function(r0, tol = 1e-10, max_iter = 1000) {
 
 #' Get final attack rate from a single simulation
 #'
-#' Runs a calibration simulation with a given beta_scalar and returns the
+#' Runs a calibration simulation with a given beta and returns the
 #' final attack rate for the community population.
 #'
-#' @param beta_scalar Multiplier for gamma to get beta (beta = beta_scalar * gamma)
+#' @param beta Between-household transmission rate
 #' @param base_pars List of base parameters (without beta set)
 #' @param nat_data National-level household data
 #' @return Final attack rate (proportion recovered at end of simulation)
-get_final_attack_rate <- function(beta_scalar, base_pars, nat_data) {
+get_final_attack_rate <- function(beta, base_pars, nat_data) {
   pars <- base_pars
-  pars$beta <- beta_scalar * pars$gamma
+  pars$beta <- beta
 
   result <- run_calibration_sim(pars, nat_data)
 
@@ -155,9 +134,9 @@ get_final_attack_rate <- function(beta_scalar, base_pars, nat_data) {
   return(final_R)
 }
 
-#' Calibrate beta_scalar using bisection search
+#' Calibrate beta using bisection search
 #'
-#' Finds the beta_scalar value that produces a final attack rate matching
+#' Finds the beta value that produces a final attack rate matching
 #' the theoretical prediction for a given R0.
 #'
 #' @param target_r0 Target R0 value to calibrate for
@@ -165,13 +144,14 @@ get_final_attack_rate <- function(beta_scalar, base_pars, nat_data) {
 #' @param nat_data National-level household data
 #' @param tol Convergence tolerance for final size difference (default 0.0005)
 #' @param max_iter Maximum bisection iterations (default 50)
-#' @param beta_lower Lower bound for beta_scalar search (default 0.01)
-#' @param beta_upper Upper bound for beta_scalar search (default 10.0)
-#' @return List with r0, beta_scalar, target_final_size, simulated_final_size,
+#' @param beta_lower Lower bound for beta search (default 0.01 * gamma)
+#' @param beta_upper Upper bound for beta search (default 10.0 * gamma)
+#' @return List with r0, beta, target_final_size, simulated_final_size,
 #'         iterations, and eval_history (data frame of all evaluated points)
-calibrate_beta_scalar <- function(target_r0, base_pars, nat_data,
-                                   tol = 0.0005, max_iter = 50,
-                                   beta_lower = 0.01, beta_upper = 10.0) {
+calibrate_beta <- function(target_r0, base_pars, nat_data,
+                           tol = 0.0005, max_iter = 50,
+                           beta_lower = 0.01 * base_pars$gamma,
+                           beta_upper = 10.0 * base_pars$gamma) {
 
   # Calculate target final size
   target_final_size <- solve_final_size(target_r0)
@@ -180,8 +160,8 @@ calibrate_beta_scalar <- function(target_r0, base_pars, nat_data,
   cat("  Target final size:", round(target_final_size, 4), "\n")
   cat("  Initial bounds: [", round(beta_lower, 4), ", ", round(beta_upper, 4), "]\n", sep = "")
 
- # Track all evaluated (beta, final_size) pairs for warm-starting future calibrations
-  eval_history <- data.frame(beta_scalar = numeric(), final_size = numeric())
+  # Track all evaluated (beta, final_size) pairs for warm-starting future calibrations
+  eval_history <- data.frame(beta = numeric(), final_size = numeric())
 
   # Bisection search
   for (iter in 1:max_iter) {
@@ -191,18 +171,18 @@ calibrate_beta_scalar <- function(target_r0, base_pars, nat_data,
     error <- sim_final_size - target_final_size
 
     # Record this evaluation
-    eval_history <- rbind(eval_history, data.frame(beta_scalar = beta_mid, final_size = sim_final_size))
+    eval_history <- rbind(eval_history, data.frame(beta = beta_mid, final_size = sim_final_size))
 
-    cat("  Iter", iter, ": beta_scalar =", round(beta_mid, 4),
+    cat("  Iter", iter, ": beta =", round(beta_mid, 4),
         ", final_size =", round(sim_final_size, 4),
         ", error =", round(error, 5), "\n")
 
     # Check convergence
     if (abs(error) < tol) {
-      cat("  Converged! beta_scalar =", round(beta_mid, 4), "\n\n")
+      cat("  Converged! beta =", round(beta_mid, 4), "\n\n")
       return(list(
         r0 = target_r0,
-        beta_scalar = beta_mid,
+        beta = beta_mid,
         target_final_size = target_final_size,
         simulated_final_size = sim_final_size,
         iterations = iter,
@@ -219,7 +199,7 @@ calibrate_beta_scalar <- function(target_r0, base_pars, nat_data,
   }
 
   warning("Calibration did not converge for R0 = ", target_r0)
-  return(list(r0 = target_r0, beta_scalar = beta_mid,
+  return(list(r0 = target_r0, beta = beta_mid,
               target_final_size = target_final_size,
               simulated_final_size = sim_final_size,
               iterations = max_iter,
@@ -228,10 +208,10 @@ calibrate_beta_scalar <- function(target_r0, base_pars, nat_data,
 
 #' Find bounds for a target final size from evaluation history
 #'
-#' Given a history of (beta_scalar, final_size) pairs and a target final size,
+#' Given a history of (beta, final_size) pairs and a target final size,
 #' finds the tightest bounds [beta_lower, beta_upper] that bracket the target.
 #'
-#' @param eval_history Data frame with beta_scalar and final_size columns
+#' @param eval_history Data frame with beta and final_size columns
 #' @param target_final_size Target final size to bracket
 #' @param default_lower Default lower bound if no suitable point found
 #' @param default_upper Default upper bound if no suitable point found
@@ -249,14 +229,14 @@ find_bounds_from_history <- function(eval_history, target_final_size,
 
   # Best lower bound: highest beta that gave final_size below target
   if (nrow(below) > 0) {
-    beta_lower <- max(below$beta_scalar)
+    beta_lower <- max(below$beta)
   } else {
     beta_lower <- default_lower
   }
 
   # Best upper bound: lowest beta that gave final_size above target
   if (nrow(above) > 0) {
-    beta_upper <- min(above$beta_scalar)
+    beta_upper <- min(above$beta)
   } else {
     beta_upper <- default_upper
   }
@@ -264,32 +244,22 @@ find_bounds_from_history <- function(eval_history, target_final_size,
   return(list(beta_lower = beta_lower, beta_upper = beta_upper))
 }
 
-# Base parameters for calibration (beta will be set by calibration)
+# Base parameters for calibration, derived from default_pars in config.R
+# Beta will be set during calibration; eps=0 for single-population calibration
 base_pars <- list(
-  # Disease dynamics
-  gamma = 1/5,                              # Recovery rate (5-day infectious period)
-
-  # SAR-based parameters (primary)
-  sar_uncrowded = 0.20,                     # Within-HH SAR: 20% baseline
-  sar_crowded = 0.40,                       # Crowded HH SAR: 40%
-
-  # Between-household transmission (beta set during calibration)
-
-  # Population mixing (single population for calibration)
-  eps = 0,                                  # No between-group mixing
-
-  # Household structure
-  max_hh_size = 7,
-  crowding_fold_diff = 2,
-
-  # Other settings
-  adjust_hhvars = "multiplicative",  # Not used in calibration (national level)
-  init_prev = 0.001
+  gamma = default_pars$gamma,
+  sar_uncrowded = default_pars$sar_uncrowded,
+  sar_crowded = default_pars$sar_crowded,
+  eps = 0,
+  max_hh_size = default_pars$max_hh_size,
+  crowding_fold_diff = default_pars$crowding_fold_diff,
+  adjust_hhvars = default_pars$adjust_hhvars,
+  init_prev = default_pars$init_prev
 )
 
 # Compute derived tau parameters from SAR values
-base_pars$tau <- calculate_tau_calibrate(base_pars$sar_uncrowded, base_pars$gamma)
-base_pars$tau_boost <- calculate_tau_calibrate(base_pars$sar_crowded, base_pars$gamma) - base_pars$tau
+base_pars$tau <- calculate_tau(base_pars$sar_uncrowded, base_pars$gamma)
+base_pars$tau_boost <- calculate_tau_boost(base_pars$sar_crowded, base_pars$gamma, base_pars$tau)
 
 # ==============================================================================
 # Calibration Simulation Function
@@ -328,27 +298,24 @@ run_calibration_sim <- function(pars, nat_data) {
     # --------------------------------------------------------------------------
     # Set up initial conditions for community population
     # --------------------------------------------------------------------------
-    # Seed infection: Move 1% of 2-person uncrowded households from fully
-    # susceptible (x=2, y=0, z=0) to having one infected (x=1, y=1, z=0)
+    # Seed infection using the same approach as simulate.R / simulate_regional.R:
+    # For each household size, move init_prev * frac * hh_size fraction from
+    # fully susceptible (x=n, y=0, z=0) to one-infected (x=n-1, y=1, z=0).
+    # This achieves an individual-level initial prevalence of init_prev.
     #
-    # Note: This seeds ~1% of 2-person households, not 1% of total population.
     # For calibration purposes, the exact seeding doesn't affect the final
     # attack rate, only the timing of the epidemic.
+
+    ic_joiner_inf <- ic_joiner %>%
+      mutate(frac = init_prev * frac * hh_size) %>%
+      mutate(y = y + 1, x = x - 1)
+    ic_joiner$frac <- ic_joiner$frac - ic_joiner_inf$frac
+    ic_joiner <- bind_rows(ic_joiner, ic_joiner_inf)
 
     init_nat_C <- household_states %>%
       left_join(ic_joiner, by = c("x", "y", "z", "hh_size", "crowded")) %>%
       arrange(state_index) %>%
       replace_na(list(frac = 0)) %>%
-      # Remove 1% from fully susceptible 2-person uncrowded households
-      mutate(frac = case_when(
-        x == 2 & y == 0 & z == 0 & crowded == 0 ~ frac - 0.01,
-        TRUE ~ frac
-      )) %>%
-      # Add 1% to 2-person households with 1 infected
-      mutate(frac = case_when(
-        x == 1 & y == 1 & z == 0 & crowded == 0 ~ 0.01,
-        TRUE ~ frac
-      )) %>%
       pull(frac)
 
     # --------------------------------------------------------------------------
@@ -398,8 +365,8 @@ run_calibration_sim <- function(pars, nat_data) {
 # Run Calibration: Bisection Search for All R0 Targets
 # ==============================================================================
 #
-# Calibrates beta_scalar values for R0 = 1.2, 1.5, 2.0, and 3.0 using bisection
-# search. The algorithm finds beta_scalar values that produce final attack rates
+# Calibrates beta values for R0 = 1.2, 1.5, 2.0, and 3.0 using bisection
+# search. The algorithm finds beta values that produce final attack rates
 # matching the theoretical predictions within tolerance (0.0005).
 
 # R0 values to calibrate (must be in increasing order for warm-start optimization)
@@ -415,28 +382,32 @@ cat("========================================\n\n")
 
 # Run calibration for each R0, using evaluation history to warm-start bounds
 calibration_results <- list()
-all_eval_history <- data.frame(beta_scalar = numeric(), final_size = numeric())
+all_eval_history <- data.frame(beta = numeric(), final_size = numeric())
 
 for (i in seq_along(r0_targets)) {
   r0 <- r0_targets[i]
   target_final_size <- solve_final_size(r0)
 
   # Find bounds from all previous evaluations
-  bounds <- find_bounds_from_history(all_eval_history, target_final_size)
+  default_lower <- 0.01 * base_pars$gamma
+  default_upper <- 10.0 * base_pars$gamma
+  bounds <- find_bounds_from_history(all_eval_history, target_final_size,
+                                     default_lower = default_lower,
+                                     default_upper = default_upper)
 
-  result <- calibrate_beta_scalar(r0, base_pars, nat_data,
-                                   tol = 0.0005,
-                                   beta_lower = bounds$beta_lower,
-                                   beta_upper = bounds$beta_upper)
+  result <- calibrate_beta(r0, base_pars, nat_data,
+                           tol = 0.0005,
+                           beta_lower = bounds$beta_lower,
+                           beta_upper = bounds$beta_upper)
   calibration_results[[i]] <- result
 
   # Accumulate evaluation history for subsequent calibrations
   all_eval_history <- rbind(all_eval_history, result$eval_history)
 }
 
-# Extract calibrated beta scalars as a named vector
-calibrated_beta_scalars <- sapply(calibration_results, `[[`, "beta_scalar")
-names(calibrated_beta_scalars) <- r0_targets
+# Extract calibrated betas as a named vector
+calibrated_betas <- sapply(calibration_results, `[[`, "beta")
+names(calibrated_betas) <- r0_targets
 
 # ==============================================================================
 # Calibration Results Summary
@@ -445,37 +416,27 @@ names(calibrated_beta_scalars) <- r0_targets
 cat("\n========================================\n")
 cat("Calibration Results Summary\n")
 cat("========================================\n")
-cat(sprintf("%-8s %-15s %-15s %-15s %-10s\n",
-            "R0", "beta_scalar", "target_size", "sim_size", "iters"))
-cat("----------------------------------------\n")
+cat(sprintf("%-8s %-15s %-15s %-15s %-15s %-10s\n",
+            "R0", "beta", "beta/gamma", "target_size", "sim_size", "iters"))
+cat("---------------------------------------------\n")
 for (res in calibration_results) {
-  cat(sprintf("%-8.1f %-15.4f %-15.4f %-15.4f %-10d\n",
-              res$r0, res$beta_scalar, res$target_final_size,
-              res$simulated_final_size, res$iterations))
+  cat(sprintf("%-8.1f %-15.4f %-15.4f %-15.4f %-15.4f %-10d\n",
+              res$r0, res$beta, res$beta / base_pars$gamma,
+              res$target_final_size, res$simulated_final_size, res$iterations))
 }
-cat("========================================\n\n")
-
-# Print calibrated values in a format ready for parameters.R
-cat("Calibrated beta_scalars for use in parameters.R:\n")
-cat("beta_scalars_vec <- c(\n")
-for (i in seq_along(r0_targets)) {
-  comma <- if (i < length(r0_targets)) "," else ""
-  cat(sprintf("  `%s` = %.4f%s  # R0 = %s\n",
-              r0_targets[i], calibrated_beta_scalars[i], comma, r0_targets[i]))
-}
-cat(")\n")
+cat("========================================\n")
 
 # ==============================================================================
 # Diagnostic Plot: Verify Final Calibration
 # ==============================================================================
 #
-# Run a final simulation with each calibrated beta_scalar and plot the results
+# Run a final simulation with each calibrated beta and plot the results
 # to visually verify the calibration.
 
 # Run final verification simulations for all R0 values
 verification_results <- lapply(seq_along(r0_targets), function(i) {
   pars <- base_pars
-  pars$beta <- calibrated_beta_scalars[i] * base_pars$gamma
+  pars$beta <- calibrated_betas[i]
   result <- run_calibration_sim(pars, nat_data)
   result$r0 <- r0_targets[i]
   result
@@ -504,5 +465,7 @@ fig_calibration_verification <- verification_df %>%
   ) +
   theme_minimal()
 
-# Save the calibration results to the environment for use in other scripts
-# The key output is `calibrated_beta_scalars`, which can be used in parameters.R
+ggsave(file.path(paths$figures_dir, "calibration_verification.pdf"),
+       fig_calibration_verification, width = 8, height = 5)
+
+# The key output is `calibrated_betas`, a named vector (R0 → beta) used by parameters.R
