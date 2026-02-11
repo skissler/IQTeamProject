@@ -5,7 +5,7 @@
 # county-specific household size distributions and crowding rates.
 #
 # Requires: pars object (from parameters.R or direct definition)
-# Outputs: epidf_indiv_full.csv in output directory
+# Outputs: county_sim.csv in output directory
 # //////////////////////////////////////////////////////////////////////////////
 
 # Load dependencies (skip if already loaded via run_analysis.R)

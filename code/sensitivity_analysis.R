@@ -31,10 +31,10 @@ if (!exists("pars_metadata")) {
 
 #' Load all regional simulation output files
 #' @param output_dir Directory containing output files
-#' @param prefix File prefix (default: "epidf_indiv_full_regional_")
+#' @param prefix File prefix (default: "regional_sim_")
 #' @return Combined tibble with all results
 load_all_regional_outputs <- function(output_dir = paths$output_dir,
-                                       prefix = "epidf_indiv_full_regional_") {
+                                       prefix = "regional_sim_") {
 
   # Find all matching files
   pattern <- paste0("^", prefix, ".*\\.csv$")

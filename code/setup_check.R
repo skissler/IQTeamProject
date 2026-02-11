@@ -80,7 +80,8 @@ check_setup <- function(verbose = TRUE) {
   # Check 4: Required Packages
   # --------------------------------------------------------------------------
   required_packages <- c(
-    "tidyverse", "odin", "sf", "tigris", "tidycensus", "haven", "future.apply"
+    "tidyverse", "odin", "sf", "tigris", "tidycensus", "haven", "future.apply",
+    "patchwork"
   )
 
   missing_packages <- character(0)

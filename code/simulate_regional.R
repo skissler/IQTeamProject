@@ -5,7 +5,7 @@
 # region-specific household size distributions and crowding rates.
 #
 # Requires: pars object (from parameters.R or run_analysis.R loop)
-# Outputs: epidf_indiv_full_regional_{parset_name}.csv in output directory
+# Outputs: regional_sim_{parset_name}.csv in output directory
 # //////////////////////////////////////////////////////////////////////////////
 
 # Load dependencies (skip if already loaded via run_analysis.R)

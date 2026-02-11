@@ -81,19 +81,19 @@ pars <- baseline_pars
 # Run with no adjustment (use regional NAWS directly)
 cat("  [1/3] Running with adjust_hhvars = 'none'...\n")
 pars$adjust_hhvars <- "none"
-paths$county_output <- "output/epidf_indiv_county_none.csv"
+paths$county_output <- "output/county_sim_none.csv"
 source('code/simulate.R')
 
 # Run with multiplicative adjustment (baseline behavior)
 cat("  [2/3] Running with adjust_hhvars = 'multiplicative'...\n")
 pars$adjust_hhvars <- "multiplicative"
-paths$county_output <- "output/epidf_indiv_county_multiplicative.csv"
+paths$county_output <- "output/county_sim_multiplicative.csv"
 source('code/simulate.R')
 
 # Run with additive adjustment
 cat("  [3/3] Running with adjust_hhvars = 'additive'...\n")
 pars$adjust_hhvars <- "additive"
-paths$county_output <- "output/epidf_indiv_county_additive.csv"
+paths$county_output <- "output/county_sim_additive.csv"
 source('code/simulate.R')
 
 cat("  County-level simulations complete.\n")
@@ -127,6 +127,6 @@ cat("\nSensitivity summary files:\n")
 cat("  - output/sensitivity_summary.csv\n")
 cat("  - output/sensitivity_differential.csv\n")
 cat("\nCounty-level simulation files:\n")
-cat("  - output/epidf_indiv_county_none.csv (no adjustment)\n")
-cat("  - output/epidf_indiv_county_multiplicative.csv (multiplicative adjustment)\n")
-cat("  - output/epidf_indiv_county_additive.csv (additive adjustment)\n")
+cat("  - output/county_sim_none.csv (no adjustment)\n")
+cat("  - output/county_sim_multiplicative.csv (multiplicative adjustment)\n")
+cat("  - output/county_sim_additive.csv (additive adjustment)\n")

@@ -15,7 +15,7 @@
 #   - data/movements_lettuce.csv     - Weekly lettuce shipments
 #   - data/movements_strawberries.csv - Weekly strawberry shipments
 #   - data/movements_oranges.csv     - Weekly orange shipments
-#   - output/epidf_indiv_full_regional_r0_1.2.csv - Baseline epidemic simulation
+#   - output/regional_sim_r0_1.2.csv              - Baseline epidemic simulation
 #
 # Outputs:
 #   - figures/crop_movements_raw.pdf      - Raw weekly movement data
@@ -36,9 +36,9 @@ if (!exists("paths")) {
 cat("Loading crop movement data...\n")
 
 # Read weekly movement data for each crop
-lettuce <- read_csv("data/movements_lettuce.csv", show_col_types = FALSE)
-strawberries <- read_csv("data/movements_strawberries.csv", show_col_types = FALSE)
-oranges <- read_csv("data/movements_oranges.csv", show_col_types = FALSE)
+lettuce <- read_csv(paths$movements_lettuce, show_col_types = FALSE)
+strawberries <- read_csv(paths$movements_strawberries, show_col_types = FALSE)
+oranges <- read_csv(paths$movements_oranges, show_col_types = FALSE)
 
 # Combine and filter to California origins
 movements <- bind_rows(lettuce, strawberries, oranges) %>%
@@ -79,7 +79,7 @@ cat("Loading baseline epidemic simulation...\n")
 
 # Load baseline regional simulation (using default R0 from config)
 baseline_file <- file.path(paths$output_dir,
-                           paste0("epidf_indiv_full_regional_r0_", default_pars$r0, ".csv"))
+                           paste0("regional_sim_r0_", default_pars$r0, ".csv"))
 
 if (!file.exists(baseline_file)) {
   stop("Baseline simulation file not found: ", baseline_file,

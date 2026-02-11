@@ -17,7 +17,7 @@
 #   - paths: File paths from config.R
 #
 # Outputs:
-#   - One CSV file per parameter set: output/epidf_indiv_full_regional_{parset_name}.csv
+#   - One CSV file per parameter set: output/regional_sim_{parset_name}.csv
 # ==============================================================================
 
 # Check prerequisites

@@ -103,8 +103,8 @@ Loads all regional simulation outputs and generates comparative summaries:
 - Creates comparison figures across sensitivity dimensions
 
 ### Output Files
-- `output/epidf_indiv_full.csv` - County-level daily trajectories (~46 MB)
-- `output/epidf_indiv_full_regional_{parset_name}.csv` - Regional sensitivity runs (e.g., `epidf_indiv_full_regional_r0_1.2.csv`)
+- `output/county_sim.csv` - County-level daily trajectories (~46 MB)
+- `output/regional_sim_{parset_name}.csv` - Regional sensitivity runs (e.g., `regional_sim_r0_1.2.csv`)
 - `output/sensitivity_summary.csv` - Summary statistics for all parameter sets
 - `output/sensitivity_differential.csv` - Differential metrics (A vs C) for all parameter sets
 - `figures/sensitivity_*.pdf` - Comparison visualizations

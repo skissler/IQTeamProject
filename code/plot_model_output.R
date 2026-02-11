@@ -8,7 +8,7 @@ source('code/utils_documented.R')
 source('code/import_naws.R')
 source('code/import_acs.R')
 
-epidf_indiv_full <- read_csv("output/epidf_indiv_full.csv")
+epidf_indiv_full <- read_csv("output/county_sim.csv")
 
 # Load US states geometry
 states <- tigris::states(cb = TRUE, year = 2020) %>%

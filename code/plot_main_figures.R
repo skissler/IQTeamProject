@@ -32,7 +32,7 @@ cat("Loading regional simulation data...\n")
 
 # Load baseline regional simulation
 regional_file <- file.path(paths$output_dir,
-                           paste0("epidf_indiv_full_regional_r0_", default_pars$r0, ".csv"))
+                           paste0("regional_sim_r0_", default_pars$r0, ".csv"))
 if (!file.exists(regional_file)) {
   stop("Regional simulation file not found: ", regional_file)
 }
@@ -188,7 +188,7 @@ for (method in adjust_methods) {
 
   # Load county data for this method
 
-  county_file <- file.path(paths$output_dir, paste0("epidf_indiv_county_", method, ".csv"))
+  county_file <- file.path(paths$output_dir, paste0("county_sim_", method, ".csv"))
   if (!file.exists(county_file)) {
     cat("  WARNING: County file not found, skipping:", county_file, "\n")
     next

@@ -35,7 +35,7 @@ The model is parameterized using a combination of national, regional, and county
 5. Simulation and Analysis
 The simulation and analysis workflow is automated by the run_analysis.R script.
 •	Main Workflow (run_analysis.R): This script acts as the master control, sourcing other scripts in the correct order: calibrate_model.R, simulate.R, and finally plot_model_output.R.
-•	County-level Simulation (simulate.R): This script iterates through each U.S. county. For each county, it retrieves the appropriate data on household size and crowding distri-butions and then runs the household_model_twopop_crowding to simulate disease spread within that county's specific demographic profile. The results are saved to epidf_indiv_full.csv.
+•	County-level Simulation (simulate.R): This script iterates through each U.S. county. For each county, it retrieves the appropriate data on household size and crowding distri-butions and then runs the household_model_twopop_crowding to simulate disease spread within that county's specific demographic profile. The results are saved to county_sim.csv.
 •	Visualization (plot_model_output.R): The plot_model_output.R script reads the simu-lation results from the CSV file and generates a variety of plots and maps. These visuali-zations include time-series plots of infection curves for each subpopulation and geo-graphic maps showing spatial patterns in disease outcomes across counties.
 
 6. Development Notes and Discussion

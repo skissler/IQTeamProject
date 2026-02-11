@@ -74,7 +74,7 @@ temp <- naws %>%
 
 naws_crowding <- naws %>%
   select(FY, REGION6, CROWDED1, PWTYCRD) %>%
-  filter(FY >= data_settings$naws_start_year) %>% 
+  filter(FY >= data_settings$naws_start_year & FY <= data_settings$naws_end_year) %>% 
   group_by(CROWDED1, REGION6) %>% 
   summarise(PWTYCRD=sum(PWTYCRD)) %>% 
   group_by(REGION6) %>% 

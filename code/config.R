@@ -11,15 +11,17 @@ paths <- list(
   naws_data = "data/naws_all.sas7bdat",
   state_region = "data/stateregion.csv",
   state_abbrev = "data/stateabbrev.csv",
-  movements_data = "data/movements.csv",
+  movements_lettuce = "data/movements_lettuce.csv",
+  movements_strawberries = "data/movements_strawberries.csv",
+  movements_oranges = "data/movements_oranges.csv",
 
   # Output directories
   output_dir = "output",
   figures_dir = "figures",
 
   # Primary output files
-  county_output = "output/epidf_indiv_full.csv",
-  regional_output_prefix = "output/epidf_indiv_full_regional_",
+  county_output = "output/county_sim.csv",
+  regional_output_prefix = "output/regional_sim_",
 
   # Sensitivity analysis outputs
   sensitivity_summary = "output/sensitivity_summary.csv",
