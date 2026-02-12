@@ -367,7 +367,11 @@ Ok, got it, I think -- I've plotted the percent reduction in harvest for each co
 We're closing in, I think. I want to come up with some kind of very basic assessment of the proportion of lost agricultural production in each region due to the outbreak. For this, I think we can assume some kind of constant productivity across the year, that all the agricultural workers are working year-round and that we can just count up workdays lost and transalte that into economic losses. It'd be tough to do some kind of comprehensive analysis across all crops because the labor needs are so different. 
 
 
+# 11 Feb 2026
 
+Useful for the NAWS data:
+
+https://www.dol.gov/agencies/eta/national-agricultural-workers-survey/naws-data-finder
 
 
 

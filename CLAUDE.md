@@ -66,12 +66,12 @@ The models implement House & Keeling (2009) household-structured transmission wi
 - **`simulate.R`** / **`simulate_regional.R`** - Runs epidemic simulations across counties/regions
 
 ### Parameter Sets (`code/parameters.R`)
-Defines 12 parameter configurations for one-at-a-time sensitivity analysis across four dimensions:
+Defines 14 parameter configurations for one-at-a-time sensitivity analysis across four dimensions:
 
 **Sensitivity Dimensions (baseline values in bold):**
 1. **R0 values:** 1.2, 1.5 **(baseline)**, 2.0, 3.0
-2. **Assortativity (ε):** 0, 0.33 **(baseline)**, 0.5, 0.7
-3. **SAR in crowded households:** 30%, 40% **(baseline)**, 50%, 60%
+2. **Assortativity (ε):** 0, 0.33 **(baseline)**, 0.5, 0.75
+3. **SAR in crowded households:** 20%, 30%, 40% **(baseline)**, 50%, 60%
 4. **Crowding fold difference:** 1, 2 **(baseline)**, 3
 
 **Key Parameters:**

@@ -103,7 +103,7 @@ calculate_summary_stats <- function(df) {
   return(summary_df)
 }
 
-#' Calculate differential statistics (Ag workers vs Community)
+#' Calculate differential statistics (ag workers vs community)
 #' @param summary_df Output from calculate_summary_stats
 #' @return Tibble with differential metrics
 calculate_differential_stats <- function(summary_df) {
@@ -240,6 +240,8 @@ plot_sensitivity_overview <- function(diff_df, metric = "attack_rate_diff") {
     "peak_prevalence_diff" = "Peak Prevalence Difference\n(Agricultural - Community)",
     "time_to_peak_diff" = "Peak Timing Difference in Days\n(Agricultural - Community)",
     "max_relative_infection" = "Peak Relative Infection Rate\n(Agricultural / Community)",
+    "peak_prevalence_ratio" = "Peak Prevalence Ratio\n(Agricultural / Community)",
+    "attack_rate_ratio" = "Attack Rate Ratio\n(Agricultural / Community)",
     "final_attack_rate_A" = "Final Attack Rate\n(Agricultural Workers)"
   )
 
@@ -473,6 +475,22 @@ run_sensitivity_analysis <- function() {
   ggsave(file.path(paths$figures_dir, "sensitivity_overview_max_relative_infection.png"),
          fig_overview_relinf, width = 12, height = 5, dpi = 300)
   cat("  Saved: sensitivity_overview_max_relative_infection.pdf/.png\n")
+
+  # Overview figure - peak prevalence ratio across all dimensions
+  fig_overview_peakratio <- plot_sensitivity_overview(diff_stats, "peak_prevalence_ratio")
+  ggsave(file.path(paths$figures_dir, "sensitivity_overview_peak_prevalence_ratio.pdf"),
+         fig_overview_peakratio, width = 12, height = 5)
+  ggsave(file.path(paths$figures_dir, "sensitivity_overview_peak_prevalence_ratio.png"),
+         fig_overview_peakratio, width = 12, height = 5, dpi = 300)
+  cat("  Saved: sensitivity_overview_peak_prevalence_ratio.pdf/.png\n")
+
+  # Overview figure - attack rate ratio across all dimensions
+  fig_overview_arratio <- plot_sensitivity_overview(diff_stats, "attack_rate_ratio")
+  ggsave(file.path(paths$figures_dir, "sensitivity_overview_attack_rate_ratio.pdf"),
+         fig_overview_arratio, width = 12, height = 5)
+  ggsave(file.path(paths$figures_dir, "sensitivity_overview_attack_rate_ratio.png"),
+         fig_overview_arratio, width = 12, height = 5, dpi = 300)
+  cat("  Saved: sensitivity_overview_attack_rate_ratio.pdf/.png\n")
 
   # Individual sensitivity dimension plots
   sens_dimensions <- c("r0", "eps", "sar", "fold")
