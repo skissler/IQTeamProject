@@ -4,7 +4,7 @@
 # This script loads all regional simulation outputs and creates comparative
 # summaries and visualizations across the sensitivity dimensions:
 #   1. R0 values: 1.2, 1.5 (baseline), 2.0, 3.0
-#   2. Assortativity (eps): 0, 0.33 (baseline), 0.5, 0.7
+#   2. Assortativity (eta = 1-eps): 0, 0.25, 0.33, 0.5, 0.67 (baseline), 0.75, 1
 #   3. SAR in crowded households: 30%, 40% (baseline), 50%, 60%
 #   4. Crowding fold difference: 1, 2 (baseline), 3
 #
@@ -204,6 +204,12 @@ prepare_sensitivity_data <- function(df, sens_dimension) {
     }
   }
 
+  # Transform eps → eta (eta = 1 - eps) for display
+  if (sens_dimension == "eps") {
+    result <- result %>%
+      mutate(sens_value = 1 - sens_value)
+  }
+
   return(result)
 }
 
@@ -221,13 +227,13 @@ plot_sensitivity_overview <- function(diff_df, metric = "attack_rate_diff") {
     mutate(
       sens_type_label = case_when(
         sens_type == "r0" ~ "R0",
-        sens_type == "eps" ~ "Assortativity (epsilon)",
+        sens_type == "eps" ~ "Assortativity (eta)",
         sens_type == "sar" ~ "SAR (Crowded)",
         sens_type == "fold" ~ "Crowding Fold",
         TRUE ~ sens_type
       ),
       sens_type_label = factor(sens_type_label,
-                               levels = c("R0", "Assortativity (epsilon)",
+                               levels = c("R0", "Assortativity (eta)",
                                           "SAR (Crowded)", "Crowding Fold"))
     ) %>%
     # Create numeric x for proper line connections within each facet
@@ -291,7 +297,7 @@ plot_epidemic_curves <- function(all_data, sens_dimension, region = 1) {
     labs(
       x = "Time (days)",
       y = "Proportion Infected",
-      color = paste0(toupper(sens_dimension), " Value"),
+      color = paste0(c("r0" = "R0", "eps" = "eta", "sar" = "SAR", "fold" = "FOLD")[sens_dimension], " Value"),
       linetype = "Population",
       title = paste("Epidemic Curves - Region", region)
     ) +
@@ -314,7 +320,7 @@ plot_epidemic_curves_all_regions <- function(all_data, sens_dimension, metric = 
 
   sens_labels <- c(
     "r0" = "R0",
-    "eps" = "Assortativity (epsilon)",
+    "eps" = "Assortativity (eta)",
     "sar" = "SAR (Crowded)",
     "fold" = "Crowding Fold Diff."
   )
@@ -370,7 +376,7 @@ plot_relative_infection_all_regions <- function(all_data, sens_dimension) {
 
   sens_labels <- c(
     "r0" = "R0",
-    "eps" = "Assortativity (epsilon)",
+    "eps" = "Assortativity (eta)",
     "sar" = "SAR (Crowded)",
     "fold" = "Crowding Fold Diff."
   )

@@ -5,7 +5,7 @@
 #
 # Sensitivity dimensions (one-at-a-time analysis):
 #   1. R0 values: 1.2, 1.5 (baseline), 2.0, 3.0
-#   2. Assortativity (eps): 0, 0.33 (baseline), 0.5, 0.75
+#   2. Assortativity (eta = 1-eps): 0, 0.25, 0.33, 0.5, 0.67 (baseline), 0.75, 1
 #   3. SAR in crowded households: 20%, 30%, 40% (baseline), 50%, 60%
 #   4. Crowding fold difference: 1, 2 (baseline), 3
 #
@@ -81,7 +81,7 @@ create_parset <- function(sens_type, sens_value, parset,
 # Baseline values are defined in config.R (default_pars)
 
 r0_values <- c(1.2, 1.5, 2.0, 3.0)
-eps_values <- c(0, 0.33, 0.5, 0.75)
+eps_values <- c(0, 0.25, 0.33, 0.5, 0.67, 0.75, 1)
 sar_crowded_values <- c(0.20, 0.30, 0.40, 0.50, 0.60)
 fold_diff_values <- c(1, 2, 3)
 

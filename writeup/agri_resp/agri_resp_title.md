@@ -31,7 +31,7 @@ Supplementary:
 - [ ] Three methods for county imputation 
 - [x] Model structure 
 - [x] Sensitivity to R0
-- [x] Sensitivity to epsilon 
+- [x] Sensitivity to eta
 - [x] Sensitivity to SAR 
 - [x] Sensitivity to crowding fold difference 
 - [ ] Sensitivity to county imputation method 

@@ -31,11 +31,13 @@ Supplementary:
 - [ ] Three methods for county imputation 
 - [x] Model structure 
 - [x] Sensitivity to R0
-- [x] Sensitivity to epsilon 
+- [x] Sensitivity to eta
 - [x] Sensitivity to SAR 
 - [x] Sensitivity to crowding fold difference 
 - [ ] Sensitivity to county imputation method 
 
+Other to do: 
+- [ ] 
 
 
 --->
@@ -96,19 +98,19 @@ We simulated respiratory disease transmission using a deterministic household-st
 
 The model tracks the number of infections over time in the population, explicitly accounting for transmission within and between households of various sizes. The transmission model has three main epidemiological parameters: the between-household transmission rate ($\beta$), the within-household transmission rate ($\tau$), and the recovery rate ($\gamma$). We allowed the within-household transmission rate $\tau$ to differ for uncrowded vs. crowded households. 
 
-We assumed that mixing among agricultural workers (A) and the general community (C) was assortative, governed by parameter $\epsilon$. We modeled this using the mixing matrix 
+We assumed that mixing among agricultural workers (A) and the general community (C) was assortative, governed by an assortativity parameter $\eta$. We modeled this using the mixing matrix
 
-$$ M = 
-\begin{pmatrix} m_{CC} & m_{CA} \\\ m_{AC} & m_{AA} \end{pmatrix} = 
-\begin{pmatrix} (1-\epsilon) + \epsilon w_C & \epsilon w_A \\\ \epsilon w_C & (1-\epsilon) + \epsilon w_A \end{pmatrix}
+$$ M =
+\begin{pmatrix} m_{CC} & m_{CA} \\\ m_{AC} & m_{AA} \end{pmatrix} =
+\begin{pmatrix} \eta + (1-\eta) w_C & (1-\eta) w_A \\\ (1-\eta) w_C & \eta + (1-\eta) w_A \end{pmatrix}
 $$
 
-Here, $w_C$ is the fraction of the region's population made up by the general community and $w_A$ is the fraction of the population made up by agricultural workers. This matrix modulates the between-household force of infection $\lambda$ experienced by each population such that 
+Here, $w_C$ is the fraction of the region's population made up by the general community and $w_A$ is the fraction of the population made up by agricultural workers. This matrix modulates the between-household force of infection $\lambda$ experienced by each population such that
 
-$$\lambda_C = \beta (m_{CC} I_C + m_{CA} I_A)$$ 
+$$\lambda_C = \beta (m_{CC} I_C + m_{CA} I_A)$$
 $$\lambda_A = \beta (m_{AC} I_C + m_{AA} I_A)$$
 
-where $\lambda_i$ is the between-household force of infection for members of sub-population $i$, $\beta$ is the between-household transmission constant, and $I_i$ is the proportion of infectious individuals in sub-population $i$; thus, $\epsilon = 0$ implies completely assortative mixing and $\epsilon = 1$ implies mixing proportional to each sub-population's size. 
+where $\lambda_i$ is the between-household force of infection for members of sub-population $i$, $\beta$ is the between-household transmission constant, and $I_i$ is the proportion of infectious individuals in sub-population $i$; thus, $\eta = 1$ implies completely assortative mixing and $\eta = 0$ implies mixing proportional to each sub-population's size.
 
 Besides the impact of household size, household crowding, and assortative mixing, we did not assume any additional differences in transmission rates between the two sub-populations. For full details on the model structure, see the **Supplementary Methods.** 
 
@@ -116,7 +118,7 @@ Besides the impact of household size, household crowding, and assortative mixing
 
 Following previous methods [x], we began by fixing the recovery rate $\gamma = 1/5$, which corresponds to a mean infectious period of 5 days. Then, given $\gamma$ and the household secondary attack rate (SAR), we derived $\tau$ (**Supplementary Methods**). We set the SAR for uncrowded households at 20%, following estimates for influenza [x]. For crowded households, we set the baseline SAR at 40% [x]. In sensitivity analyses, we considered crowded-household SARs of 0.2, 0.3, 0.5, and 0.6. Last, given values for $\gamma$ and $\tau$, we numerically identified the value of $\beta$ that would achieve a desired basic reproduction number ($\mathcal{R_0}$) when simulating outbreaks at the national level. Specifically, for a candidate $\beta$ value, we ran the model with a single sub-population to equilibrium; then, we compared the outbreak's final size with the theoretical prediction from the implicit relationship $R(\infty) = 1 - \exp(-\mathcal{R_0} \cdot R(\infty))$, where $R(\infty)$ is the final size of the outbreak. [x] We adjusted $\beta$ using a bisection search algorithm until the simulated final size was within 0.0005 of the theoretical value. For the baseline analysis, we used $\mathcal{R_0}$ = 1.5, reflecting a moderate pandemic influenza scenario and the effective reproduction number during many COVID-19 surges when behavioral mitigations were in place. In sensitivity analyses, we considered $\mathcal{R_0}$ values of 1.2, 2.0, and 3.0. Baseline and sensitivity parameter values are listed in **Supplementary Table XX**. 
 
-For the baseline assortativity, we used $\varepsilon = 0.33$, reflecting moderate assortativity where agricultural workers have preferential within-group contact but still interact with the general population. At this baseline, agricultural workers have approximately 67% of their between-household contacts within their own group and 33% with the general community (range across regions: 67.2%–67.7% within-group). The general community, being much larger, has nearly all contacts (>99%) within their own group. In sensitivity analyses, we considered $\varepsilon \in \{0, 0.5, 0.75\}$, corresponding to agricultural workers having 100%, 50%, and 25% of contacts within their own group, respectively.
+For the baseline assortativity, we used $\eta = 0.67$, reflecting moderate assortativity where agricultural workers have preferential within-group contact but still interact with the general population. At this baseline, agricultural workers have approximately 67% of their between-household contacts within their own group and 33% with the general community (range across regions: 67.2%–67.7% within-group). The general community, being much larger, has nearly all contacts (>99%) within their own group. In sensitivity analyses, we considered $\eta \in \{0, 0.25, 0.33, 0.5, 0.75, 1\}$, corresponding to agricultural workers having 0%, 25%, 33%, 50%, 75%, and 100% of contacts within their own group, respectively.
 
 We assumed that infections were symptomatic with probability $p_{symp}$ = 0.5 at baseline, and we considered $p_{symp} \in \{0.25, 0.75, 1\}$ in sensitivity analyses. We assumed symptoms began one day after infection and lasted for three days. 
 
@@ -145,7 +147,7 @@ To translate disease dynamics into agricultural productivity impacts, we estimat
 
 Agricultural worker households are substantially more crowded on average than the general U.S. population (Figure 1). While mean household size was similar between groups (2.7 for agricultural workers vs 2.5 for the general population; Figure 1), the proportion of crowded households ranged from 3 to 9 times higher among agricultural workers than the general population across the six regions. Crowding rates among agricultural workers ranged from 11% (Midwest) to 33% (California), compared to 2-8% in the general population.
 
-Simulations of respiratory disease outbreaks at the regional level revealed consistently higher disease burden among agricultural workers compared to the general population (Figure 2). Under baseline assumptions ($R_0$ = 1.5, SAR = 20%/40% for uncrowded/crowded households, $\varepsilon$ = 0.33), peak prevalence among agricultural workers exceeded that of the general population by 0.5% to 2.0% across regions. Cumulative attack rates ranged from 3.5% to 11.5% higher among agricultural workers, with final attack rates of 60-72% among agricultural workers compared to 56-63% in the general population.
+Simulations of respiratory disease outbreaks at the regional level revealed consistently higher disease burden among agricultural workers compared to the general population (Figure 2). Under baseline assumptions ($R_0$ = 1.5, SAR = 20%/40% for uncrowded/crowded households, $\eta$ = 0.67), peak prevalence among agricultural workers exceeded that of the general population by 0.5% to 2.0% across regions. Cumulative attack rates ranged from 3.5% to 11.5% higher among agricultural workers, with final attack rates of 60-72% among agricultural workers compared to 56-63% in the general population.
 
 These differences were sensitive to the basic reproduction number. At $R_0$ = 1.2, peak prevalence among agricultural workers exceeded the general population by 0.2-1.0%, and attack rates differed by 4-15%. At higher transmissibility ($R_0$ = 2.0), peak prevalence differences widened to 0.6-2.5%, while attack rate differences narrowed to 2-6% as both populations approached high overall infection levels. At $R_0$ = 3.0, with near-complete infection of both populations (>93% attack rates), differences between groups were minimal (peak prevalence difference 0.5-2.3%, attack rate difference 0.4-1.7%).
 
@@ -272,8 +274,8 @@ where $I_k$ is the prevalence in population $k$:
 $I_k = \frac{\sum_{x,y,z,c} y \cdot H_k(x,y,z,c)}{\sum_{x,y,z,c} n \cdot H_k(x,y,z,c)}$
 
 The mixing matrix elements are:
-$m_{kk} = (1-\epsilon) + \epsilon w_k$
-$m_{kj} = \epsilon w_j$
+$m_{kk} = \eta + (1-\eta) w_k$
+$m_{kj} = (1-\eta) w_j$
 
 where $w_k = \frac{N_k}{N_C + N_A}$ is the population fraction in group $k$.
 
