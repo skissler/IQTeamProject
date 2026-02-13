@@ -11,11 +11,15 @@
 #   4. Calculate workforce availability (1 - symptomatic proportion)
 #   5. Estimate production losses for epidemics peaking on each day of year
 #
+# Note: This code assumes p_symp = 1 (all infections are symptomatic).
+# Because production loss scales linearly with p_symp, you can obtain
+# results for any p_symp by multiplying the output losses by p_symp.
+#
 # Inputs:
 #   - data/movements_lettuce.csv     - Weekly lettuce shipments
 #   - data/movements_strawberries.csv - Weekly strawberry shipments
 #   - data/movements_oranges.csv     - Weekly orange shipments
-#   - output/regional_sim_r0_1.2.csv              - Baseline epidemic simulation
+#   - output/regional_sim_r0_1.5.csv              - Baseline epidemic simulation
 #
 # Outputs:
 #   - figures/crop_movements_raw.pdf      - Raw weekly movement data
@@ -202,6 +206,43 @@ get_impact <- function(peakday, avg_movements_daily, epidf_with_symp) {
   return(impact_df)
 }
 
+# Check the epidemic wraparound: 
+check_wraparound <- function(peakday, avg_movements_daily, epidf_with_symp) {
+
+  # Get peak time from simulation (in simulation days)
+  peaktime_sim <- epidf_with_symp %>%
+    ungroup() %>%
+    filter(subpop == "C") %>%
+    filter(symp == max(symp)) %>%
+    pull(t) %>%
+    first()
+
+  # Get workforce availability from agricultural workers
+  # wf = 1 - symptomatic proportion (proportion available to work)
+  wf_epidemic <- epidf_with_symp %>%
+    filter(subpop == "A") %>%
+    mutate(wf = 1 - symp) %>%
+    select(t_sim = t, wf) %>%
+    ungroup()
+
+  # Calculate offset to align simulation peak with target peakday
+  offset <- peakday - peaktime_sim
+
+  # Map simulation days to calendar days (1-364)
+  # Use modular arithmetic to wrap around the calendar year
+  wf_mapped <- wf_epidemic %>%
+    mutate(
+      # Shift simulation time by offset, wrap to 1-364
+      calendar_day = ((t_sim + offset - 1) %% CALENDAR_DAYS) + 1
+    ) %>%
+    # Keep only unique calendar days (in case of duplicates from wrapping)
+    group_by(calendar_day) %>%
+    summarise(wf = first(wf), .groups = "drop")
+
+  return(wf_mapped)
+}
+
+
 # ==============================================================================
 # 5. Calculate Impact Across All Epidemic Timings
 # ==============================================================================
@@ -237,13 +278,14 @@ fig_movements_raw <- movements %>%
   ggplot(aes(x = begin_date, y = lbs / 1e6, col = commodity)) +
   geom_line(linewidth = 0.8, alpha = 0.8) +
   scale_color_manual(values = crop_colors) +
+  expand_limits(y = 0) +
   labs(
     x = "Date",
     y = "Weekly Shipments (Million lbs)",
     color = "Commodity",
     title = "California Crop Shipments Over Time"
   ) +
-  theme_minimal() +
+  theme_classic() +
   theme(legend.position = "bottom")
 
 ggsave(file.path(paths$figures_dir, "crop_movements_raw.pdf"),
@@ -255,13 +297,14 @@ fig_movements_avg <- avg_movements %>%
   ggplot(aes(x = week, y = lbs / 1e6, col = commodity)) +
   geom_line(linewidth = 0.8, alpha = 0.8) +
   scale_color_manual(values = crop_colors) +
+  expand_limits(y = 0) +
   labs(
     x = "Week of Year",
     y = "Average Weekly Shipments (Million lbs)",
     color = "Commodity",
     title = "Average Seasonal Harvest Pattern"
   ) +
-  theme_minimal() +
+  theme_classic() +
   theme(legend.position = "bottom")
 
 ggsave(file.path(paths$figures_dir, "crop_movements_averaged.pdf"),
@@ -273,6 +316,7 @@ fig_impact <- impact_df_combined %>%
   ggplot(aes(x = peakday, y = pct_loss, col = commodity)) +
   geom_line(linewidth = 0.8, alpha = 0.8) +
   scale_color_manual(values = crop_colors) +
+  expand_limits(y = 0) +
   labs(
     x = "Day of Year (Epidemic Peak)",
     y = "Production Loss (%)",
@@ -280,7 +324,7 @@ fig_impact <- impact_df_combined %>%
     title = "Estimated Production Loss by Epidemic Timing",
     subtitle = paste0("Based on baseline epidemic (R0 = ", default_pars$r0, ") in California")
   ) +
-  theme_minimal() +
+  theme_classic() +
   theme(legend.position = "bottom")
 
 ggsave(file.path(paths$figures_dir, "crop_impact_by_peakday.pdf"),

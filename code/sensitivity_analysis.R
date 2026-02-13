@@ -4,7 +4,7 @@
 # This script loads all regional simulation outputs and creates comparative
 # summaries and visualizations across the sensitivity dimensions:
 #   1. R0 values: 1.2, 1.5 (baseline), 2.0, 3.0
-#   2. Assortativity (eta = 1-eps): 0, 0.25, 0.33, 0.5, 0.67 (baseline), 0.75, 1
+#   2. Assortativity (eta = 1-eps): 0, 1/4, 1/3, 1/2, 2/3 (baseline), 3/4
 #   3. SAR in crowded households: 30%, 40% (baseline), 50%, 60%
 #   4. Crowding fold difference: 1, 2 (baseline), 3
 #
@@ -207,7 +207,7 @@ prepare_sensitivity_data <- function(df, sens_dimension) {
   # Transform eps → eta (eta = 1 - eps) for display
   if (sens_dimension == "eps") {
     result <- result %>%
-      mutate(sens_value = 1 - sens_value)
+      mutate(sens_value = round(1 - sens_value, 2))
   }
 
   return(result)
@@ -251,11 +251,16 @@ plot_sensitivity_overview <- function(diff_df, metric = "attack_rate_diff") {
     "final_attack_rate_A" = "Final Attack Rate\n(Agricultural Workers)"
   )
 
+  # Colorblind-friendly palette (Okabe-Ito) and region labels
+  cb_palette <- c("#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#D55E00")
+  region_labels <- setNames(region_map$REGION_NAME, region_map$REGION6)
+
   p <- plot_data %>%
     ggplot(aes(x = factor(sens_value), y = .data[[metric]], color = factor(REGION6))) +
-    geom_point(size = 2, alpha = 0.8) +
-    geom_line(aes(group = REGION6, x = x_numeric), alpha = 0.5) +
+    geom_line(aes(group = REGION6), alpha = 0.4, linewidth = 1) +
+    geom_point(size = 1.5, alpha = 0.8) +
     facet_wrap(~sens_type_label, scales = "free_x", nrow = 1) +
+    scale_color_manual(values = cb_palette, labels = region_labels) +
     labs(
       x = "Parameter Value",
       y = metric_labels[metric],

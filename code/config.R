@@ -64,8 +64,8 @@ default_pars <- list(
   sar_crowded = 0.40,           # SAR for crowded households: 40%
 
   # Population mixing
-  eps = 0.33,                   # Assortativity: probability of within-group contact
-                                # 0 = random mixing, 1 = complete assortment
+  eps = 1/3,                    # Mixing parameter (eta = 1 - eps for assortativity)
+                                # eps = 0: complete assortment, eps = 1: proportional mixing
 
   # Household structure
   max_hh_size = 7,              # Maximum household size modeled (7+ grouped together)

@@ -70,7 +70,7 @@ Defines 14 parameter configurations for one-at-a-time sensitivity analysis acros
 
 **Sensitivity Dimensions (baseline values in bold):**
 1. **R0 values:** 1.2, 1.5 **(baseline)**, 2.0, 3.0
-2. **Assortativity (η):** 0, 0.25, 0.33, 0.5, 0.67 **(baseline)**, 0.75, 1
+2. **Assortativity (η):** 0, 1/4, 1/3, 1/2, 2/3 **(baseline)**, 3/4
 3. **SAR in crowded households:** 20%, 30%, 40% **(baseline)**, 50%, 60%
 4. **Crowding fold difference:** 1, 2 **(baseline)**, 3
 
