@@ -165,7 +165,7 @@ The simulated outbreaks yielded substantial productivity losses for all three cr
 
 **Figure 2.** Epidemic simulations.
 
-![Epidemic simulations](../../figures/main_epicurves.png)
+![Epidemic simulations](../../figures/main_epicurves_white.png)
 
 
 
