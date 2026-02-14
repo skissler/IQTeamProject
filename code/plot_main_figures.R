@@ -13,6 +13,7 @@
 # Outputs (for each adjustment method):
 #   - figures/main_overlay_{method}.pdf/.png - Current infections
 #   - figures/main_cumulative_{method}.pdf/.png - Cumulative infections
+#   - figures/main_relative_infection_{method}.pdf/.png - Relative infection rate (A/C)
 # ==============================================================================
 
 # Load dependencies
@@ -177,6 +178,73 @@ create_cumulative_plot <- function(county_plot, regional_plot, adjust_method) {
     guides(color = guide_legend(override.aes = list(linewidth = 1.5, alpha = 1)))
 }
 
+#' Create overlay plot for relative infection rate (A/C)
+#' @param county_plot County data prepared for plotting
+#' @param regional_plot Regional data prepared for plotting
+#' @param adjust_method Adjustment method name for subtitle
+#' @return ggplot object
+create_relative_infection_plot <- function(county_plot, regional_plot, adjust_method) {
+
+  # Compute A/C ratio for county data
+  county_rel <- county_plot %>%
+    select(t, GEOID, subpop, I_indiv, region_label) %>%
+    pivot_wider(names_from = subpop, values_from = I_indiv) %>%
+    filter(C > 0) %>%
+    mutate(rel_inf = A / C)
+
+  # Compute A/C ratio for regional data
+  regional_rel <- regional_plot %>%
+    select(t, subpop, I_indiv, region_label) %>%
+    pivot_wider(names_from = subpop, values_from = I_indiv) %>%
+    filter(C > 0) %>%
+    mutate(rel_inf = A / C)
+
+  ggplot() +
+    # County curves: thin, semi-transparent, in back
+    geom_line(
+      data = county_rel,
+      aes(x = t, y = rel_inf, group = GEOID),
+      color = "grey50",
+      linewidth = 0.15,
+      alpha = 0.3
+    ) +
+    # Regional curves: black outline for visibility
+    geom_line(
+      data = regional_rel,
+      aes(x = t, y = rel_inf),
+      color = "black",
+      linewidth = 2.5,
+      alpha = 1
+    ) +
+    # Regional curves: thick, opaque, in front
+    geom_line(
+      data = regional_rel,
+      aes(x = t, y = rel_inf),
+      color = "#7B287D",
+      linewidth = 1.2,
+      alpha = 1
+    ) +
+    geom_hline(yintercept = 1, linetype = "dashed", color = "grey50", alpha = 0.5) +
+    facet_wrap(~region_label, ncol = 3) +
+    scale_x_continuous(limits = c(0, 150), breaks = seq(0, 150, 30)) +
+    expand_limits(y = 0.5) +
+    labs(
+      x = "Time (days)",
+      y = "Relative Infection Rate (Agricultural / Community)",
+      title = paste0("Relative Infection Rate: ", adjust_labels[adjust_method]),
+      subtitle = paste0("Thick lines: regional average. Thin lines: individual counties. ",
+                        "R0 = ", default_pars$r0)
+    ) +
+    theme_classic() +
+    theme(
+      legend.position = "bottom",
+      strip.text = element_text(face = "bold", size = 10),
+      panel.grid.minor = element_blank(),
+      plot.title = element_text(face = "bold", size = 12),
+      plot.subtitle = element_text(size = 9, color = "grey40")
+    )
+}
+
 # ==============================================================================
 # 4. Generate Figures for Each Adjustment Method
 # ==============================================================================
@@ -217,6 +285,14 @@ for (method in adjust_methods) {
   ggsave(file.path(paths$figures_dir, paste0("main_cumulative_", method, ".png")),
          fig_cumulative, width = 12, height = 8, dpi = 300)
   cat("  Saved: main_cumulative_", method, ".pdf/.png\n", sep = "")
+
+  # Create and save relative infection plot (A/C ratio)
+  fig_relative <- create_relative_infection_plot(county_plot, regional_plot, method)
+  ggsave(file.path(paths$figures_dir, paste0("main_relative_infection_", method, ".pdf")),
+         fig_relative, width = 12, height = 8)
+  ggsave(file.path(paths$figures_dir, paste0("main_relative_infection_", method, ".png")),
+         fig_relative, width = 12, height = 8, dpi = 300)
+  cat("  Saved: main_relative_infection_", method, ".pdf/.png\n", sep = "")
 }
 
 cat("\nMain overlay/cumulative figures complete.\n")

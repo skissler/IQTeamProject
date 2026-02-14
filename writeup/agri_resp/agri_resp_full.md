@@ -163,6 +163,10 @@ The simulated outbreaks yielded substantial productivity losses for all three cr
 
 ![Household characteristics](../../figures/hh_inkscape_white.png)
 
+**Figure 2.** Epidemic simulations.
+
+![Epidemic simulations](../../figures/main_epicurves.png)
+
 
 
 
