@@ -17,3 +17,7 @@ County-level simulations demonstrated geographic heterogeneity in these infectio
 
 The simulated outbreaks yielded substantial productivity losses for all three crops we considered, with the impact varying by outbreak timing relative to peak harvest periods. For strawberries, peak productivity losses were 1.14% with the worst outbreak timing being an epidemic peak on day 141 (approximately late May). For iceberg lettuce, maximum losses were 0.90% for outbreaks that peaked in late May (day 141). For oranges, peak losses were 0.88% for outbreaks peaking in late January (day 30). These translate into losses of roughly xxx, xxx, and xxx USD. 
 
+**Figure 1.** Household characteristics.
+
+![Household characteristics](../../figures/hh_inkscape_white.png)
+

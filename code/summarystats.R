@@ -20,10 +20,15 @@ if (!exists("acs_data_regional")) source("code/import_acs.R")
 # Combine regional data
 # ==============================================================================
 
+# Create ordered factor for region labels (preserves numeric order, shows names)
+region_labels <- setNames(region_map$REGION_NAME, region_map$REGION6)
+
 data_regional <- bind_rows(
   mutate(select(naws_data, REGION6, hhSize, prop), SOURCE = "NAWS"),
   mutate(select(acs_data_regional, REGION6, hhSize, prop), SOURCE = "ACS")
-)
+) %>%
+  mutate(region_label = factor(region_labels[as.character(REGION6)],
+                               levels = region_map$REGION_NAME))
 
 # ==============================================================================
 # Figure 1: Household size pyramid (ACS vs NAWS by region)
@@ -39,18 +44,18 @@ data_modified <- data_regional %>%
 # Mean household size per region and source (for reference lines)
 data_means <- data_modified %>%
   mutate(temp = as.numeric(hhSize) * prop) %>%
-  group_by(REGION6, SOURCE) %>%
+  group_by(region_label, SOURCE) %>%
   summarise(mean_hhSize = sum(temp), .groups = "drop") %>%
   mutate(lineend = case_when(SOURCE == "NAWS" ~ Inf, TRUE ~ -Inf))
 
-source_colors <- c("ACS" = "#3b82f6", "NAWS" = "#16a34a")
+source_colors <- c("ACS" = "#E41A1C", "NAWS" = "#377EB8")  # ACS = community (red), NAWS = ag workers (blue)
 
 fig_hhsize_pyramid <- ggplot(data_modified, aes(x = hhSize, y = plot_prop, fill = SOURCE)) +
   geom_col(alpha = 0.8) +
   coord_flip() +
   geom_segment(data = data_means, aes(x = mean_hhSize, xend = mean_hhSize, y = 0, yend = lineend, col = SOURCE),
                lty = "dashed") +
-  facet_wrap(~REGION6, labeller = label_both) +
+  facet_wrap(~region_label) +
   scale_y_continuous(
     labels = function(x) paste0(abs(x) * 100, "%"),
     breaks = scales::pretty_breaks(n = 5)
@@ -79,10 +84,21 @@ ggsave(file.path(paths$figures_dir, "fig_hhsize_pyramid.pdf"),
 # ==============================================================================
 
 fig_crowding_hists <- acs_data %>%
+  mutate(region_label = factor(region_labels[as.character(REGION6)],
+                               levels = region_map$REGION_NAME)) %>%
   ggplot(aes(x = prop_crowded)) +
-  geom_histogram(aes(y = after_stat(density)), bins = 50) +
-  geom_vline(data = naws_crowding, aes(xintercept = prop_crowded), lty = "dashed") +
-  facet_wrap(~REGION6) +
+  geom_histogram(aes(y = after_stat(density)), fill = "#E41A1C", alpha = 0.7, bins = 50) +
+  geom_vline(data = acs_data_regional %>%
+               group_by(REGION6) %>%
+               summarise(prop_crowded = first(prop_crowded), .groups = "drop") %>%
+               mutate(region_label = factor(region_labels[as.character(REGION6)],
+                                            levels = region_map$REGION_NAME)),
+             aes(xintercept = prop_crowded), lty = "dashed", color = "#E41A1C", linewidth = 0.8) +
+  geom_vline(data = naws_crowding %>%
+               mutate(region_label = factor(region_labels[as.character(REGION6)],
+                                            levels = region_map$REGION_NAME)),
+             aes(xintercept = prop_crowded), lty = "dashed", color = "#377EB8", linewidth = 0.8) +
+  facet_wrap(~region_label) +
   labs(
     x = "Proportion of Households Crowded",
     y = "Density"
