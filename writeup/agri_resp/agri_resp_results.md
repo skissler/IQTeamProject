@@ -25,3 +25,7 @@ The simulated outbreaks yielded substantial productivity losses for all three cr
 
 ![Epidemic simulations](../../figures/main_epicurves_white.png)
 
+**Figure 3.** Crop impact.
+
+![Crop impact](../../figures/crop_impact.png)
+
