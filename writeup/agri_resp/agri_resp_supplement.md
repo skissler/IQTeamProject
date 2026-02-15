@@ -154,6 +154,29 @@ To assess the impact of epidemic timing on crop production, we shifted the epide
 
 ![Model structure](../../figures/modelstructure.png)
 
+
+
+**Figure SXX.** Crowding distributions under each county-level imputation method
+
+![Crowding distributions imputed additive](../../figures/crowding_distribution_additive.png)
+![Crowding distributions imputed multiplicative](../../figures/crowding_distribution_multiplicative.png)
+![Crowding distributions imputed none](../../figures/crowding_distribution_none.png)
+
+**Figure SXX.** Mean household size distributions and distributions of households size 4+ under each county-level imputation method
+
+![Mean and four plus household size distributions imputed additive](../../figures/hhsize_distribution_additive.png)
+![Mean and four plus household size distributions imputed multiplicative](../../figures/hhsize_distribution_multiplicative.png)
+![Mean and four plus household size distributions imputed none](../../figures/hhsize_distribution_none.png)
+
+
+
+
+**Figure SXX.** Model structure.
+
+![Model structure](../../figures/modelstructure.png)
+
+
+
 **Figure SXX.** Sensitivity of outbreak final size to reproduction number, assortative mixing, secondary attack rate in crowded households, and crowding fold difference. 
 
 ![Sensitivity overview final size](../../figures/sensitivity_overview_attackrate.png)
