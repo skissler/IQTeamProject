@@ -217,10 +217,6 @@ To assess the impact of epidemic timing on crop production, we shifted the epide
 
 ### Supplementary Tables
 
-**Table SXX.** Regional household size and crowding data from ACS and NAWS
-
-**Table SXX.** Crop calendar and labor intensity data by region  
-
-**Table SXX.** Baseline and sensitivity analysis parameter values. Complete specification of all parameter combinations examined.
+**Table SXX.** Baseline and sensitivity analysis parameter values.
 
 **Table SXX.** Simulation results summary across all scenarios. Peak prevalence, time to peak, and final attack rate for agricultural workers and general population under all parameter combinations.
