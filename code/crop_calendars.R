@@ -290,7 +290,9 @@ fig_movements_raw <- movements %>%
 
 ggsave(file.path(paths$figures_dir, "crop_movements_raw.pdf"),
        fig_movements_raw, width = 10, height = 5)
-cat("  Saved: crop_movements_raw.pdf\n")
+ggsave(file.path(paths$figures_dir, "crop_movements_raw.png"),
+       fig_movements_raw, width = 10, height = 5, dpi = 300)
+cat("  Saved: crop_movements_raw.pdf/.png\n")
 
 # Figure: Averaged weekly pattern
 fig_movements_avg <- avg_movements %>%
@@ -309,7 +311,9 @@ fig_movements_avg <- avg_movements %>%
 
 ggsave(file.path(paths$figures_dir, "crop_movements_averaged.pdf"),
        fig_movements_avg, width = 8, height = 5)
-cat("  Saved: crop_movements_averaged.pdf\n")
+ggsave(file.path(paths$figures_dir, "crop_movements_averaged.png"),
+       fig_movements_avg, width = 8, height = 5, dpi = 300)
+cat("  Saved: crop_movements_averaged.pdf/.png\n")
 
 # Month axis breaks and labels for impact figures
 impact_month_breaks <- cumsum(c(1, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30))
@@ -337,7 +341,9 @@ fig_impact <- impact_df_combined %>%
 
 ggsave(file.path(paths$figures_dir, "crop_impact_by_peakday.pdf"),
        fig_impact, width = 10, height = 5)
-cat("  Saved: crop_impact_by_peakday.pdf\n")
+ggsave(file.path(paths$figures_dir, "crop_impact_by_peakday.png"),
+       fig_impact, width = 10, height = 5, dpi = 300)
+cat("  Saved: crop_impact_by_peakday.pdf/.png\n")
 
 # Figure: Production loss scaled by p_symp = 0.5
 fig_impact_psymp <- impact_df_combined %>%

@@ -154,10 +154,6 @@ To assess the impact of epidemic timing on crop production, we shifted the epide
 
 ![Model structure](../../figures/modelstructure.png)
 
-**Figure SXX.** Household size and crowding distributions by population and region
-
-![Household structure](../../figures/hh_white.png)
-
 **Figure SXX.** Sensitivity of outbreak final size to reproduction number, assortative mixing, secondary attack rate in crowded households, and crowding fold difference. 
 
 ![Sensitivity overview final size](../../figures/sensitivity_overview_attackrate.png)
@@ -175,6 +171,11 @@ To assess the impact of epidemic timing on crop production, we shifted the epide
 ![Sensitivity overview final size](../../figures/sensitivity_overview_max_relative_infection.png)
 
 **Figure SXX.** Sensitivity to county-level NAWS adjustment approach. Comparison of attack rate differentials under three approaches: (A) Null method (regional NAWS values used directly), (B) Additive method (baseline; county-level deviations from regional ACS means added to regional NAWS values), (C) Multiplicative method (regional NAWS values scaled by ratio of county-level to regional mean ACS values).
+
+**Figure SXX.** Crop movements for iceberg lettuce, oranges, and strawberries, 2018-2025
+
+![Crop movements](../../figures/crop_movements_raw.png)
+
 
 ### Supplementary Tables
 
