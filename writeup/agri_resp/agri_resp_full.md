@@ -383,6 +383,21 @@ To assess the impact of epidemic timing on crop production, we shifted the epide
 
 **Figure SXX.** Sensitivity to county-level NAWS adjustment approach. Comparison of attack rate differentials under three approaches: (A) Null method (regional NAWS values used directly), (B) Additive method (baseline; county-level deviations from regional ACS means added to regional NAWS values), (C) Multiplicative method (regional NAWS values scaled by ratio of county-level to regional mean ACS values).
 
+![Epidemic multiplicative](../../figures/main_overlay_multiplicative.png)
+
+![Cumulative infections multiplicative](../../figures/main_cumulative_multiplicative.png)
+
+![Relative infections multiplicative](../../figures/main_relative_infection_multiplicative.png)
+
+
+![Epidemic none](../../figures/main_overlay_none.png)
+
+![Cumulative infections none](../../figures/main_cumulative_none.png)
+
+![Relative infections none](../../figures/main_relative_infection_none.png)
+
+
+
 **Figure SXX.** Crop movements for iceberg lettuce, oranges, and strawberries, 2018-2025
 
 ![Crop movements](../../figures/crop_movements_raw.png)
