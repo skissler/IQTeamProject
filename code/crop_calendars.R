@@ -353,17 +353,17 @@ orange_bar <- tibble(
   xmax = c(365, month_starts[6] + month_days[6])
 )
 
-# Lettuce: planting Dec to mid-Aug, ~100d cool / ~50d warm maturation
-# Planting: Dec 1 (day 335) to mid-Aug (day ~227)
+# Lettuce: planting late Dec to mid-Aug, ~100d cool / ~50d warm maturation
+# Planting: Dec 20 (day 354) to mid-Aug (day ~227)
 # Harvest: shift start by +100d, shift end by +50d
-# Harvest start: 335 + 100 = 435 → wraps to day 70 (mid Mar)
+# Harvest start: 354 + 100 = 454 → wraps to day 89 (late Mar)
 # Harvest end: 227 + 50 = 277 (early Oct)
 lettuce_plant <- tibble(
-  xmin = c(month_starts[12], 1),
-  xmax = c(365, month_starts[8] + month_days[8] / 2)  # Dec 1 to mid-Aug
+  xmin = c(354, 1),
+  xmax = c(365, month_starts[8] + month_days[8] / 2)  # Dec 20 to mid-Aug
 )
 lettuce_harvest <- tibble(
-  xmin = 70,   # mid-Mar
+  xmin = 89,   # late Mar (Dec 20 + 100 days, wrapped)
   xmax = 277   # early Oct
 )
 
