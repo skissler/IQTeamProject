@@ -90,6 +90,7 @@ Fresh % 5     12  25  26   18  12  2
 "Lettuce is planted continuously from late December to mid-August along the Central Coast." "Cool season plantings may require up to 100 days to mature, but as the season warms, time to maturity decreases" ---> 
 
 
+
 ### Disease transmission model
 
 #### Model structure
@@ -118,7 +119,7 @@ Besides the impact of household size, household crowding, and assortative mixing
 
 Following previous methods [x], we began by fixing the recovery rate $\gamma = 1/5$, which corresponds to a mean infectious period of 5 days. Then, given $\gamma$ and the household secondary attack rate (SAR), we derived $\tau$ (**Supplementary Methods**). We set the SAR for uncrowded households at 20%, following estimates for influenza [x]. For crowded households, we set the baseline SAR at 40% [x]. In sensitivity analyses, we considered crowded-household SARs of 0.2, 0.3, 0.5, and 0.6. Last, given values for $\gamma$ and $\tau$, we numerically identified the value of $\beta$ that would achieve a desired basic reproduction number ($\mathcal{R_0}$) when simulating outbreaks at the national level. Specifically, for a candidate $\beta$ value, we ran the model with a single sub-population to equilibrium; then, we compared the outbreak's final size with the theoretical prediction from the implicit relationship $R(\infty) = 1 - \exp(-\mathcal{R_0} \cdot R(\infty))$, where $R(\infty)$ is the final size of the outbreak. [x] We adjusted $\beta$ using a bisection search algorithm until the simulated final size was within 0.0005 of the theoretical value. For the baseline analysis, we used $\mathcal{R_0}$ = 1.5, reflecting a moderate pandemic influenza scenario and the effective reproduction number during many COVID-19 surges when behavioral mitigations were in place. In sensitivity analyses, we considered $\mathcal{R_0}$ values of 1.2, 2.0, and 3.0. Baseline and sensitivity parameter values are listed in **Supplementary Table XX**. 
 
-For the baseline assortativity, we used $\eta = 2/3$, reflecting moderate assortativity where agricultural workers have preferential within-group contact but still interact with the general population. At this baseline, agricultural workers have approximately 67% of their between-household contacts within their own group and 33% with the general community. The general community, being much larger, has nearly all contacts (>99%) within their own group. In sensitivity analyses, we considered $\eta \in \{0, 1/4, 1/3, 1/2, 3/4\}$, corresponding to agricultural workers having 0%, 25%, 33%, 50%, and 75% of contacts within their own group, respectively.
+For the baseline assortativity, we used $\eta = 2/3$. Because agricultural workers constitute a small fraction of the total population ($w_A$ ranges from roughly 1% to 5% across regions), the within-group contact fraction for agricultural workers is $m_{AA} = \eta + (1-\eta) w_A \approx \eta$. At baseline, agricultural workers thus have approximately 67% of their between-household contacts within their own group. The general community, being much larger ($w_C \approx 1 - w_A > 95\%$), has nearly all contacts within their own group regardless of $\eta$ (since $m_{CC} = \eta + (1-\eta) w_C \approx 1$). In sensitivity analyses, we considered $\eta \in \{0, 1/4, 1/3, 1/2, 3/4\}$. At $\eta = 0$ (proportional mixing), agricultural workers still have $m_{AA} = w_A \approx 1$–$5\%$ of contacts within their own group; at $\eta = 3/4$, this rises to approximately 75%.
 
 We assumed symptoms began one day after infection and lasted for three days. For the crop productivity analysis, we computed production losses assuming all infections were symptomatic ($p_{symp} = 1$); because production loss scales linearly with $p_{symp}$, results for any other symptomatic probability can be obtained by multiplying the reported losses by $p_{symp}$.
 
@@ -239,21 +240,21 @@ $$w(n) = \begin{cases} 0 & n = 1 \\\ 1 + (d - 1) \cdot \frac{n - 2}{5} & n \geq 
 
 where $d$ is a crowding fold-difference parameter (the ratio of crowding probability for size-7 households to size-2 households). For example, when $d = 2$, $w(n) = \\{ 0, 1, 1.2, 1.4, 1.6, 1.8, 2\\}$ for $n \in \\{1, 2, ..., 7\\}$. Note that it is impossible for size-1 households to be crowded. We treated households of size 7+ as $n = 7$. For a given region and sub-population, the probability that a household of size $n$ is crowded is then:
 
-$$p_{\text{crowded}}(n) = \eta \cdot w(n)$$
+$$p_{\text{crowded}}(n) = \xi \cdot w(n)$$
 
-where the constant $\eta$ is chosen so that the total proportion of crowded households in the region, $\sum_n p(n) p_\text{crowded}(n)$, matches the observed fraction of crowded households, $P_\text{crowded}$ (here, $p(n)$ is the proportion of households that are size $n$). Specifically, 
+where the constant $\xi$ is chosen so that the total proportion of crowded households in the region, $\sum_n p(n) p_\text{crowded}(n)$, matches the observed fraction of crowded households, $P_\text{crowded}$ (here, $p(n)$ is the proportion of households that are size $n$). Specifically, 
 
-<!-- $$\eta = \frac{P_{\text{crowded}}}{\sum_n p(n) \cdot w(n)}$$ -->
-$$\eta = \frac{P_{\text{crowded}}}{\sum_n p(n) \cdot w(n)}$$
+<!-- $$\xi = \frac{P_{\text{crowded}}}{\sum_n p(n) \cdot w(n)}$$ -->
+$$\xi = \frac{P_{\text{crowded}}}{\sum_n p(n) \cdot w(n)}$$
 
 For example, for household size proportions $p(n) = \\{ 0.1, 0.2, 0.3, 0.2, 0.1, 0.05, 0.05\\}$ for $n \in \\{1, 2, ..., n\\}$, and for an overall crowding fraction of $$P_\text{crowded} = 0.2$$, we have 
 
-$$ \eta = \frac{0.2}{(0.1)(0) + (0.2)(1) + (0.3)(1.2) + (0.2)(1.4) + (0.1)(1.6) + (0.05)(1.8) + (0.05)(2)}$$
+$$ \xi = \frac{0.2}{(0.1)(0) + (0.2)(1) + (0.3)(1.2) + (0.2)(1.4) + (0.1)(1.6) + (0.05)(1.8) + (0.05)(2)}$$
 $$ = 0.168$$
 
 which ensures that 
 
-$$\sum_n p(n) p_\text{crowded}(n) = \sum_n  p(n) \eta w(n) $$
+$$\sum_n p(n) p_\text{crowded}(n) = \sum_n  p(n) \xi w(n) $$
 $$ = 0.168 [(0.1)(0) + (0.2)(1) + (0.3)(1.2) + (0.2)(1.4) + (0.1)(1.6) + (0.05)(1.8) + (0.05)(2)]$$
 $$ = 0.2 = P_\text{crowded}$$
 
@@ -316,15 +317,17 @@ $\text{Within-household infection rate} = \tau_c \cdot x \cdot y \cdot H_k(x,y,z
 - **Between-household transmission:** Susceptible individuals are infected through community contacts at rate $\lambda_k$, determined by the mixing matrix and overall prevalence in each population:
 $\text{Between-household infection rate} = \lambda_k \cdot x \cdot H_k(x,y,z,c)$
 
-The force of infection for population $k$ is:
+The between-household force of infection for population $k$ is:
 $\lambda_k = \beta \left[ m_{kk} I_k + m_{kj} I_j \right]$
 
 where $I_k$ is the prevalence in population $k$:
 $I_k = \frac{\sum_{x,y,z,c} y \cdot H_k(x,y,z,c)}{\sum_{x,y,z,c} n \cdot H_k(x,y,z,c)}$
 
 The mixing matrix elements are:
-$m_{kk} = \eta + (1-\eta) w_k$
-$m_{kj} = (1-\eta) w_j$
+$$ M =
+\begin{pmatrix} m_{CC} & m_{CA} \\\ m_{AC} & m_{AA} \end{pmatrix} =
+\begin{pmatrix} \eta + (1-\eta) w_C & (1-\eta) w_A \\\ (1-\eta) w_C & \eta + (1-\eta) w_A \end{pmatrix}
+$$
 
 where $w_k = \frac{N_k}{N_C + N_A}$ is the population fraction in group $k$.
 

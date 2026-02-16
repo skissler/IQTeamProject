@@ -51,21 +51,21 @@ $$w(n) = \begin{cases} 0 & n = 1 \\\ 1 + (d - 1) \cdot \frac{n - 2}{5} & n \geq 
 
 where $d$ is a crowding fold-difference parameter (the ratio of crowding probability for size-7 households to size-2 households). For example, when $d = 2$, $w(n) = \\{ 0, 1, 1.2, 1.4, 1.6, 1.8, 2\\}$ for $n \in \\{1, 2, ..., 7\\}$. Note that it is impossible for size-1 households to be crowded. We treated households of size 7+ as $n = 7$. For a given region and sub-population, the probability that a household of size $n$ is crowded is then:
 
-$$p_{\text{crowded}}(n) = \eta \cdot w(n)$$
+$$p_{\text{crowded}}(n) = \xi \cdot w(n)$$
 
-where the constant $\eta$ is chosen so that the total proportion of crowded households in the region, $\sum_n p(n) p_\text{crowded}(n)$, matches the observed fraction of crowded households, $P_\text{crowded}$ (here, $p(n)$ is the proportion of households that are size $n$). Specifically, 
+where the constant $\xi$ is chosen so that the total proportion of crowded households in the region, $\sum_n p(n) p_\text{crowded}(n)$, matches the observed fraction of crowded households, $P_\text{crowded}$ (here, $p(n)$ is the proportion of households that are size $n$). Specifically, 
 
-<!-- $$\eta = \frac{P_{\text{crowded}}}{\sum_n p(n) \cdot w(n)}$$ -->
-$$\eta = \frac{P_{\text{crowded}}}{\sum_n p(n) \cdot w(n)}$$
+<!-- $$\xi = \frac{P_{\text{crowded}}}{\sum_n p(n) \cdot w(n)}$$ -->
+$$\xi = \frac{P_{\text{crowded}}}{\sum_n p(n) \cdot w(n)}$$
 
 For example, for household size proportions $p(n) = \\{ 0.1, 0.2, 0.3, 0.2, 0.1, 0.05, 0.05\\}$ for $n \in \\{1, 2, ..., n\\}$, and for an overall crowding fraction of $$P_\text{crowded} = 0.2$$, we have 
 
-$$ \eta = \frac{0.2}{(0.1)(0) + (0.2)(1) + (0.3)(1.2) + (0.2)(1.4) + (0.1)(1.6) + (0.05)(1.8) + (0.05)(2)}$$
+$$ \xi = \frac{0.2}{(0.1)(0) + (0.2)(1) + (0.3)(1.2) + (0.2)(1.4) + (0.1)(1.6) + (0.05)(1.8) + (0.05)(2)}$$
 $$ = 0.168$$
 
 which ensures that 
 
-$$\sum_n p(n) p_\text{crowded}(n) = \sum_n  p(n) \eta w(n) $$
+$$\sum_n p(n) p_\text{crowded}(n) = \sum_n  p(n) \xi w(n) $$
 $$ = 0.168 [(0.1)(0) + (0.2)(1) + (0.3)(1.2) + (0.2)(1.4) + (0.1)(1.6) + (0.05)(1.8) + (0.05)(2)]$$
 $$ = 0.2 = P_\text{crowded}$$
 
@@ -128,15 +128,17 @@ $\text{Within-household infection rate} = \tau_c \cdot x \cdot y \cdot H_k(x,y,z
 - **Between-household transmission:** Susceptible individuals are infected through community contacts at rate $\lambda_k$, determined by the mixing matrix and overall prevalence in each population:
 $\text{Between-household infection rate} = \lambda_k \cdot x \cdot H_k(x,y,z,c)$
 
-The force of infection for population $k$ is:
+The between-household force of infection for population $k$ is:
 $\lambda_k = \beta \left[ m_{kk} I_k + m_{kj} I_j \right]$
 
 where $I_k$ is the prevalence in population $k$:
 $I_k = \frac{\sum_{x,y,z,c} y \cdot H_k(x,y,z,c)}{\sum_{x,y,z,c} n \cdot H_k(x,y,z,c)}$
 
 The mixing matrix elements are:
-$m_{kk} = \eta + (1-\eta) w_k$
-$m_{kj} = (1-\eta) w_j$
+$$ M =
+\begin{pmatrix} m_{CC} & m_{CA} \\\ m_{AC} & m_{AA} \end{pmatrix} =
+\begin{pmatrix} \eta + (1-\eta) w_C & (1-\eta) w_A \\\ (1-\eta) w_C & \eta + (1-\eta) w_A \end{pmatrix}
+$$
 
 where $w_k = \frac{N_k}{N_C + N_A}$ is the population fraction in group $k$.
 
