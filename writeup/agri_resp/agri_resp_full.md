@@ -223,14 +223,21 @@ where $d$ is a crowding fold-difference parameter (the ratio of crowding probabi
 
 $$p_{\text{crowded}}(n) = \eta \cdot w(n)$$
 
-where the constant $\eta$ is chosen so that the total proportion of crowded households in the region, $\sum_n p_n p_\text{crowded}(n)$, matches the observed fraction of crowded households (here, $p_n$ is the propoortion of households that are size $n$). Specifically, 
+where the constant $\eta$ is chosen so that the total proportion of crowded households in the region, $\sum_n p_n p_\text{crowded}(n)$, matches the observed fraction of crowded households, $P_\text{crowded}$ (here, $p_n$ is the proportion of households that are size $n$). Specifically, 
 
 <!-- $$\eta = \frac{P_{\text{crowded}}}{\sum_n p(n) \cdot w(n)}$$ -->
-$$\eta = \frac{\sum_n p(n) p_{\text{crowded}}(n)}{\sum_n p(n) \cdot w(n)}$$
+$$\eta = \frac{P_{\text{crowded}}}{\sum_n p(n) \cdot w(n)}$$
 
-With the baseline $d = 2$, households of size 7+ are twice as likely to be crowded as households of size 2, with a linear gradient in between; and the constant $\eta$ ensures that the total fraction of crowded households in the region (
-$\sum_n p_{\text{crowded}}(n)$
-) matches the proportion of crowded households from the ACS/NAWS data ($P_{\text{crowded}}$). 
+For example, for household size proportions $p(n) = \\{ 0.1, 0.2, 0.3, 0.2, 0.1 0.05, 0.05\\}$ for $n \in \\{1, 2, ..., n\\}$, and for an overall crowding fraction of {P_\text{crowded} = 0.2}, we have 
+
+$$ \eta = \frac{0.2}{(0.1)(0) + (0.2)(1) + (0.3)(1.2) + (0.2)(1.4) + (0.1)(1.6) + (0.05)(1.8) + (0.05)(2)}$$
+$$ = 0.168$$
+
+which ensures that 
+
+$$\sum_n p(n) p_\text{crowded}(n) = \sum_n \eta w(n) p_\text{crowded}(n)$$
+$$ = 0.168 [(0.1)(0) + (0.2)(1) + (0.3)(1.2) + (0.2)(1.4) + (0.1)(1.6) + (0.05)(1.8) + (0.05)(2)]$$
+$$ = 0.2 = P_\text{crowded}$$
 
 The NAWS dataset reports household characteristics for agricultural workers at the regional level only, while the ACS provides county-level data for the general population. While our main analysis was at the regional level, we also performed a county-level analysis to assess geographic variation in outbreak disparities between agriculural workers and the general community. To generate county-level population estimates for agricultural workers, we used county-level ACS variation to adjust the regional NAWS values. The underlying assumption is that county-level variation among agricultural workers follows a similar pattern to county-level variation in the general population; i.e., if a county's general population has larger households than the regional average, agricultural workers in that county likely also have larger households than the regional average for agricultural workers.
 
