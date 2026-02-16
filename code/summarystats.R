@@ -107,3 +107,35 @@ fig_crowding_hists <- acs_data %>%
 
 ggsave(file.path(paths$figures_dir, "fig_crowding_hists.pdf"),
        fig_crowding_hists, width = 10, height = 6)
+
+# ==============================================================================
+# Mixing matrix elements by region and assortativity (eta)
+# ==============================================================================
+
+# Extract agricultural worker population fractions by region
+w_A_by_region <- acs_data_regional %>%
+  group_by(REGION6) %>%
+  summarise(w_A = first(prop_ag_workers), .groups = "drop") %>%
+  mutate(region_label = region_labels[as.character(REGION6)])
+
+# Define eta values (sensitivity analysis range + baseline)
+eta_values <- c(0, 1/4, 1/3, 1/2, 2/3, 3/4)
+
+# Compute mixing matrix elements for each region x eta combination
+mixing_matrix_table <- expand_grid(
+  w_A_by_region,
+  eta = eta_values
+) %>%
+  mutate(
+    w_C = 1 - w_A,
+    m_AA = eta + (1 - eta) * w_A,
+    m_AC = (1 - eta) * w_C,
+    m_CC = eta + (1 - eta) * w_C,
+    m_CA = (1 - eta) * w_A
+  ) %>%
+  select(region_label, REGION6, w_A, eta, m_AA, m_AC, m_CC, m_CA)
+
+# Save to output
+write_csv(mixing_matrix_table, file.path(paths$output_dir, "mixing_matrix_table.csv"))
+
+cat("Mixing matrix table saved to", file.path(paths$output_dir, "mixing_matrix_table.csv"), "\n")

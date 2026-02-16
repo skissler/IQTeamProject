@@ -119,7 +119,7 @@ Besides the impact of household size, household crowding, and assortative mixing
 
 Following previous methods [x], we began by fixing the recovery rate $\gamma = 1/5$, which corresponds to a mean infectious period of 5 days. Then, given $\gamma$ and the household secondary attack rate (SAR), we derived $\tau$ (**Supplementary Methods**). We set the SAR for uncrowded households at 20%, following estimates for influenza [x]. For crowded households, we set the baseline SAR at 40% [x]. In sensitivity analyses, we considered crowded-household SARs of 0.2, 0.3, 0.5, and 0.6. Last, given values for $\gamma$ and $\tau$, we numerically identified the value of $\beta$ that would achieve a desired basic reproduction number ($\mathcal{R_0}$) when simulating outbreaks at the national level. Specifically, for a candidate $\beta$ value, we ran the model with a single sub-population to equilibrium; then, we compared the outbreak's final size with the theoretical prediction from the implicit relationship $R(\infty) = 1 - \exp(-\mathcal{R_0} \cdot R(\infty))$, where $R(\infty)$ is the final size of the outbreak. [x] We adjusted $\beta$ using a bisection search algorithm until the simulated final size was within 0.0005 of the theoretical value. For the baseline analysis, we used $\mathcal{R_0}$ = 1.5, reflecting a moderate pandemic influenza scenario and the effective reproduction number during many COVID-19 surges when behavioral mitigations were in place. In sensitivity analyses, we considered $\mathcal{R_0}$ values of 1.2, 2.0, and 3.0. Baseline and sensitivity parameter values are listed in **Supplementary Table XX**. 
 
-For the baseline assortativity, we used $\eta = 2/3$. Because agricultural workers constitute a small fraction of the total population ($w_A$ ranges from roughly 1% to 5% across regions), the within-group contact fraction for agricultural workers is $m_{AA} = \eta + (1-\eta) w_A \approx \eta$. At baseline, agricultural workers thus have approximately 67% of their between-household contacts within their own group. The general community, being much larger ($w_C \approx 1 - w_A > 95\%$), has nearly all contacts within their own group regardless of $\eta$ (since $m_{CC} = \eta + (1-\eta) w_C \approx 1$). In sensitivity analyses, we considered $\eta \in \{0, 1/4, 1/3, 1/2, 3/4\}$. At $\eta = 0$ (proportional mixing), agricultural workers still have $m_{AA} = w_A \approx 1$–$5\\%$ of contacts within their own group; at $\eta = 3/4$, this rises to approximately 75%.
+For the baseline assortativity, we used $\eta = 2/3$. Because agricultural workers constitute a small fraction of the total population ($w_A$ ranges from roughly 1% to 5% across regions), the within-group contact fraction for agricultural workers is $m_{AA} = \eta + (1-\eta) w_A \approx \eta$. At baseline, agricultural workers thus have approximately 67% of their between-household contacts (range across regions: 66.9% - 67.4%) within their own group. The general community, being much larger ($w_C \approx 1 - w_A > 95\%$), has nearly all contacts within their own group regardless of $\eta$ (since $m_{CC} = \eta + (1-\eta) w_C \approx 1$; **Supplementary Table XX**). In sensitivity analyses, we considered $\eta \in \{0, 1/4, 1/3, 1/2, 3/4\}$. At $\eta = 0$ (proportional mixing), agricultural workers have between 0.7% - 2.2% of their contacts within their own group, depending on the region; at $\eta = 3/4$, this rises to between 75.2% and 75.5%.
 
 We assumed symptoms began one day after infection and lasted for three days. For the crop productivity analysis, we computed production losses assuming all infections were symptomatic ($p_{symp} = 1$); because production loss scales linearly with $p_{symp}$, results for any other symptomatic probability can be obtained by multiplying the reported losses by $p_{symp}$.
 
@@ -513,7 +513,48 @@ To assess the impact of epidemic timing on crop production, we shifted the epide
 | fold_1 | 1.5 | 0.67 | 40% | 1 | 0.050 | 0.083 | calibrated | 0.200 |
 | fold_3 | 1.5 | 0.67 | 40% | 3 | 0.050 | 0.083 | calibrated | 0.200 |
 
-**Table S2.** Simulation results: peak prevalence, time to peak, and final attack rate for agricultural workers (A) and the general community (C) across all parameter sets and regions. Results are shown for the baseline additive county-level imputation method.
+**Table S2.** Mixing matrix elements by region and assortativity parameter ($\eta$). For each region, $w_A$ is the proportion of the population that are agricultural workers (derived from ACS data). The mixing matrix governs between-household contact patterns: $m_{AA}$ is the fraction of agricultural workers' between-household contacts that are with other agricultural workers, $m_{AC}$ is the fraction with the general community, and vice versa for $m_{CC}$ and $m_{CA}$. Because $w_A$ is small (0.7–2.2%), $m_{AA} \approx \eta$ and $m_{CC} \approx 1$ across all values of $\eta$. At $\eta = 0$ (proportional mixing), agricultural workers have only $w_A$ of contacts within their own group; the baseline $\eta = 2/3$ is highlighted in bold.
+
+| $\eta$ | Region | $w_A$ (%) | $m_{AA}$ (%) | $m_{AC}$ (%) | $m_{CC}$ (%) | $m_{CA}$ (%) |
+|:---:|:---|:---:|:---:|:---:|:---:|:---:|
+| 0 | East | 0.7 | 0.7 | 99.3 | 99.3 | 0.7 |
+| 0 | Southeast | 1.0 | 1.0 | 99.0 | 99.0 | 1.0 |
+| 0 | Midwest | 1.6 | 1.6 | 98.4 | 98.4 | 1.6 |
+| 0 | Southwest | 1.0 | 1.0 | 99.0 | 99.0 | 1.0 |
+| 0 | Northwest | 2.1 | 2.1 | 97.9 | 97.9 | 2.1 |
+| 0 | California | 2.2 | 2.2 | 97.8 | 97.8 | 2.2 |
+| 1/4 | East | 0.7 | 25.5 | 74.5 | 99.5 | 0.5 |
+| 1/4 | Southeast | 1.0 | 25.8 | 74.2 | 99.2 | 0.8 |
+| 1/4 | Midwest | 1.6 | 26.2 | 73.8 | 98.8 | 1.2 |
+| 1/4 | Southwest | 1.0 | 25.7 | 74.3 | 99.3 | 0.7 |
+| 1/4 | Northwest | 2.1 | 26.6 | 73.4 | 98.4 | 1.6 |
+| 1/4 | California | 2.2 | 26.6 | 73.4 | 98.4 | 1.6 |
+| 1/3 | East | 0.7 | 33.8 | 66.2 | 99.5 | 0.5 |
+| 1/3 | Southeast | 1.0 | 34.0 | 66.0 | 99.3 | 0.7 |
+| 1/3 | Midwest | 1.6 | 34.4 | 65.6 | 99.0 | 1.0 |
+| 1/3 | Southwest | 1.0 | 34.0 | 66.0 | 99.4 | 0.6 |
+| 1/3 | Northwest | 2.1 | 34.7 | 65.3 | 98.6 | 1.4 |
+| 1/3 | California | 2.2 | 34.8 | 65.2 | 98.5 | 1.5 |
+| 1/2 | East | 0.7 | 50.4 | 49.6 | 99.6 | 0.4 |
+| 1/2 | Southeast | 1.0 | 50.5 | 49.5 | 99.5 | 0.5 |
+| 1/2 | Midwest | 1.6 | 50.8 | 49.2 | 99.2 | 0.8 |
+| 1/2 | Southwest | 1.0 | 50.5 | 49.5 | 99.5 | 0.5 |
+| 1/2 | Northwest | 2.1 | 51.1 | 48.9 | 98.9 | 1.1 |
+| 1/2 | California | 2.2 | 51.1 | 48.9 | 98.9 | 1.1 |
+| **2/3** | **East** | **0.7** | **66.9** | **33.1** | **99.8** | **0.2** |
+| **2/3** | **Southeast** | **1.0** | **67.0** | **33.0** | **99.7** | **0.3** |
+| **2/3** | **Midwest** | **1.6** | **67.2** | **32.8** | **99.5** | **0.5** |
+| **2/3** | **Southwest** | **1.0** | **67.0** | **33.0** | **99.7** | **0.3** |
+| **2/3** | **Northwest** | **2.1** | **67.4** | **32.6** | **99.3** | **0.7** |
+| **2/3** | **California** | **2.2** | **67.4** | **32.6** | **99.3** | **0.7** |
+| 3/4 | East | 0.7 | 75.2 | 24.8 | 99.8 | 0.2 |
+| 3/4 | Southeast | 1.0 | 75.3 | 24.7 | 99.7 | 0.3 |
+| 3/4 | Midwest | 1.6 | 75.4 | 24.6 | 99.6 | 0.4 |
+| 3/4 | Southwest | 1.0 | 75.2 | 24.8 | 99.8 | 0.2 |
+| 3/4 | Northwest | 2.1 | 75.5 | 24.5 | 99.5 | 0.5 |
+| 3/4 | California | 2.2 | 75.5 | 24.5 | 99.5 | 0.5 |
+
+**Table S3.** Simulation results: peak prevalence, time to peak, and final attack rate for agricultural workers (A) and the general community (C) across all parameter sets and regions. Results are shown for the baseline additive county-level imputation method.
 
 | Parameter set | Region | Peak prev. (A) | Peak prev. (C) | Time to peak (A) | Time to peak (C) | Attack rate (A) | Attack rate (C) |
 |:---|:---|:---:|:---:|:---:|:---:|:---:|:---:|
@@ -608,7 +649,7 @@ To assess the impact of epidemic timing on crop production, we shifted the epide
 | | Northwest | 9.8% | 7.0% | 43 | 52 | 73.9% | 59.0% |
 | | California | 11.6% | 8.6% | 38 | 46 | 77.1% | 63.7% |
 
-**Table S3.** Differential metrics between agricultural workers and the general community across all parameter sets and regions. Peak prevalence difference (A minus C), attack rate difference (A minus C), time to peak difference (A minus C, in days; negative values indicate agricultural workers peak earlier), peak prevalence ratio (A/C), attack rate ratio (A/C), and maximum relative infection rate (the highest instantaneous ratio of agricultural worker to community infection prevalence observed during the simulation).
+**Table S4.** Differential metrics between agricultural workers and the general community across all parameter sets and regions. Peak prevalence difference (A minus C), attack rate difference (A minus C), time to peak difference (A minus C, in days; negative values indicate agricultural workers peak earlier), peak prevalence ratio (A/C), attack rate ratio (A/C), and maximum relative infection rate (the highest instantaneous ratio of agricultural worker to community infection prevalence observed during the simulation).
 
 | Parameter set | Region | Peak prev. diff. | Attack rate diff. | Time diff. | Peak prev. ratio | Attack rate ratio | Max rel. infection |
 |:---|:---|:---:|:---:|:---:|:---:|:---:|:---:|
