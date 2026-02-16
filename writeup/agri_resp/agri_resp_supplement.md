@@ -83,7 +83,7 @@ $$\tilde{p}_{\text{NAWS},i}(n) \propto \max\left(0, \; p_{\text{NAWS},r}(n) + \l
 
 $$\tilde{q}_{\text{NAWS},i} = q_{\text{NAWS},r} + \left[ q_{\text{ACS},i} - \bar{q}_{\text{ACS},r} \right]$$
 
-Household size proportions were clamped to be non-negative before renormalization, and the crowding proportion was clamped to $[0, 1]$.
+Household size proportions were clamped to be non-negative before renormalization, and the crowding proportion was clamped to $[0, 1]$ (i.e., values below 0 were set to 0 and values above 1 were set to 1).
 
 *Multiplicative method.* We scaled regional NAWS values by the ratio of county-level to regional mean ACS values:
 

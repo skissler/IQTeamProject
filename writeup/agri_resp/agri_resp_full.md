@@ -78,7 +78,7 @@ We obtained county-level data on overall population size, household size distrib
 
 #### Crop harvest calendars and labor requirements
 
-To approximate daily harvest volumes, we obtained data on specialty crop movements (point-to-point shipments) for strawberries, iceberg lettuce, and oranges from the United States Department of Agriculture's (USDA's) Agricultural Marketing Services. We extracted the total weekly weight of shipments originating in California for each of these crops between 1 Jan 2018 and 1 Jan 2025. California produces approximately xx% of U.S. strawberries, xx% of U.S. iceberg lettuce, and xx% of U.S. oranges. We averaged the weekly shipment volumes for each crop across the seven available years to mitigate the impact of inter-anual variation. Then, we interpolated daily shipment volumes by assuming equal shipment volumes across each day of the week. We normalized these shipment volumes by the total mean annual shipment volume, so that the daily values reflected the proportion of the total harvest normally collected on that day. We cross-referenced the resulting production curves with independent reports on each crop's production timing (Supplementary Methods, Supplementary Figure XX). 
+To approximate daily harvest volumes, we obtained data on specialty crop movements (point-to-point shipments) for strawberries, iceberg lettuce, and oranges from the United States Department of Agriculture's (USDA's) Agricultural Marketing Services. We extracted the total weekly weight of shipments originating in California for each of these crops between 1 Jan 2018 and 1 Jan 2025. California produces approximately xx% of U.S. strawberries, xx% of U.S. iceberg lettuce, and xx% of U.S. oranges. We averaged the weekly shipment volumes for each crop across the seven available years to mitigate the impact of inter-annual variation. Then, we interpolated daily shipment volumes by assuming equal shipment volumes across each day of the week. We normalized these shipment volumes by the total mean annual shipment volume, so that the daily values reflected the proportion of the total harvest normally collected on that day. We cross-referenced the resulting production curves with independent reports on each crop's production timing (Supplementary Methods, Supplementary Figure XX). 
 
 <!--- UCLA: "Navels are normally harvested from November to June." And: 
 
@@ -271,7 +271,7 @@ $$\tilde{p}_{\text{NAWS},i}(n) \propto \max\left(0, \; p_{\text{NAWS},r}(n) + \l
 
 $$\tilde{q}_{\text{NAWS},i} = q_{\text{NAWS},r} + \left[ q_{\text{ACS},i} - \bar{q}_{\text{ACS},r} \right]$$
 
-Household size proportions were clamped to be non-negative before renormalization, and the crowding proportion was clamped to $[0, 1]$.
+Household size proportions were clamped to be non-negative before renormalization, and the crowding proportion was clamped to $[0, 1]$ (i.e., values below 0 were set to 0 and values above 1 were set to 1).
 
 *Multiplicative method.* We scaled regional NAWS values by the ratio of county-level to regional mean ACS values:
 
