@@ -203,13 +203,15 @@ We assess region-level impacts; farm-specific impacts may differ substantially (
 
 ### Supplementary Methods
 
-#### Data
+#### Data extraction
 
 County-level household size distributions were obtained from American Community Survey (ACS) table B11016 (Household Type by Household Size), which reports counts of family and non-family households by size. We combined family and non-family counts for each household size (1 through 7+). 
 
 County-level household crowding proportions were obtained from ACS table B25014 (Tenure by Occupants per Room), where crowded households were defined as those with more than 1.00 occupants per room. We summed across owner- and renter-occupied units and all occupancy levels over size 1 (1.01–1.50, 1.51–2.00, and >2.00 persons per room). We normalized by the total population size (ACS table B01003).
 
 To calculate the proportion of agricultural workers in a county using the ACS data, we extracted the number of individuals employed in "farming, fishing, and forestry occupations" (ACS occupation codes C24030_004 [males] and C24030_031 [females]) as a proportion of total employed individuals (C24030_001).
+
+#### Data processing: calculating regional values for the general community
 
 To enable region-level analysis, we aggregated the county-level ACS data into the corresponding National Agricultural Workers Survey (NAWS) regions using population-weighted averages. For each variable (household size proportions, crowding proportions, and proportion of agricultural workers), we multiplied each county's value by its population size, summed within each region, then divided by the total regional population size. Specifically, for each county $i$ in region $r$, we computed:
 
@@ -228,6 +230,8 @@ to ensure
 $$\sum_n \bar{p}_{\text{ACS},r}(n) = 1$$. 
 
 Household sizes for agricultural workers were derived from the NAWS D52 variable (total number of people sleeping in the housing unit). Households of size 7 or greater were grouped into a single "7+" category for consistency with the ACS data. Crowding status was derived from the CROWDED1 variable. Both household size and crowding data were weighted using the NAWS survey weights (PWTYCRD) and summarized by NAWS region.
+
+#### Data processing: calculating crowding by household size
 
 In both the ACS and NAWS datasets, household size and household crowding are reported separately, but for the disease transmission model, we required the proportion of households of a given size that are crowded. To assign crowding probabilities by household size, we used a linear relationship where larger households are progressively more likely to be crowded. For a household of size $n$, we defined a crowding multiplier:
 
@@ -252,6 +256,8 @@ which ensures that
 $$\sum_n p(n) p_\text{crowded}(n) = \sum_n  p(n) \eta w(n) $$
 $$ = 0.168 [(0.1)(0) + (0.2)(1) + (0.3)(1.2) + (0.2)(1.4) + (0.1)(1.6) + (0.05)(1.8) + (0.05)(2)]$$
 $$ = 0.2 = P_\text{crowded}$$
+
+#### Data processing: imputing county-level household characteristics for agricultural workers
 
 The NAWS dataset reports household characteristics for agricultural workers at the regional level only, while the ACS provides county-level data for the general population. While our main analysis was at the regional level, we also performed a county-level analysis to assess within-region variation in outbreak disparities between agriculural workers and the general community. To generate county-level population estimates for agricultural workers, we used county-level ACS variation to adjust the regional NAWS values. The underlying assumption is that county-level variation among agricultural workers follows a similar pattern to county-level variation in the general population; i.e., if a county's general population has larger households than the regional average, agricultural workers in that county likely also have larger households than the regional average for agricultural workers.
 
@@ -289,7 +295,9 @@ $$\tilde{q}_{\text{NAWS},i} = q_{\text{NAWS},r}$$
 
 This method assumes no county-level variation in agricultural worker household characteristics within a region.
 
-**Crop movement data.** **TO FILL IN: Cross-referencing of crop movement data with UCDavis information, with figure.** 
+#### Data processing: assessing the validity of crop movements as a proxy for harvest
+
+**TO FILL IN: Cross-referencing of crop movement data with UCDavis information, with figure.** 
 
 #### Mathematical model structure
 
