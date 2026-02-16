@@ -219,11 +219,13 @@ In both the ACS and NAWS datasets, household size and household crowding are rep
 
 $$w(n) = \begin{cases} 0 & n = 1 \\\ 1 + (d - 1) \cdot \frac{n - 2}{5} & n \geq 2 \end{cases}$$
 
-where $d$ is a crowding fold-difference parameter (the ratio of crowding probability for size-7 households to size-2 households). We treated households of size 7+ as $n = 7$. The crowding probability for each household size within a given geographic area is then:
+where $d$ is a crowding fold-difference parameter (the ratio of crowding probability for size-7 households to size-2 households). For example, when $d = 2$, $w(n) = \\{ 0, 1, 1.2, 1.4, 1.6, 1.8, 2\\}$ for $n \in \\{1, 2, ..., 7\\}. Note that it is impossible for size-1 households to be crowded. We treated households of size 7+ as $n = 7$. For a given region and sub-population, the probability that a household of size $n$ is crowded is then:
 
 $$p_{\text{crowded}}(n) = \eta \cdot w(n)$$
 
-where the constant $\eta$ is chosen so that the weighted average across all household sizes equals the observed aggregate crowding proportion:
+where the constant $\eta$ is chosen so that the total proportion of crowded households in the region 
+
+$\sum_n p_\text{crowded}(n)$ is equal to the reported fraction of households that are crowded, i.e., 
 
 <!-- $$\eta = \frac{P_{\text{crowded}}}{\sum_n p(n) \cdot w(n)}$$ -->
 $$\eta = \frac{\sum_n p_{\text{crowded}}(n)}{\sum_n p(n) \cdot w(n)}$$
