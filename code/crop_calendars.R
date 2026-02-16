@@ -315,6 +315,140 @@ ggsave(file.path(paths$figures_dir, "crop_movements_averaged.png"),
        fig_movements_avg, width = 8, height = 5, dpi = 300)
 cat("  Saved: crop_movements_averaged.pdf/.png\n")
 
+# Figure: Normalized movements overlaid with UC Davis harvest information
+# Uses day-of-year on x-axis so that month ticks, USDA data, and UC Davis
+# reference data all align correctly.
+cat("Generating crop validation figure...\n")
+
+# Normalize each commodity so weekly proportions sum to 1, then convert to
+# day-of-year x-coordinates (midpoint of each week)
+avg_movements_norm <- avg_movements %>%
+  group_by(commodity) %>%
+  mutate(prop = lbs / sum(lbs)) %>%
+  ungroup() %>%
+  mutate(day_mid = (week - 0.5) * 7)  # midpoint of week in days
+
+# --- UC Davis reference data ---
+
+month_starts <- cumsum(c(1, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30))  # day 1 of each month
+month_days <- c(31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31)
+
+# Strawberry monthly harvest proportions (Apr=4, May=5, ..., Oct=10)
+# Source: UC Davis Cost and Return Study
+# Stairstep: each month shows harvest_prop / (days_in_month / 7) as a flat segment
+straw_ucdavis <- tibble(
+  month = 4:10,
+  harvest_prop = c(0.05, 0.12, 0.25, 0.26, 0.18, 0.12, 0.02)
+) %>%
+  mutate(
+    day_start = month_starts[month],
+    day_end = month_starts[month] + month_days[month],
+    weekly_prop = harvest_prop / (month_days[month] / 7)
+  )
+
+# Orange harvest season: November to June (UC Davis)
+# Wraps around year: Nov 1 (day 305) to Jun 30 (day 181)
+orange_bar <- tibble(
+  xmin = c(month_starts[11], 1),
+  xmax = c(365, month_starts[6] + month_days[6])
+)
+
+# Lettuce: planting Dec to mid-Aug, ~100d cool / ~50d warm maturation
+# Planting: Dec 1 (day 335) to mid-Aug (day ~227)
+# Harvest: shift start by +100d, shift end by +50d
+# Harvest start: 335 + 100 = 435 → wraps to day 70 (mid Mar)
+# Harvest end: 227 + 50 = 277 (early Oct)
+lettuce_plant <- tibble(
+  xmin = c(month_starts[12], 1),
+  xmax = c(365, month_starts[8] + month_days[8] / 2)  # Dec 1 to mid-Aug
+)
+lettuce_harvest <- tibble(
+  xmin = 70,   # mid-Mar
+  xmax = 277   # early Oct
+)
+
+# Bar y-positions (placed near top of the plot for visibility)
+max_prop <- max(avg_movements_norm$prop, na.rm = TRUE)
+bar_y_orange <- max_prop * 1.08
+bar_y_lettuce_plant <- max_prop * 1.00
+bar_y_lettuce_harvest <- max_prop * 0.96
+bar_height <- max_prop * 0.025
+
+# Month axis ticks (day of year for 1st of each month)
+val_month_breaks <- month_starts
+val_month_labels <- c("Jan", "Feb", "Mar", "Apr", "May", "Jun",
+                      "Jul", "Aug", "Sep", "Oct", "Nov", "Dec")
+
+fig_movements_validated <- ggplot() +
+  # Orange harvest season bars (wraps around year)
+  geom_rect(data = orange_bar,
+            aes(xmin = xmin, xmax = xmax,
+                ymin = bar_y_orange - bar_height, ymax = bar_y_orange + bar_height),
+            fill = "orange", alpha = 0.4) +
+  # Lettuce planting bars (wraps around year)
+  geom_rect(data = lettuce_plant,
+            aes(xmin = xmin, xmax = xmax,
+                ymin = bar_y_lettuce_plant - bar_height,
+                ymax = bar_y_lettuce_plant + bar_height),
+            fill = "blue", alpha = 0.15) +
+  # Lettuce harvest bar
+  geom_rect(data = lettuce_harvest,
+            aes(xmin = xmin, xmax = xmax,
+                ymin = bar_y_lettuce_harvest - bar_height,
+                ymax = bar_y_lettuce_harvest + bar_height),
+            fill = "blue", alpha = 0.35) +
+  # Normalized USDA shipment curves
+  geom_line(data = avg_movements_norm,
+            aes(x = day_mid, y = prop, color = commodity),
+            linewidth = 0.8, alpha = 0.8) +
+  # UC Davis strawberry reference (stairstep with vertical risers)
+  geom_segment(data = straw_ucdavis,
+               aes(x = day_start, xend = day_end,
+                   y = weekly_prop, yend = weekly_prop),
+               color = "magenta", linewidth = 0.8, linetype = "dashed", alpha = 0.8) +
+  # Vertical risers connecting consecutive months
+  geom_segment(data = straw_ucdavis %>%
+                 mutate(prev_prop = lag(weekly_prop, default = 0)) %>%
+                 filter(weekly_prop != prev_prop),
+               aes(x = day_start, xend = day_start,
+                   y = prev_prop, yend = weekly_prop),
+               color = "magenta", linewidth = 0.8, linetype = "dashed", alpha = 0.8) +
+  # Closing riser at end of season (last month back to 0)
+  geom_segment(data = straw_ucdavis %>% slice_tail(n = 1),
+               aes(x = day_end, xend = day_end,
+                   y = weekly_prop, yend = 0),
+               color = "magenta", linewidth = 0.8, linetype = "dashed", alpha = 0.8) +
+  # Annotations
+  annotate("text", x = 70, y = bar_y_orange + bar_height * 2.5,
+           label = "Oranges: harvest (Nov-Jun)", size = 2.8, hjust = 0,
+           color = "darkorange3") +
+  annotate("text", x = 290, y = bar_y_lettuce_plant + bar_height * 2.5,
+           label = "Lettuce: planting", size = 2.8, hjust = 1,
+           color = "blue", alpha = 0.5) +
+  annotate("text", x = 290, y = bar_y_lettuce_harvest - bar_height * 3,
+           label = "Lettuce: harvest", size = 2.8, hjust = 1,
+           color = "blue", alpha = 0.8) +
+  scale_color_manual(values = crop_colors) +
+  scale_x_continuous(breaks = val_month_breaks, labels = val_month_labels,
+                     minor_breaks = NULL, limits = c(1, 365)) +
+  expand_limits(y = 0) +
+  labs(
+    x = NULL,
+    y = "Weekly Proportion of Annual Harvest",
+    color = "USDA Shipment Data",
+    title = "Seasonal Harvest Patterns: USDA Shipment Data vs. UC Davis Harvest Calendars",
+    subtitle = "Solid lines: normalized USDA shipments. Dashed segments: UC Davis strawberry harvest proportions.\nHorizontal bars: UC Davis harvest/planting seasons for oranges and lettuce."
+  ) +
+  theme_classic() +
+  theme(legend.position = "bottom",
+        plot.subtitle = element_text(size = 9, color = "grey40"))
+
+ggsave(file.path(paths$figures_dir, "crop_movements_validated.pdf"),
+       fig_movements_validated, width = 10, height = 6)
+ggsave(file.path(paths$figures_dir, "crop_movements_validated.png"),
+       fig_movements_validated, width = 10, height = 6, dpi = 300)
+cat("  Saved: crop_movements_validated.pdf/.png\n")
+
 # Month axis breaks and labels for impact figures
 impact_month_breaks <- cumsum(c(1, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30))
 impact_month_labels <- c("Jan", "", "", "Apr", "", "",

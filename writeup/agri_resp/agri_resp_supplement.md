@@ -109,7 +109,11 @@ This method assumes no county-level variation in agricultural worker household c
 
 #### Data processing: assessing the validity of crop movements as a proxy for harvest
 
-**TO FILL IN: Cross-referencing of crop movement data with UCDavis information, with figure.** 
+We used crop movements (point-to-point shipments) reported by the USDA as a proxy for harvesting of oranges, iceberg lettuce, and strawberries. We used this proxy as there are few available data sources that capture crop-specific harvesting volumes at resolutions finer than the national and annual scale, whereas we needed information on the seasonality of harvesting to assess the potential impact of epidemic timing on harvesting. To roughly validate the relationship between crop movents and harvests, we cross-referenced the average weekly crop movement curves against information from those same crops produced by the University of California Agriculture and Natural Resources
+Cooperative Extension. For strawberries, the report gives the fraction of strawberries harvested in each month for the Central Coast Region
+of California (Santa Cruz, Monterey, and San Benito Counties); they note that navel oranges in the San Joaquin Valley are "normally harvested from November to June", and that iceberg lettuce in the Central Coast Region is "planted continuously from December to mid-August" and takes up to 100 days to mature in for cool season plantings, while time to maturity decreases in the warmer season. 
+
+Given this information, we depicted the rough timing and volume of harvests as reported by the University of California reports against the weekly crop movement data. There are differences in alignment; for example, the crop movement data puts peak strawberry harvests in late April/early May, while the University of California report has peak harvests in June-July; and the movements of iceberg lettuce are shifted somewhat later than the estimated harvest window from the University of California report. While these discrepancies might reflect limitations in the use of the crop movements data as a proxy for harvests, they may also reflect the fact that the movements data capture crop movements from across the state of California, while the University of California reports pertain to specific sub-regions. So, with appropriate caution, we conclude that the crop movements data are a reasonable proxy for crop harvests. 
 
 #### Mathematical model structure
 
@@ -289,6 +293,11 @@ To assess the impact of epidemic timing on crop production, we shifted the epide
 **Figure S24.** Weekly crop shipments (in million pounds) for iceberg lettuce, oranges, and strawberries originating from California, 2018–2025. Each commodity is shown as a separate colored line: oranges in orange, strawberries in magenta, and iceberg lettuce in blue.
 
 ![Crop movements](../../figures/crop_movements_raw.png)
+
+**Figure S25.** Average weekly crop shipments (in terms of proportion of total shipment volume) for iceberg lettuce, oranges, and strawberries originating from California, 2018–2025, along with harvesting windows from independent reports by the University of California Agriculture and Natural Resources
+UC Cooperative Extension. Each commodity is shown as a separate colored line: oranges in orange, strawberries in magenta, and iceberg lettuce in blue. 
+
+![Crop movements](../../figures/crop_movements_validated.png)
 
 **Figure S26.** Estimated annual crop production loss (%) as a function of epidemic peak timing, under baseline parameters ($R_0 = 1.5$, $p_{\text{symp}} = 1$). The horizontal axis shows the day of the year on which the community symptomatic peak occurs; the vertical axis shows the resulting percentage loss in total annual production due to workforce illness. Each colored line represents one commodity. Losses are highest when the epidemic peak coincides with peak harvest periods.
 
