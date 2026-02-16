@@ -223,19 +223,19 @@ where $d$ is a crowding fold-difference parameter (the ratio of crowding probabi
 
 $$p_{\text{crowded}}(n) = \eta \cdot w(n)$$
 
-where the constant $\eta$ is chosen so that the total proportion of crowded households in the region, $\sum_n p_n p_\text{crowded}(n)$, matches the observed fraction of crowded households, $P_\text{crowded}$ (here, $p_n$ is the proportion of households that are size $n$). Specifically, 
+where the constant $\eta$ is chosen so that the total proportion of crowded households in the region, $\sum_n p(n) p_\text{crowded}(n)$, matches the observed fraction of crowded households, $P_\text{crowded}$ (here, $p(n)$ is the proportion of households that are size $n$). Specifically, 
 
 <!-- $$\eta = \frac{P_{\text{crowded}}}{\sum_n p(n) \cdot w(n)}$$ -->
 $$\eta = \frac{P_{\text{crowded}}}{\sum_n p(n) \cdot w(n)}$$
 
-For example, for household size proportions $p(n) = \\{ 0.1, 0.2, 0.3, 0.2, 0.1 0.05, 0.05\\}$ for $n \in \\{1, 2, ..., n\\}$, and for an overall crowding fraction of {P_\text{crowded} = 0.2}, we have 
+For example, for household size proportions $p(n) = \\{ 0.1, 0.2, 0.3, 0.2, 0.1, 0.05, 0.05\\}$ for $n \in \\{1, 2, ..., n\\}$, and for an overall crowding fraction of $$P_\text{crowded} = 0.2$$, we have 
 
 $$ \eta = \frac{0.2}{(0.1)(0) + (0.2)(1) + (0.3)(1.2) + (0.2)(1.4) + (0.1)(1.6) + (0.05)(1.8) + (0.05)(2)}$$
 $$ = 0.168$$
 
 which ensures that 
 
-$$\sum_n p(n) p_\text{crowded}(n) = \sum_n \eta w(n) p_\text{crowded}(n)$$
+$$\sum_n p(n) p_\text{crowded}(n) = \sum_n  p(n) \eta w(n) $$
 $$ = 0.168 [(0.1)(0) + (0.2)(1) + (0.3)(1.2) + (0.2)(1.4) + (0.1)(1.6) + (0.05)(1.8) + (0.05)(2)]$$
 $$ = 0.2 = P_\text{crowded}$$
 
