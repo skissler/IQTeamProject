@@ -74,7 +74,7 @@ This study addresses these gaps by developing a disease transmission model speci
 
 #### Population characteristics
 
-We obtained county-level data on overall population size, household size distribution (proportion of households of size 1, 2, 3, 4, 5, 6, or 7+), proportion of crowded households (i.e., with more than one individual per room), and proportion of agricultural workers from the U.S. Census Bureau’s 2022 American Community Survey (ACS) 5-year estimates. We obtained regional data on household size distribution and proprtion of crowded households for agricultural workers from the 2018-2022 National Agricultural Workers Survey (NAWS). The NAWS data are stratified geographically into six regions: East, Southeast, Midwest, Southwest, Northwest, and California. To enable region-level analysis, we aggregated the county-level ACS data into the corresponding NAWS regions using population-weighted averages. Full details on the data extraction are given in the **Supplementary Information.** 
+We obtained county-level data on overall population size, household size distribution (proportion of households of size 1, 2, 3, 4, 5, 6, or 7+), proportion of crowded households (i.e., with more than one individual per room), and proportion of agricultural workers from the U.S. Census Bureau’s 2022 American Community Survey (ACS) 5-year estimates. For agricultural workers specifically, we obtained regional data on household size distribution and proprtion of crowded households from the 2018-2022 National Agricultural Workers Survey (NAWS). The NAWS data are stratified geographically into six regions: East, Southeast, Midwest, Southwest, Northwest, and California. To enable region-level analysis, we aggregated the county-level ACS data into the corresponding NAWS regions using population-weighted averages. Full details on the data extraction are given in the **Supplementary Information.** 
 
 #### Crop harvest calendars and labor requirements
 
@@ -205,25 +205,28 @@ We assess region-level impacts; farm-specific impacts may differ substantially (
 
 #### Data
 
-Agricultural workers were defined as individuals employed in "farming, fishing, and forestry occupations" (ACS occupation codes C24030_004 [males] and C24030_031 [females]) as a proportion of total employed individuals (C24030_001).
+County-level household size distributions were obtained from American Community Survey (ACS) table B11016 (Household Type by Household Size), which reports counts of family and non-family households by size. We combined family and non-family counts for each household size (1 through 7+). 
 
-County-level household size distributions were obtained from ACS table B11016 (Household Type by Household Size), which reports counts of family and non-family households by size. We combined family and non-family counts for each household size (1 through 7+). County-level household crowding was obtained from ACS table B25014 (Tenure by Occupants per Room), where crowded households were defined as those with more than 1.00 occupants per room, summing across owner- and renter-occupied units and all crowding levels (1.01–1.50, 1.51–2.00, and >2.00 persons per room). Total population was obtained from ACS table B01003.
+County-level household crowding proportions were obtained from ACS table B25014 (Tenure by Occupants per Room), where crowded households were defined as those with more than 1.00 occupants per room. We summed across owner- and renter-occupied units and all occupancy levels over size 1 (1.01–1.50, 1.51–2.00, and >2.00 persons per room). We normalized by the total population size (ACS table B01003).
 
-To enable region-level analysis, we aggregated the county-level ACS data into the corresponding NAWS regions using population-weighted averages. For each variable (household size proportions, crowding proportions, and proportion of agricultural workers), we multiplied each county's value by its population, summed within each region, then divided by the total regional population. This ensures that larger counties contribute proportionally more to the regional estimate.
+To calculate the proportion of agricultural workers in a county using the ACS data, we extracted the number of individuals employed in "farming, fishing, and forestry occupations" (ACS occupation codes C24030_004 [males] and C24030_031 [females]) as a proportion of total employed individuals (C24030_001).
 
-Household sizes in the NAWS data were derived from the D52 variable (total number of people sleeping in the housing unit). Households of size 7 or greater were grouped into a single "7+" category for consistency with the ACS data. Crowding status was derived from the CROWDED1 variable. Both household size and crowding data were weighted using the NAWS survey weights (PWTYCRD) and summarized by NAWS region.
+To enable region-level analysis, we aggregated the county-level ACS data into the corresponding National Agricultural Workers Survey (NAWS) regions using population-weighted averages. For each variable (household size proportions, crowding proportions, and proportion of agricultural workers), we multiplied each county's value by its population size, summed within each region, then divided by the total regional population size.
 
-To assign crowding probabilities by household size, we used a linear relationship where larger households are progressively more likely to be crowded. For a household of size $n$, the crowding multiplier is:
+Household sizes for agricultural workers were derived from the NAWS D52 variable (total number of people sleeping in the housing unit). Households of size 7 or greater were grouped into a single "7+" category for consistency with the ACS data. Crowding status was derived from the CROWDED1 variable. Both household size and crowding data were weighted using the NAWS survey weights (PWTYCRD) and summarized by NAWS region.
+
+In both the ACS and NAWS datasets, household size and household crowding are reported separately, but for the disease transmission model, we required the proportion of households of a given size that are crowded. To assign crowding probabilities by household size, we used a linear relationship where larger households are progressively more likely to be crowded. For a household of size $n$, we defined a crowding multiplier:
 
 $$w(n) = \begin{cases} 0 & n = 1 \\\ 1 + (d - 1) \cdot \frac{n - 2}{5} & n \geq 2 \end{cases}$$
 
-where $d$ is the crowding fold difference parameter (the ratio of crowding probability for size-7 households to size-2 households). We treated households of size 7+ as $n = 7$. The crowding probability for each household size within a given geographic area is then:
+where $d$ is a crowding fold-difference parameter (the ratio of crowding probability for size-7 households to size-2 households). We treated households of size 7+ as $n = 7$. The crowding probability for each household size within a given geographic area is then:
 
-$$p_{\text{crowded}}(n) = c \cdot w(n)$$
+$$p_{\text{crowded}}(n) = \eta \cdot w(n)$$
 
 where the constant $\eta$ is chosen so that the weighted average across all household sizes equals the observed aggregate crowding proportion:
 
-$$\eta = \frac{P_{\text{crowded}}}{\sum_n p(n) \cdot w(n)}$$
+<!-- $$\eta = \frac{P_{\text{crowded}}}{\sum_n p(n) \cdot w(n)}$$ -->
+$$\eta = \frac{\sum_n p_{\text{crowded}}(n)}{\sum_n p(n) \cdot w(n)}$$
 
 Here $P_{\text{crowded}}$ is the overall proportion of crowded households and $p(n)$ is the proportion of households of size $n$. With the baseline $d = 2$, households of size 7+ are twice as likely to be crowded as households of size 2, with a linear gradient in between; and the constant $\eta$ ensures that the total fraction of crowded households in the region (
 $\sum_n p_{\text{crowded}}(n)$
@@ -446,17 +449,9 @@ To assess the impact of epidemic timing on crop production, we shifted the epide
 
 ![Crop movements](../../figures/crop_movements_raw.png)
 
-**Figure S25.** Average seasonal harvest pattern for California crops, computed by averaging weekly shipments across years. Commodities and colors are as in Figure S24.
-
-![Crop movements averaged](../../figures/crop_movements_averaged.png)
-
 **Figure S26.** Estimated annual crop production loss (%) as a function of epidemic peak timing, under baseline parameters ($R_0 = 1.5$, $p_{\text{symp}} = 1$). The horizontal axis shows the day of the year on which the community symptomatic peak occurs; the vertical axis shows the resulting percentage loss in total annual production due to workforce illness. Each colored line represents one commodity. Losses are highest when the epidemic peak coincides with peak harvest periods.
 
 ![Crop impact by peak day](../../figures/crop_impact_by_peakday.png)
-
-**Figure S27.** As in Figure S26, but scaled to $p_{\text{symp}} = 0.5$ (50% of infections are symptomatic). Because production loss scales linearly with $p_{\text{symp}}$, all values are exactly half those shown in Figure S26.
-
-![Crop impact by peak day psymp 0.5](../../figures/crop_impact_by_peakday_psymp05.png)
 
 ### Supplementary Tables
 
