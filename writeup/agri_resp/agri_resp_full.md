@@ -223,14 +223,12 @@ where $d$ is a crowding fold-difference parameter (the ratio of crowding probabi
 
 $$p_{\text{crowded}}(n) = \eta \cdot w(n)$$
 
-where the constant $\eta$ is chosen so that the total proportion of crowded households in the region 
-
-$\sum_n p_\text{crowded}(n)$ is equal to the reported fraction of households that are crowded, i.e., 
+where the constant $\eta$ is chosen so that the total proportion of crowded households in the region, $\sum_n p_n p_\text{crowded}(n)$, matches the observed fraction of crowded households (here, $p_n$ is the propoortion of households that are size $n$). Specifically, 
 
 <!-- $$\eta = \frac{P_{\text{crowded}}}{\sum_n p(n) \cdot w(n)}$$ -->
-$$\eta = \frac{\sum_n p_{\text{crowded}}(n)}{\sum_n p(n) \cdot w(n)}$$
+$$\eta = \frac{\sum_n p(n) p_{\text{crowded}}(n)}{\sum_n p(n) \cdot w(n)}$$
 
-Here $P_{\text{crowded}}$ is the overall proportion of crowded households and $p(n)$ is the proportion of households of size $n$. With the baseline $d = 2$, households of size 7+ are twice as likely to be crowded as households of size 2, with a linear gradient in between; and the constant $\eta$ ensures that the total fraction of crowded households in the region (
+With the baseline $d = 2$, households of size 7+ are twice as likely to be crowded as households of size 2, with a linear gradient in between; and the constant $\eta$ ensures that the total fraction of crowded households in the region (
 $\sum_n p_{\text{crowded}}(n)$
 ) matches the proportion of crowded households from the ACS/NAWS data ($P_{\text{crowded}}$). 
 
