@@ -445,7 +445,7 @@ To assess the impact of epidemic timing on crop production, we shifted the epide
 
 ![Sensitivity R0 epidemic curves](../../figures/sensitivity_r0_curves_all_regions.png)
  -->
-**Figure S5. Cumulative infection curves under sensitivity to the basic reproduction number ($R_0$).** Each panel corresponds to one of the six NAWS regions. Within each panel, different colors represent different $R_0$ values (1.2, 1.5, 2.0, 3.0). Solid lines represent agricultural workers (A); dashed lines represent the general community (C). The vertical axis shows the cumulative proportion of the population infected over time and ranges from 0 to 1. All other parameter values are held at baseline (**Supplementary Table S2**).
+**Figure S5. Impact of the basic reproduction number ($R_0$) on cumulative infections among agricultural workers and the general community.** Panels depict the simulated cumulative infections over time for agricultural workers (solid lines) and the general community (dashed lines) in each of the six NAWS regions across different $R_0$ values (colors). All other parameter values are held at baseline (**Supplementary Table S2**).
 
 ![Sensitivity R0 cumulative](../../figures/sensitivity_r0_cumulative_all_regions.png)
 
@@ -457,7 +457,7 @@ To assess the impact of epidemic timing on crop production, we shifted the epide
 
 <!-- ![Sensitivity eps epidemic curves](../../figures/sensitivity_eps_curves_all_regions.png) -->
 
-**Figure S6. Cumulative infection curves under sensitivity to assortativity ($\eta$).** Layout and visual encoding are as in Figure S5, with different colors representing $\eta$ values (0, 0.25, 0.33, 0.50, 0.67, 0.75). Higher $\eta$ implies more within-group mixing.
+**Figure S6. Impact of assortativity ($\eta$) on cumulative infections among agricultural workers and the general community.** Panels depict the simulated cumulative infections over time for agricultural workers (solid lines) and the general community (dashed lines) in each of the six NAWS regions across different values of the assortativity parameter $\eta$ (colors), where larger $\eta$ corresponds to more within-group mixing. All other parameter values are held at baseline (**Supplementary Table S2**).
 
 ![Sensitivity eps cumulative](../../figures/sensitivity_eps_cumulative_all_regions.png)
 
@@ -469,7 +469,7 @@ To assess the impact of epidemic timing on crop production, we shifted the epide
 
 ![Sensitivity SAR epidemic curves](../../figures/sensitivity_sar_curves_all_regions.png) -->
 
-**Figure S7. Cumulative infection curves under sensitivity to the secondary attack rate (SAR) in crowded households.** Layout and visual encoding are as in Figure S5, with different colors representing SAR values (20%, 30%, 40%, 50%, 60%).
+**Figure S7. Impact of the secondary attack rate (SAR) in crowded households on cumulative infections among agricultural workers and the general community.** Panels depict the simulated cumulative infections over time for agricultural workers (solid lines) and the general community (dashed lines) in each of the six NAWS regions across different values of the secondary attack rate (SAR) in crowded households. All other parameter values are held at baseline; note that the SAR in uncrowded households was held fixed at 0.2. (**Supplementary Table S2**).
 
 ![Sensitivity SAR cumulative](../../figures/sensitivity_sar_cumulative_all_regions.png)
 
@@ -481,7 +481,7 @@ To assess the impact of epidemic timing on crop production, we shifted the epide
 
 ![Sensitivity fold epidemic curves](../../figures/sensitivity_fold_curves_all_regions.png) -->
 
-**Figure S8. Cumulative infection curves under sensitivity to the crowding fold difference ($d$).** Layout and visual encoding are as in Figure S5, with different colors representing fold difference values (1, 2, 3). A fold difference of 1 means no size-dependent crowding gradient; a fold difference of 3 means households of size 7+ are three times as likely to be crowded as households of size 2.
+**Figure S8. Impact of the crowding fold difference parameter $d$ on cumulative infections among agricultural workers and the general community.** Panels depict the simulated cumulative infections over time for agricultural workers (solid lines) and the general community (dashed lines) in each of the six NAWS regions across different values of the crowding fold-difference parameter $d$ (colors), which represents how much more likely a household of size 7+ is to be crowded than a household of size 2. All other parameter values are held at baseline (**Supplementary Table S2**).
 
 ![Sensitivity fold cumulative](../../figures/sensitivity_fold_cumulative_all_regions.png)
 
