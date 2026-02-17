@@ -447,8 +447,10 @@ plot_hhsize_histograms <- function(data, method) {
 
   p1 <- ggplot(df, aes(x = mean_hhsize, fill = subpop)) +
     geom_histogram(position = "identity", alpha = 0.5, bins = 30) +
+    geom_vline(data = acs_reference, aes(xintercept = acs_mean_hhsize),
+               linetype = "dashed", color = "#E41A1C", linewidth = 0.6) +
     geom_vline(data = naws_reference, aes(xintercept = naws_mean_hhsize),
-               linetype = "dashed", color = "black", linewidth = 0.6) +
+               linetype = "dashed", color = "#377EB8", linewidth = 0.6) +
     facet_wrap(~region_label, ncol = 3, scales = "free_y") +
     scale_fill_manual(values = pop_colors, labels = pop_labels, name = "Population") +
     labs(x = "Mean Household Size", y = "Number of Counties") +
@@ -458,8 +460,10 @@ plot_hhsize_histograms <- function(data, method) {
 
   p2 <- ggplot(df, aes(x = prop_hhsize4plus, fill = subpop)) +
     geom_histogram(position = "identity", alpha = 0.5, binwidth = 0.01) +
+    geom_vline(data = acs_reference, aes(xintercept = acs_prop_hhsize4plus),
+               linetype = "dashed", color = "#E41A1C", linewidth = 0.6) +
     geom_vline(data = naws_reference, aes(xintercept = naws_prop_hhsize4plus),
-               linetype = "dashed", color = "black", linewidth = 0.6) +
+               linetype = "dashed", color = "#377EB8", linewidth = 0.6) +
     facet_wrap(~region_label, ncol = 3, scales = "free_y") +
     scale_x_continuous(limits = c(0, 1)) +
     scale_fill_manual(values = pop_colors, labels = pop_labels, name = "Population") +
