@@ -180,9 +180,9 @@ To translate epidemic dynamics into agricultural workforce availability, we comp
 
 $$\text{symp}_t = p_{\text{symp}} \sum_{d=1}^{3} i_{t-d}$$
 
-where $p_{\text{symp}}$ is the probability that an infection is symptomatic. Daily workforce strength was defined as $\text{wf}(t) = 1 - \text{symp}(t)$. 
+where $p_{\text{symp}}$ is the probability that an infection is symptomatic. Daily workforce strength was defined as $\text{wf}(t) = 1 - \text{symp}_t$. 
 
-To assess the impact of epidemic timing on crop production, we shifted the epidemic curve so that the community symptomatic peak aligned with each day of the calendar year. The outbreak-adjusted harvest volume for each crop on each day was $V_{\text{adj}}(t) = V(t) \times \text{wf}(t)$, and total annual production loss was $(1 - \sum_t V_{\text{adj}}(t) / \sum_t V(t)) \times 100\%$.
+To assess the impact of epidemic timing on crop production, we shifted the epidemic curve so that the community symptomatic peak aligned with each day of the calendar year. For each epidemic curve, we calculated the outbreak-adjusted harvest volume for each crop on each day as $V_{\text{adj}}(t) = V(t) \times \text{wf}(t)$, where $V(t)$ is the mean harvest volume on day $t$. The total production loss for that epidemic curve, expressed as a percentage, was $(1 - \sum_t V_{\text{adj}}(t) / \sum_t V(t)) \times 100\%$. We repeated this calculation for epidemics peaking on each day of the year. 
 
 ### Supplementary Figures
 
