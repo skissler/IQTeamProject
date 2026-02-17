@@ -423,6 +423,19 @@ naws_reference <- naws_data %>%
   mutate(region_label = factor(paste0(REGION_NAME, " (", REGION_ABBREV, ")"),
                                levels = region_order))
 
+# --- Compute ACS regional reference values for vlines ---
+acs_reference <- community_stats %>%
+  group_by(REGION6) %>%
+  summarise(
+    acs_mean_hhsize = mean(mean_hhsize),
+    acs_prop_hhsize4plus = mean(prop_hhsize4plus),
+    acs_prop_crowded = mean(prop_crowded),
+    .groups = "drop"
+  ) %>%
+  left_join(region_map, by = "REGION6") %>%
+  mutate(region_label = factor(paste0(REGION_NAME, " (", REGION_ABBREV, ")"),
+                               levels = region_order))
+
 # --- Plotting functions ---
 
 #' Create household size distribution histograms
@@ -471,8 +484,10 @@ plot_crowding_histograms <- function(data, method) {
 
   ggplot(df, aes(x = prop_crowded, fill = subpop)) +
     geom_histogram(position = "identity", alpha = 0.5, binwidth = 0.01) +
+    geom_vline(data = acs_reference, aes(xintercept = acs_prop_crowded),
+               linetype = "dashed", color = "#E41A1C", linewidth = 0.6) +
     geom_vline(data = naws_reference, aes(xintercept = naws_prop_crowded),
-               linetype = "dashed", color = "black", linewidth = 0.6) +
+               linetype = "dashed", color = "#377EB8", linewidth = 0.6) +
     facet_wrap(~region_label, ncol = 3, scales = "free_y") +
     scale_x_continuous(limits = c(0, 1)) +
     scale_fill_manual(values = pop_colors, labels = pop_labels, name = "Population") +
