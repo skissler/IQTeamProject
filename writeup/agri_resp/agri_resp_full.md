@@ -159,6 +159,8 @@ County-level simulations demonstrated geographic heterogeneity in these infectio
 
 The simulated outbreaks yielded substantial productivity losses for all three crops we considered, with the impact varying by outbreak timing relative to peak harvest periods. For strawberries, peak productivity losses were 0.61% with the worst outbreak timing being an epidemic peak on day 143 (approximately late May). For iceberg lettuce, maximum losses were 0.48% for outbreaks that peaked in late May (day 141). For oranges, peak losses were 0.47% for outbreaks peaking in late January (day 30). These translate into peak losses of roughly $21,193,696, $6,018,904, and $4,044,806 USD for strawberries, head lettuce, and oranges, respectively.
 
+### Main figures
+
 **Figure 1. Household characteristics by region for agricultural workers and the general community.** (A) Proportion of households of size 1 – 7+ for agricultural workers (blue) and the general community (red). Mean household sizes for each region and sub-population are depicted as circles. (B) Proportion of households that are crowded for agricultural workers (blue) and the general community (red). Histograms for the general community represent county-level differences in household crowding within each region. For agricultural workers, household crowding is available only at the region level, so these are depicted as single bars. Mean household crowding proportions for each region and sub-population are depicted as circles. Data for agricultural workers are extracted from the National Agricultural Workers Survey (NAWS) and data for the general community are extracted from the American Community Survey (ACS). 
 
 ![Household characteristics](../../figures/hh_inkscape.png)
