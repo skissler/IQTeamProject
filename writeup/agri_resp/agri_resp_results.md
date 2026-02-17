@@ -15,7 +15,7 @@ County-level simulations demonstrated geographic heterogeneity in these infectio
 
 ### Respiratory disease outbreaks among agricultural workers can lead to substantial productivity losses.
 
-The simulated outbreaks yielded substantial productivity losses for all three crops we considered, with the impact varying by outbreak timing relative to peak harvest periods. For strawberries, peak productivity losses were 1.14% with the worst outbreak timing being an epidemic peak on day 141 (approximately late May). For iceberg lettuce, maximum losses were 0.90% for outbreaks that peaked in late May (day 141). For oranges, peak losses were 0.88% for outbreaks peaking in late January (day 30). These translate into losses of roughly xxx, xxx, and xxx USD. 
+The simulated outbreaks yielded substantial productivity losses for all three crops we considered, with the impact varying by outbreak timing relative to peak harvest periods. For strawberries, peak productivity losses were 1.14% with the worst outbreak timing being an epidemic peak on day 141 (approximately late May). For iceberg lettuce, maximum losses were 0.90% for outbreaks that peaked in late May (day 141). For oranges, peak losses were 0.88% for outbreaks peaking in late January (day 30). These translate into peak losses of roughly $39,404,351, $11,205,945, and $7,502,062 USD for strawberries, head lettuce, and oranges, respectively. 
 
 **Figure 1.** Household characteristics.
 
@@ -31,4 +31,19 @@ The simulated outbreaks yielded substantial productivity losses for all three cr
 <div align="center">
   <img src="../../figures/crop_impact.png" width="50%">
 </div>
+
+
+
+
+<!--- 
+
+2024 California head lettuce value: $1,245,105,000 (https://www.nass.usda.gov/Publications/Todays_Reports/reports/vegean25.pdf)
+2024 California orange value: $852,507,000
+2024 California strawberry value: $3,456,522,000
+
+Losses: 
+39,404,351 strawberries
+11,205,945 head lettuce 
+7,502,062 oranges
+---> 
 

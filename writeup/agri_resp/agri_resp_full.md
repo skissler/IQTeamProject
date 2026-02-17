@@ -130,7 +130,7 @@ The transmission model requires knowing the fraction of households of each size 
 
 We implemented the transmission model in `R` (version 4.5.0) using `odin` (version 1.2.7). We initialized outbreaks by setting 0.1% of individuals in each sub-population as infectious. We distributed the initial infectious individuals proportionally across household types, equivalent to uniform-randomly choosing the initial infected individuals from each sub-population. We simulated outbreaks over 365 days. 
 
-In addition to the main regional simulations, we also generated county-level simulations to explore differences in transmission between agricultural workers and the general population at a finer geographic scale. Since the NAWS dataset does not report at the county level, we imputed county-level household size distributions and crowding proportions for agricultural workers using three different methods: an "additive" method, where county-level NAWS values were imputed by adding the difference between the county-level and regional ACS values to the regional NAWS value; a "multiplicative" method, where regional NAWS values were scaled by the ratio of county-level to regional ACS values; and a "null" method, where regional NAWS values were used without adjustment. The "null" method yielded no variation in county-level agricultural household characteristics within a region; the "additive" method yielded an intermediate amount of variation; and the "multiplicative" method yielded a high amount of variation (**Supplementary Figure xx**). We treated the "additive" method as a baseline and considered the "null" and "multiplicative" methods in sensitivity analyses. Due to the high uncertainty in these imputation methods, we emphasize that these county-level results have a low level of confidence and are intended to provide a rough estimate of within-region variation around the regional mean. 
+In addition to the main regional simulations, we also generated county-level simulations to explore differences in transmission between agricultural workers and the general population at a finer geographic scale. Since the NAWS dataset does not report at the county level, we imputed county-level household size distributions and crowding proportions for agricultural workers using three different methods: an "additive" method, where county-level NAWS values were imputed by adding the difference between the county-level and regional ACS values to the regional NAWS value; a "multiplicative" method, where regional NAWS values were scaled by the ratio of county-level to regional ACS values; and a "null" method, where regional NAWS values were used without adjustment (**Supplementary Methods**). The "null" method yielded no variation in county-level agricultural household characteristics within a region; the "additive" method yielded an intermediate amount of variation; and the "multiplicative" method yielded a high amount of variation (**Supplementary Figure xx**). We treated the "additive" method as a baseline and considered the "null" and "multiplicative" methods in sensitivity analyses. Due to the high uncertainty in these imputation methods, we emphasize that these county-level results have a low level of confidence and are intended to provide a rough estimate of within-region variation around the regional mean. 
 
 
 
@@ -157,7 +157,7 @@ County-level simulations demonstrated geographic heterogeneity in these infectio
 
 ### Respiratory disease outbreaks among agricultural workers can lead to substantial productivity losses.
 
-The simulated outbreaks yielded substantial productivity losses for all three crops we considered, with the impact varying by outbreak timing relative to peak harvest periods. For strawberries, peak productivity losses were 1.14% with the worst outbreak timing being an epidemic peak on day 141 (approximately late May). For iceberg lettuce, maximum losses were 0.90% for outbreaks that peaked in late May (day 141). For oranges, peak losses were 0.88% for outbreaks peaking in late January (day 30). These translate into losses of roughly xxx, xxx, and xxx USD. 
+The simulated outbreaks yielded substantial productivity losses for all three crops we considered, with the impact varying by outbreak timing relative to peak harvest periods. For strawberries, peak productivity losses were 1.14% with the worst outbreak timing being an epidemic peak on day 141 (approximately late May). For iceberg lettuce, maximum losses were 0.90% for outbreaks that peaked in late May (day 141). For oranges, peak losses were 0.88% for outbreaks peaking in late January (day 30). These translate into peak losses of roughly $39,404,351, $11,205,945, and $7,502,062 USD for strawberries, head lettuce, and oranges, respectively. 
 
 **Figure 1.** Household characteristics.
 
@@ -173,6 +173,21 @@ The simulated outbreaks yielded substantial productivity losses for all three cr
 <div align="center">
   <img src="../../figures/crop_impact.png" width="50%">
 </div>
+
+
+
+
+<!--- 
+
+2024 California head lettuce value: $1,245,105,000 (https://www.nass.usda.gov/Publications/Todays_Reports/reports/vegean25.pdf)
+2024 California orange value: $852,507,000
+2024 California strawberry value: $3,456,522,000
+
+Losses: 
+39,404,351 strawberries
+11,205,945 head lettuce 
+7,502,062 oranges
+---> 
 
 
 
