@@ -440,55 +440,55 @@ To assess the impact of epidemic timing on crop production, we shifted the epide
 <!-- **Figure S9.** Sensitivity of the peak prevalence ratio (agricultural workers divided by community) to the basic reproduction number ($R_0$), assortativity ($\eta$), secondary attack rate in crowded households (SAR), and crowding fold difference. Layout and visual encoding are as in Figure S4, with the ratio of agricultural worker to community peak prevalence on the vertical axis. A horizontal gray dashed reference line at 1.0 indicates equal peak prevalence. -->
 
 
-
+<!-- 
 **Figure S5.** Epidemic curves under sensitivity to $R_0$, showing proportion currently infected over time across the six NAWS regions. Each panel corresponds to one region. Within each panel, different colors represent different $R_0$ values (1.2, 1.5, 2.0, 3.0). Solid lines represent agricultural workers (A); dashed lines represent the general community (C).
 
 ![Sensitivity R0 epidemic curves](../../figures/sensitivity_r0_curves_all_regions.png)
-
+ -->
 **Figure S6.** Cumulative infection curves under sensitivity to $R_0$, showing cumulative proportion infected over time across the six NAWS regions. Visual encoding is as in Figure S10. The vertical axis ranges from 0 to 1.
 
 ![Sensitivity R0 cumulative](../../figures/sensitivity_r0_cumulative_all_regions.png)
 
-**Figure S7.** Relative infection rate (agricultural workers divided by community) over time under sensitivity to $R_0$ across the six NAWS regions. Each panel corresponds to one region. Different colors represent different $R_0$ values. A horizontal gray dashed line at 1.0 indicates equal infection rates. Values above 1.0 indicate that agricultural workers have higher infection prevalence than the general community.
+<!-- **Figure S7.** Relative infection rate (agricultural workers divided by community) over time under sensitivity to $R_0$ across the six NAWS regions. Each panel corresponds to one region. Different colors represent different $R_0$ values. A horizontal gray dashed line at 1.0 indicates equal infection rates. Values above 1.0 indicate that agricultural workers have higher infection prevalence than the general community.
 
-![Sensitivity R0 relative infection](../../figures/sensitivity_r0_relative_infection_all_regions.png)
+![Sensitivity R0 relative infection](../../figures/sensitivity_r0_relative_infection_all_regions.png) -->
 
-**Figure S8.** Epidemic curves under sensitivity to assortativity ($\eta$), showing proportion currently infected over time across the six NAWS regions. Visual encoding is as in Figure S10, with different colors representing different $\eta$ values (0, 0.25, 0.33, 0.50, 0.67, 0.75). Higher $\eta$ implies more within-group mixing. Solid lines: agricultural workers (A); dashed lines: general community (C).
+<!-- **Figure S8.** Epidemic curves under sensitivity to assortativity ($\eta$), showing proportion currently infected over time across the six NAWS regions. Visual encoding is as in Figure S10, with different colors representing different $\eta$ values (0, 0.25, 0.33, 0.50, 0.67, 0.75). Higher $\eta$ implies more within-group mixing. Solid lines: agricultural workers (A); dashed lines: general community (C). -->
 
-![Sensitivity eps epidemic curves](../../figures/sensitivity_eps_curves_all_regions.png)
+<!-- ![Sensitivity eps epidemic curves](../../figures/sensitivity_eps_curves_all_regions.png) -->
 
 **Figure S9.** Cumulative infection curves under sensitivity to assortativity ($\eta$) across the six NAWS regions. Visual encoding is as in Figure S13.
 
 ![Sensitivity eps cumulative](../../figures/sensitivity_eps_cumulative_all_regions.png)
 
-**Figure S10.** Relative infection rate (agricultural workers divided by community) over time under sensitivity to assortativity ($\eta$) across the six NAWS regions. Visual encoding is as in Figure S12, with different colors for each $\eta$ value.
+<!-- **Figure S10.** Relative infection rate (agricultural workers divided by community) over time under sensitivity to assortativity ($\eta$) across the six NAWS regions. Visual encoding is as in Figure S12, with different colors for each $\eta$ value.
 
-![Sensitivity eps relative infection](../../figures/sensitivity_eps_relative_infection_all_regions.png)
+![Sensitivity eps relative infection](../../figures/sensitivity_eps_relative_infection_all_regions.png) -->
 
-**Figure S11.** Epidemic curves under sensitivity to the secondary attack rate (SAR) in crowded households, showing proportion currently infected over time across the six NAWS regions. Visual encoding is as in Figure S10, with different colors representing SAR values (20%, 30%, 40%, 50%, 60%). Solid lines: agricultural workers (A); dashed lines: general community (C).
+<!-- **Figure S11.** Epidemic curves under sensitivity to the secondary attack rate (SAR) in crowded households, showing proportion currently infected over time across the six NAWS regions. Visual encoding is as in Figure S10, with different colors representing SAR values (20%, 30%, 40%, 50%, 60%). Solid lines: agricultural workers (A); dashed lines: general community (C).
 
-![Sensitivity SAR epidemic curves](../../figures/sensitivity_sar_curves_all_regions.png)
+![Sensitivity SAR epidemic curves](../../figures/sensitivity_sar_curves_all_regions.png) -->
 
 **Figure S12.** Cumulative infection curves under sensitivity to the secondary attack rate in crowded households across the six NAWS regions. Visual encoding is as in Figure S16.
 
 ![Sensitivity SAR cumulative](../../figures/sensitivity_sar_cumulative_all_regions.png)
 
-**Figure S13.** Relative infection rate (agricultural workers divided by community) over time under sensitivity to the secondary attack rate in crowded households across the six NAWS regions. Visual encoding is as in Figure S12, with different colors for each SAR value.
+<!-- **Figure S13.** Relative infection rate (agricultural workers divided by community) over time under sensitivity to the secondary attack rate in crowded households across the six NAWS regions. Visual encoding is as in Figure S12, with different colors for each SAR value.
 
-![Sensitivity SAR relative infection](../../figures/sensitivity_sar_relative_infection_all_regions.png)
+![Sensitivity SAR relative infection](../../figures/sensitivity_sar_relative_infection_all_regions.png) -->
 
-**Figure S14.** Epidemic curves under sensitivity to the crowding fold difference, showing proportion currently infected over time across the six NAWS regions. Visual encoding is as in Figure S10, with different colors representing fold difference values (1, 2, 3). A fold difference of 1 means no size-dependent crowding gradient; a fold difference of 3 means households of size 7+ are three times as likely to be crowded as households of size 2. Solid lines: agricultural workers (A); dashed lines: general community (C).
+<!-- **Figure S14.** Epidemic curves under sensitivity to the crowding fold difference, showing proportion currently infected over time across the six NAWS regions. Visual encoding is as in Figure S10, with different colors representing fold difference values (1, 2, 3). A fold difference of 1 means no size-dependent crowding gradient; a fold difference of 3 means households of size 7+ are three times as likely to be crowded as households of size 2. Solid lines: agricultural workers (A); dashed lines: general community (C).
 
-![Sensitivity fold epidemic curves](../../figures/sensitivity_fold_curves_all_regions.png)
+![Sensitivity fold epidemic curves](../../figures/sensitivity_fold_curves_all_regions.png) -->
 
 **Figure S15.** Cumulative infection curves under sensitivity to the crowding fold difference across the six NAWS regions. Visual encoding is as in Figure S19.
 
 ![Sensitivity fold cumulative](../../figures/sensitivity_fold_cumulative_all_regions.png)
 
-**Figure S16.** Relative infection rate (agricultural workers divided by community) over time under sensitivity to the crowding fold difference across the six NAWS regions. Visual encoding is as in Figure S12, with different colors for each fold difference value.
+<!-- **Figure S16.** Relative infection rate (agricultural workers divided by community) over time under sensitivity to the crowding fold difference across the six NAWS regions. Visual encoding is as in Figure S12, with different colors for each fold difference value.
 
 ![Sensitivity fold relative infection](../../figures/sensitivity_fold_relative_infection_all_regions.png)
-
+ -->
 **Figure S17.** County-level epidemic dynamics under the multiplicative county-level imputation method for agricultural worker household characteristics. Each of the six panels corresponds to one NAWS region. Thin semi-transparent lines show individual county trajectories; thick lines with black outlines show the population-weighted regional average. Blue lines represent agricultural workers (A); red lines represent the general community (C). Top row: proportion currently infected over time. Middle row: cumulative proportion infected over time. Bottom row: relative infection rate (A/C ratio) over time, with purple lines for the regional average and grey lines for individual counties; a horizontal dashed line at 1.0 indicates equal infection rates.
 
 ![Epidemic multiplicative](../../figures/main_overlay_multiplicative.png)
