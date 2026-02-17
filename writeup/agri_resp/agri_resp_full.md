@@ -445,7 +445,7 @@ To assess the impact of epidemic timing on crop production, we shifted the epide
 
 ![Sensitivity R0 epidemic curves](../../figures/sensitivity_r0_curves_all_regions.png)
  -->
-**Figure S6.** Cumulative infection curves under sensitivity to $R_0$, showing cumulative proportion infected over time across the six NAWS regions. Visual encoding is as in Figure S10. The vertical axis ranges from 0 to 1.
+**Figure S5. Cumulative infection curves under sensitivity to the basic reproduction number ($R_0$).** Each panel corresponds to one of the six NAWS regions. Within each panel, different colors represent different $R_0$ values (1.2, 1.5, 2.0, 3.0). Solid lines represent agricultural workers (A); dashed lines represent the general community (C). The vertical axis shows the cumulative proportion of the population infected over time and ranges from 0 to 1. All other parameter values are held at baseline (**Supplementary Table S2**).
 
 ![Sensitivity R0 cumulative](../../figures/sensitivity_r0_cumulative_all_regions.png)
 
@@ -457,7 +457,7 @@ To assess the impact of epidemic timing on crop production, we shifted the epide
 
 <!-- ![Sensitivity eps epidemic curves](../../figures/sensitivity_eps_curves_all_regions.png) -->
 
-**Figure S9.** Cumulative infection curves under sensitivity to assortativity ($\eta$) across the six NAWS regions. Visual encoding is as in Figure S13.
+**Figure S6. Cumulative infection curves under sensitivity to assortativity ($\eta$).** Layout and visual encoding are as in Figure S5, with different colors representing $\eta$ values (0, 0.25, 0.33, 0.50, 0.67, 0.75). Higher $\eta$ implies more within-group mixing.
 
 ![Sensitivity eps cumulative](../../figures/sensitivity_eps_cumulative_all_regions.png)
 
@@ -469,7 +469,7 @@ To assess the impact of epidemic timing on crop production, we shifted the epide
 
 ![Sensitivity SAR epidemic curves](../../figures/sensitivity_sar_curves_all_regions.png) -->
 
-**Figure S12.** Cumulative infection curves under sensitivity to the secondary attack rate in crowded households across the six NAWS regions. Visual encoding is as in Figure S16.
+**Figure S7. Cumulative infection curves under sensitivity to the secondary attack rate (SAR) in crowded households.** Layout and visual encoding are as in Figure S5, with different colors representing SAR values (20%, 30%, 40%, 50%, 60%).
 
 ![Sensitivity SAR cumulative](../../figures/sensitivity_sar_cumulative_all_regions.png)
 
@@ -481,7 +481,7 @@ To assess the impact of epidemic timing on crop production, we shifted the epide
 
 ![Sensitivity fold epidemic curves](../../figures/sensitivity_fold_curves_all_regions.png) -->
 
-**Figure S15.** Cumulative infection curves under sensitivity to the crowding fold difference across the six NAWS regions. Visual encoding is as in Figure S19.
+**Figure S8. Cumulative infection curves under sensitivity to the crowding fold difference ($d$).** Layout and visual encoding are as in Figure S5, with different colors representing fold difference values (1, 2, 3). A fold difference of 1 means no size-dependent crowding gradient; a fold difference of 3 means households of size 7+ are three times as likely to be crowded as households of size 2.
 
 ![Sensitivity fold cumulative](../../figures/sensitivity_fold_cumulative_all_regions.png)
 
@@ -489,7 +489,7 @@ To assess the impact of epidemic timing on crop production, we shifted the epide
 
 ![Sensitivity fold relative infection](../../figures/sensitivity_fold_relative_infection_all_regions.png)
  -->
-**Figure S17.** County-level epidemic dynamics under the multiplicative county-level imputation method for agricultural worker household characteristics. Each of the six panels corresponds to one NAWS region. Thin semi-transparent lines show individual county trajectories; thick lines with black outlines show the population-weighted regional average. Blue lines represent agricultural workers (A); red lines represent the general community (C). Top row: proportion currently infected over time. Middle row: cumulative proportion infected over time. Bottom row: relative infection rate (A/C ratio) over time, with purple lines for the regional average and grey lines for individual counties; a horizontal dashed line at 1.0 indicates equal infection rates.
+**Figure S9.** County-level epidemic dynamics under the multiplicative county-level imputation method for agricultural worker household characteristics. Each of the six panels corresponds to one NAWS region. Thin semi-transparent lines show individual county trajectories; thick lines with black outlines show the population-weighted regional average. Blue lines represent agricultural workers (A); red lines represent the general community (C). Top row: proportion currently infected over time. Middle row: cumulative proportion infected over time. Bottom row: relative infection rate (A/C ratio) over time, with purple lines for the regional average and grey lines for individual counties; a horizontal dashed line at 1.0 indicates equal infection rates.
 
 ![Epidemic multiplicative](../../figures/main_overlay_multiplicative.png)
 
@@ -497,7 +497,7 @@ To assess the impact of epidemic timing on crop production, we shifted the epide
 
 ![Relative infections multiplicative](../../figures/main_relative_infection_multiplicative.png)
 
-**Figure S18.** County-level epidemic dynamics under the null county-level imputation method (regional NAWS values used directly for all counties within a region, with no county-level adjustment). Visual encoding is as in Figure S22.
+**Figure S10.** County-level epidemic dynamics under the null county-level imputation method (regional NAWS values used directly for all counties within a region, with no county-level adjustment). Visual encoding is as in Figure S9.
 
 ![Epidemic none](../../figures/main_overlay_none.png)
 
@@ -505,15 +505,15 @@ To assess the impact of epidemic timing on crop production, we shifted the epide
 
 ![Relative infections none](../../figures/main_relative_infection_none.png)
 
-**Figure S19.** Weekly crop shipments (in million pounds) for iceberg lettuce, oranges, and strawberries originating from California, 2018–2025. Each commodity is shown as a separate colored line: oranges in orange, strawberries in magenta, and iceberg lettuce in blue.
+**Figure S11.** Weekly crop shipments (in million pounds) for iceberg lettuce, oranges, and strawberries originating from California, 2018–2025. Each commodity is shown as a separate colored line: oranges in orange, strawberries in magenta, and iceberg lettuce in blue.
 
 ![Crop movements](../../figures/crop_movements_raw.png)
 
-**Figure S20.** Comparison of USDA crop movement data with University of California harvest information for three California crops. Solid lines show normalized average weekly USDA shipment volumes (proportion of total annual volume) for oranges (orange), strawberries (magenta), and iceberg lettuce (blue), averaged across years 2018-2024. The dashed magenta stairstep shows monthly strawberry harvest proportions from the UC report, converted to approximate weekly rates. The orange horizontal bar indicates the reported orange harvest season (November to June). Two blue horizontal bars indicate the lettuce planting season (lighter; December to mid-August) and estimated harvest season (darker; approximately mid-March to early October, derived by shifting the planting window forward by 100 days at the cool-season end and 50 days at the warm-season end to account for maturation time).
+**Figure S12.** Comparison of USDA crop movement data with University of California harvest information for three California crops. Solid lines show normalized average weekly USDA shipment volumes (proportion of total annual volume) for oranges (orange), strawberries (magenta), and iceberg lettuce (blue), averaged across years 2018-2024. The dashed magenta stairstep shows monthly strawberry harvest proportions from the UC report, converted to approximate weekly rates. The orange horizontal bar indicates the reported orange harvest season (November to June). Two blue horizontal bars indicate the lettuce planting season (lighter; December to mid-August) and estimated harvest season (darker; approximately mid-March to early October, derived by shifting the planting window forward by 100 days at the cool-season end and 50 days at the warm-season end to account for maturation time).
 
 ![Crop movements validated](../../figures/crop_movements_validated.png)
 
-**Figure S21.** Estimated annual crop production loss (%) as a function of epidemic peak timing, under baseline parameters ($R_0 = 1.5$, $p_{\text{symp}} = 1$). The horizontal axis shows the day of the year on which the community symptomatic peak occurs; the vertical axis shows the resulting percentage loss in total annual production due to workforce illness. Each colored line represents one commodity. Losses are highest when the epidemic peak coincides with peak harvest periods.
+**Figure S13.** Estimated annual crop production loss (%) as a function of epidemic peak timing, under baseline parameters ($R_0 = 1.5$, $p_{\text{symp}} = 1$). The horizontal axis shows the day of the year on which the community symptomatic peak occurs; the vertical axis shows the resulting percentage loss in total annual production due to workforce illness. Each colored line represents one commodity. Losses are highest when the epidemic peak coincides with peak harvest periods.
 
 ![Crop impact by peak day](../../figures/crop_impact_by_peakday.png)
 
