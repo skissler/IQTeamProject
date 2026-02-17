@@ -308,18 +308,18 @@ To assess the impact of epidemic timing on crop production, we shifted the epide
 
 | Region | Population | Mean household size | Proportion of households size 4+ | Crowding proportion |
 |:---|:---|:---:|:---:|:---:|
-| East | Agricultural workers | 3.86 | 54.7% | 20.3% |
-| East | General community | 2.44 | 21.7% | 2.8% |
-| Southeast | Agricultural workers | 3.89 | 52.3% | 22.4% |
-| Southeast | General community | 2.41 | 20.6% | 2.6% |
-| Midwest | Agricultural workers | 3.26 | 41.1% | 11.2% |
-| Midwest | General community | 2.39 | 20.7% | 1.9% |
-| Southwest | Agricultural workers | 3.32 | 45.1% | 14.8% |
-| Southwest | General community | 2.59 | 25.5% | 4.5% |
-| Northwest | Agricultural workers | 3.87 | 58.6% | 27.3% |
-| Northwest | General community | 2.52 | 23.4% | 3.2% |
-| California | Agricultural workers | 4.09 | 61.7% | 32.8% |
-| California | General community | 2.75 | 29.3% | 8.3% |
+| East | Agricultural workers | 3.9 | 54.7% | 20.3% |
+| East | General community | 2.4 | 21.7% | 2.8% |
+| Southeast | Agricultural workers | 3.9 | 52.3% | 22.4% |
+| Southeast | General community | 2.4 | 20.6% | 2.6% |
+| Midwest | Agricultural workers | 3.3 | 41.1% | 11.2% |
+| Midwest | General community | 2.4 | 20.7% | 1.9% |
+| Southwest | Agricultural workers | 3.3 | 45.1% | 14.8% |
+| Southwest | General community | 2.6 | 25.5% | 4.5% |
+| Northwest | Agricultural workers | 3.9 | 58.6% | 27.3% |
+| Northwest | General community | 2.5 | 23.4% | 3.2% |
+| California | Agricultural workers | 4.1 | 61.7% | 32.8% |
+| California | General community | 2.8 | 29.3% | 8.3% |
 
 **Table S2.** Baseline and sensitivity analysis parameter values. The baseline parameter set is shown in bold. Each sensitivity analysis varies one parameter at a time while holding all others at baseline values. The within-household transmission rate ($\tau$) is derived from the uncrowded SAR, the crowded household boost ($\tau_{\text{boost}}$) is derived from the difference between crowded and uncrowded SARs, and the between-household transmission rate ($\beta$) is calibrated to achieve the target $R_0$.
 
