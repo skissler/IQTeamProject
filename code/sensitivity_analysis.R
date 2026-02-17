@@ -346,11 +346,16 @@ plot_epidemic_curves_all_regions <- function(all_data, sens_dimension, metric = 
       region_label = paste("Region", REGION6)
     )
 
+  # Okabe-Ito colorblind-friendly palette
+  cb_palette <- c("#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#D55E00")
+  n_levels <- length(unique(plot_data$sens_value))
+
   p <- plot_data %>%
     ggplot(aes(x = t, y = .data[[metric]], color = factor(sens_value), linetype = subpop)) +
-    geom_line(linewidth = 0.6, alpha = 0.8) +
+    geom_line(linewidth = 0.9, alpha = 0.8) +
     facet_wrap(~region_label, ncol = 3) +
     {if (metric == "R_indiv") scale_y_continuous(limits = c(0, 1))} +
+    scale_color_manual(values = cb_palette[1:n_levels]) +
     labs(
       x = "Time (days)",
       y = metric_labels[metric],
@@ -395,12 +400,17 @@ plot_relative_infection_all_regions <- function(all_data, sens_dimension) {
       region_label = paste("Region", REGION6)
     )
 
+  # Okabe-Ito colorblind-friendly palette
+  cb_palette <- c("#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#D55E00")
+  n_levels <- length(unique(plot_data$sens_value))
+
   p <- plot_data %>%
     ggplot(aes(x = t, y = rel_inf, color = factor(sens_value))) +
-    geom_line(linewidth = 0.6, alpha = 0.8) +
+    geom_line(linewidth = 0.9, alpha = 0.8) +
     geom_hline(yintercept = 1, linetype = "dashed", color = "grey50", alpha = 0.5) +
     facet_wrap(~region_label, ncol = 3) +
     expand_limits(y = 0.5) +
+    scale_color_manual(values = cb_palette[1:n_levels]) +
     labs(
       x = "Time (days)",
       y = "Relative Infection Rate (Agricultural / Community)",
