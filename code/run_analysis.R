@@ -82,19 +82,19 @@ pars <- baseline_pars
 cat("  [1/3] Running with adjust_hhvars = 'none'...\n")
 pars$adjust_hhvars <- "none"
 paths$county_output <- "output/county_sim_none.csv"
-source('code/simulate.R')
+# source('code/simulate.R')
 
 # Run with multiplicative adjustment (baseline behavior)
 cat("  [2/3] Running with adjust_hhvars = 'multiplicative'...\n")
 pars$adjust_hhvars <- "multiplicative"
 paths$county_output <- "output/county_sim_multiplicative.csv"
-source('code/simulate.R')
+# source('code/simulate.R')
 
 # Run with additive adjustment
 cat("  [3/3] Running with adjust_hhvars = 'additive'...\n")
 pars$adjust_hhvars <- "additive"
 paths$county_output <- "output/county_sim_additive.csv"
-source('code/simulate.R')
+# source('code/simulate.R')
 
 cat("  County-level simulations complete.\n")
 

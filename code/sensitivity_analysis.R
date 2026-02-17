@@ -242,13 +242,13 @@ plot_sensitivity_overview <- function(diff_df, metric = "attack_rate_diff") {
     ungroup()
 
   metric_labels <- c(
-    "attack_rate_diff" = "Attack Rate Difference\n(Agricultural - Community)",
+    "attack_rate_diff" = "Difference in Final Size\n(Agricultural - Community)",
     "peak_prevalence_diff" = "Peak Prevalence Difference\n(Agricultural - Community)",
     "time_to_peak_diff" = "Peak Timing Difference in Days\n(Agricultural - Community)",
     "max_relative_infection" = "Peak Relative Infection Rate\n(Agricultural / Community)",
     "peak_prevalence_ratio" = "Peak Prevalence Ratio\n(Agricultural / Community)",
-    "attack_rate_ratio" = "Attack Rate Ratio\n(Agricultural / Community)",
-    "final_attack_rate_A" = "Final Attack Rate\n(Agricultural Workers)"
+    "attack_rate_ratio" = "Final Size Ratio\n(Agricultural / Community)",
+    "final_attack_rate_A" = "Final Size\n(Agricultural Workers)"
   )
 
   # Colorblind-friendly palette (Okabe-Ito) and region labels

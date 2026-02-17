@@ -168,9 +168,9 @@ $$\tau = \frac{(0.2)(0.2)}{1 - 0.2} = 0.05$$
 
 For crowded households, we computed $\tau_{\text{crowded}}$ using the same formula with the crowded SAR, then defined $\tau_{\text{boost}} = \tau_{\text{crowded}} - \tau$. For the baseline crowded SAR of 40%: $\tau_{\text{crowded}} = 0.40 \times 0.2 / 0.60 \approx 0.133$ and thus $\tau_{\text{boost}} \approx 0.083$. 
 
-Next, we calibrated the between-household transmission rate $\beta$ to achieve target $R_0$ values by running the model at the national level with aggregated ACS household data and systematically varying $\beta$ until the final attack rate matched theoretical predictions for the desired $R_0$. For an SIR model, the relationship between $R_0$ and final attack rate, $R_\infty$, is given implicitly by:
+Next, we calibrated the between-household transmission rate $\beta$ to achieve target $R_0$ values by running the model at the national level with aggregated ACS household data and systematically varying $\beta$ until the final size matched theoretical predictions for the desired $R_0$. For an SIR model, the relationship between $R_0$ and final size, $R_\infty$, is given implicitly by:
 $R_\infty = 1 - e^{-R_0 R_\infty}$. 
-For example, $R_0 = 1.5$ corresponds to $R_\infty \approx 0.58$, and $R_0 = 3.0$ corresponds to $R_\infty \approx 0.94$. We used a bisection search algorithm to find $\beta$, converging when the simulated final attack rate was within 0.0005 of the theoretical value. Calibration was performed using a single-population simulation at the national level, with national household distributions computed as population-weighted averages of all county-level ACS data. The calibrated $\beta$ values were then used in the regional and county-level simulations. We assumed no difference in $\beta$ between agricultural workers and the general community, so that all of the transmission differences in the model would come from differences in household size and crowding. 
+For example, $R_0 = 1.5$ corresponds to $R_\infty \approx 0.58$, and $R_0 = 3.0$ corresponds to $R_\infty \approx 0.94$. We used a bisection search algorithm to find $\beta$, converging when the simulated final size was within 0.0005 of the theoretical value. Calibration was performed using a single-population simulation at the national level, with national household distributions computed as population-weighted averages of all county-level ACS data. The calibrated $\beta$ values were then used in the regional and county-level simulations. We assumed no difference in $\beta$ between agricultural workers and the general community, so that all of the transmission differences in the model would come from differences in household size and crowding. 
 
 We initialized outbreaks by setting 0.1% of individuals in each sub-population as infectious. To distribute these initial infections across household types, we moved a fraction $0.001 \times n$ of households of size $n$ from the fully susceptible state $(x = n, y = 0, z = 0)$ to the single-infection state $(x = n-1, y = 1, z = 0)$. Because this fraction scales with household size $n$, exactly 0.1% of individuals are initially infected regardless of household size, approximating uniform random seeding of infections across the population.
 
@@ -186,9 +186,12 @@ To assess the impact of epidemic timing on crop production, we shifted the epide
 
 ### Supplementary Figures
 
-**Figure S1.** Schematic of the household-structured two-population SIR model. Households are stratified by size (1–7+), crowding status (crowded or uncrowded), and population (agricultural workers, A, or general community, C). Within each household, susceptible individuals (S) become infected (I) through within-household transmission at rate $\tau$ (or $\tau + \tau_{\text{boost}}$ in crowded households) and through between-household transmission at rate $\lambda_k$, and recover (R) at rate $\gamma$. Between-household transmission is governed by a mixing matrix parameterized by the assortativity parameter $\eta$.
+**Figure S1. Schematic of the disease transmission model for a household of size 3.** Within each household, susceptible individuals (S) become infected (I) through within-household transmission at rate $\tau$ (or $\tau + \tau_{\text{boost}}$ in crowded households) and through between-household transmission at rate $\lambda_k$, and recover (R) at rate $\gamma$. Between-household transmission is governed by a mixing matrix parameterized by the assortativity parameter $\eta$.
 
-![Model structure](../../figures/modelstructure.png)
+<div align="center">
+  <img src="../../figures/modelstructure.png" width="60%">
+</div>
+<!--- ![Model structure](../../figures/modelstructure.png) --->
 
 **Figure S2.** Distribution of county-level household crowding proportions under each county-level imputation method for agricultural workers. Each panel corresponds to one of the six NAWS regions. Histograms show the distribution of the imputed proportion of crowded households across counties within each region for (a) the additive method, (b) the multiplicative method, and (c) the null method (no county-level adjustment; all counties within a region receive the same regional NAWS value). Red bars show the ACS county-level distribution for the general population, red dashed vertical lines indicate the regional ACS mean, and blue dashed vertical lines indicate the regional NAWS estimate for agricultural workers.
 
@@ -202,7 +205,7 @@ To assess the impact of epidemic timing on crop production, we shifted the epide
 ![Mean and four plus household size distributions imputed multiplicative](../../figures/hhsize_distribution_multiplicative.png)
 ![Mean and four plus household size distributions imputed none](../../figures/hhsize_distribution_none.png)
 
-**Figure S4.** Sensitivity of final attack rate to the basic reproduction number ($R_0$), assortativity ($\eta$), secondary attack rate in crowded households (SAR), and crowding fold difference. Each panel shows one sensitivity dimension, with parameter values on the horizontal axis and final attack rate (proportion of the population ultimately infected) on the vertical axis. Colored lines connect results across parameter values for each of the six NAWS regions (East, Southeast, Midwest, Southwest, Northwest, California), using an Okabe-Ito colorblind-friendly palette. Solid lines with points represent agricultural workers (A); dashed lines with open points represent the general community (C). A horizontal gray dashed reference line indicates the baseline value.
+**Figure S4.** Sensitivity of final size to the basic reproduction number ($R_0$), assortativity ($\eta$), secondary attack rate in crowded households (SAR), and crowding fold difference. Each panel shows one sensitivity dimension, with parameter values on the horizontal axis and final size (proportion of the population ultimately infected) on the vertical axis. Colored lines connect results across parameter values for each of the six NAWS regions (East, Southeast, Midwest, Southwest, Northwest, California), using an Okabe-Ito colorblind-friendly palette. Solid lines with points represent agricultural workers (A); dashed lines with open points represent the general community (C). A horizontal gray dashed reference line indicates the baseline value.
 
 ![Sensitivity overview final size](../../figures/sensitivity_overview_attackrate.png)
 
@@ -218,7 +221,7 @@ To assess the impact of epidemic timing on crop production, we shifted the epide
 
 ![Sensitivity overview max relative infection](../../figures/sensitivity_overview_max_relative_infection.png)
 
-**Figure S8.** Sensitivity of the attack rate ratio (agricultural workers divided by community) to the basic reproduction number ($R_0$), assortativity ($\eta$), secondary attack rate in crowded households (SAR), and crowding fold difference. Layout and visual encoding are as in Figure S4, with the ratio of agricultural worker to community final attack rates on the vertical axis. A horizontal gray dashed reference line at 1.0 indicates equal attack rates.
+**Figure S8.** Sensitivity of the final size ratio (agricultural workers divided by community) to the basic reproduction number ($R_0$), assortativity ($\eta$), secondary attack rate in crowded households (SAR), and crowding fold difference. Layout and visual encoding are as in Figure S4, with the ratio of agricultural worker to community final sizes on the vertical axis. A horizontal gray dashed reference line at 1.0 indicates equal final sizes.
 
 ![Sensitivity overview attack rate ratio](../../figures/sensitivity_overview_attack_rate_ratio.png)
 
@@ -382,9 +385,9 @@ To assess the impact of epidemic timing on crop production, we shifted the epide
 | 3/4 | Northwest | 2.1 | 75.5 | 24.5 | 99.5 | 0.5 |
 | 3/4 | California | 2.2 | 75.5 | 24.5 | 99.5 | 0.5 |
 
-**Table S4.** Simulation results: peak prevalence, time to peak, and final attack rate for agricultural workers (A) and the general community (C) across all parameter sets and regions. Results are shown for the baseline additive county-level imputation method.
+**Table S4.** Simulation results: peak prevalence, time to peak, and final size for agricultural workers (A) and the general community (C) across all parameter sets and regions. Results are shown for the baseline additive county-level imputation method.
 
-| Parameter set | Region | Peak prev. (A) | Peak prev. (C) | Time to peak (A) | Time to peak (C) | Attack rate (A) | Attack rate (C) |
+| Parameter set | Region | Peak prev. (A) | Peak prev. (C) | Time to peak (A) | Time to peak (C) | Final size (A) | Final size (C) |
 |:---|:---|:---:|:---:|:---:|:---:|:---:|:---:|
 | **r0_1.5 (baseline)** | East | 8.9% | 6.3% | 45 | 55 | 72.1% | 57.2% |
 | | Southeast | 8.9% | 6.2% | 44 | 56 | 72.3% | 56.5% |
@@ -477,9 +480,9 @@ To assess the impact of epidemic timing on crop production, we shifted the epide
 | | Northwest | 9.8% | 7.0% | 43 | 52 | 73.9% | 59.0% |
 | | California | 11.6% | 8.6% | 38 | 46 | 77.1% | 63.7% |
 
-**Table S5.** Differential metrics between agricultural workers and the general community across all parameter sets and regions. Peak prevalence difference (A minus C), attack rate difference (A minus C), time to peak difference (A minus C, in days; negative values indicate agricultural workers peak earlier), peak prevalence ratio (A/C), attack rate ratio (A/C), and maximum relative infection rate (the highest instantaneous ratio of agricultural worker to community infection prevalence observed during the simulation).
+**Table S5.** Differential metrics between agricultural workers and the general community across all parameter sets and regions. Peak prevalence difference (A minus C), final size difference (A minus C), time to peak difference (A minus C, in days; negative values indicate agricultural workers peak earlier), peak prevalence ratio (A/C), final size ratio (A/C), and maximum relative infection rate (the highest instantaneous ratio of agricultural worker to community infection prevalence observed during the simulation).
 
-| Parameter set | Region | Peak prev. diff. | Attack rate diff. | Time diff. | Peak prev. ratio | Attack rate ratio | Max rel. infection |
+| Parameter set | Region | Peak prev. diff. | Final size diff. | Time diff. | Peak prev. ratio | Final size ratio | Max rel. infection |
 |:---|:---|:---:|:---:|:---:|:---:|:---:|:---:|
 | **r0_1.5 (baseline)** | East | 2.6 pp | 14.9 pp | −10 | 1.41 | 1.26 | 2.62 |
 | | Southeast | 2.8 pp | 15.8 pp | −12 | 1.45 | 1.28 | 2.78 |
