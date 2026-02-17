@@ -109,6 +109,43 @@ ggsave(file.path(paths$figures_dir, "fig_crowding_hists.pdf"),
        fig_crowding_hists, width = 10, height = 6)
 
 # ==============================================================================
+# Household summary statistics by region and population
+# ==============================================================================
+
+# Agricultural workers (NAWS)
+naws_summary <- naws_data %>%
+  group_by(REGION6, REGION_NAME) %>%
+  summarise(
+    mean_hhsize = sum(hhSize * prop),
+    prop_hhsize_4plus = sum(prop[hhSize >= 4]),
+    prop_crowded = first(prop_crowded),
+    .groups = "drop"
+  ) %>%
+  mutate(population = "Agricultural workers")
+
+# General community (ACS, regional)
+acs_summary <- acs_data_regional %>%
+  group_by(REGION6) %>%
+  summarise(
+    mean_hhsize = sum(hhSize * prop),
+    prop_hhsize_4plus = sum(prop[hhSize >= 4]),
+    prop_crowded = first(prop_crowded),
+    .groups = "drop"
+  ) %>%
+  mutate(
+    REGION_NAME = region_labels[as.character(REGION6)],
+    population = "General community"
+  )
+
+hh_summary <- bind_rows(naws_summary, acs_summary) %>%
+  select(REGION6, REGION_NAME, population, mean_hhsize, prop_hhsize_4plus, prop_crowded) %>%
+  arrange(REGION6, population)
+
+write_csv(hh_summary, file.path(paths$output_dir, "hh_summary.csv"))
+
+cat("Household summary statistics saved to", file.path(paths$output_dir, "hh_summary.csv"), "\n")
+
+# ==============================================================================
 # Mixing matrix elements by region and assortativity (eta)
 # ==============================================================================
 

@@ -1,9 +1,9 @@
 
 ## Results
 
-### Household crowding leads to higher modeled disease prevalence among agricultural workers.
+### Household size and crowding lead to higher modeled disease prevalence among agricultural workers.
 
-Agricultural worker households are substantially larger and more crowded on average than the general U.S. population (Figure 1). Mean household size among agricultural workers ranged from 3.3 to 4.1 across regions, compared to 2.4 to 2.8 for the general population. The proportion of crowded households was 3 to 9 times higher among agricultural workers than the general population across the six regions. Crowding rates among agricultural workers ranged from 11% (Midwest) to 33% (California), compared to 2-8% in the general population.
+Agricultural worker households are substantially larger and more crowded on average than the general U.S. population (Figure 1). Mean household size among agricultural workers ranged from 3.3 to 4.1 across regions, compared to 2.4 to 2.8 for the general population. The proportion of crowded households was 3 to 9 times higher among agricultural workers than the general population across the six regions. Crowding rates among agricultural workers ranged from 11% (Midwest) to 33% (California), compared to 2-9% in the general population.
 
 Simulations of respiratory disease outbreaks at the regional level revealed consistently higher disease burden among agricultural workers compared to the general population (Figure 2). Under baseline assumptions ($R_0$ = 1.5, SAR = 20%/40% for uncrowded/crowded households, $\eta$ = 2/3), peak prevalence among agricultural workers exceeded that of the general population by 1.5 to 3.0 percentage points across regions. Cumulative attack rates were 9 to 16 percentage points higher among agricultural workers, with final attack rates of 66-77% among agricultural workers compared to 56-64% in the general population.
 
