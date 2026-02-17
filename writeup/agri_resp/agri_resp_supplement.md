@@ -571,3 +571,11 @@ To assess the impact of epidemic timing on crop production, we shifted the epide
 | | Southwest | 1.7 pp | 9.4 pp | −6 | 1.23 | 1.16 | 1.78 |
 | | Northwest | 2.8 pp | 14.9 pp | −9 | 1.41 | 1.25 | 2.59 |
 | | California | 3.1 pp | 13.4 pp | −8 | 1.36 | 1.21 | 2.42 |
+
+**Table S6.** Estimated annual crop production losses due to epidemic-related workforce illness, assuming $p_{\text{symp}} = 0.5$. For each crop, we report the worst-case epidemic peak timing (the day of the year on which the community symptomatic peak would cause the largest production loss), the corresponding maximum production loss as a percentage of total annual production, and the estimated dollar value of that loss based on 2024 California crop values. We also report the minimum and mean production losses across all possible epidemic peak timings.
+
+| Crop | 2024 value (USD) | Worst peak day | Max loss (%) | Max loss (USD) | Min loss (%) | Mean loss (%) |
+|:---|---:|:---:|:---:|---:|:---:|:---:|
+| Strawberries | $3,456,522,000 | 143 | 0.61% | $21,193,696 | 0.05% | 0.32% |
+| Iceberg lettuce | $1,245,105,000 | 141 | 0.48% | $6,018,904 | 0.07% | 0.32% |
+| Oranges | $852,507,000 | 30 | 0.47% | $4,044,806 | 0.13% | 0.32% |

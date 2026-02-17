@@ -521,6 +521,9 @@ impact_summary <- impact_df_combined %>%
     .groups = "drop"
   )
 
+write_csv(impact_summary, file.path(paths$output_dir, "crop_impact_summary.csv"))
+cat("  Saved: crop_impact_summary.csv\n")
+
 # ==============================================================================
 # 8. Schematic Figure: Crop Production Loss Calculation
 # ==============================================================================
