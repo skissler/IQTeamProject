@@ -285,7 +285,7 @@ fig_movements_raw <- movements %>%
     color = "Commodity",
     title = "California Crop Shipments Over Time"
   ) +
-  theme_classic() +
+  theme_classic(base_size = 14) +
   theme(legend.position = "bottom")
 
 ggsave(file.path(paths$figures_dir, "crop_movements_raw.pdf"),
@@ -306,7 +306,7 @@ fig_movements_avg <- avg_movements %>%
     color = "Commodity",
     title = "Average Seasonal Harvest Pattern"
   ) +
-  theme_classic() +
+  theme_classic(base_size = 11) +
   theme(legend.position = "bottom")
 
 ggsave(file.path(paths$figures_dir, "crop_movements_averaged.pdf"),
@@ -439,9 +439,9 @@ fig_movements_validated <- ggplot() +
     title = "Seasonal Harvest Patterns: USDA Shipment Data vs. UC Davis Harvest Calendars",
     subtitle = "Solid lines: normalized USDA shipments. Dashed segments: UC Davis strawberry harvest proportions.\nHorizontal bars: UC Davis harvest/planting seasons for oranges and lettuce."
   ) +
-  theme_classic() +
+  theme_classic(base_size = 14) +
   theme(legend.position = "bottom",
-        plot.subtitle = element_text(size = 9, color = "grey40"))
+        plot.subtitle = element_text(color = "grey40"))
 
 ggsave(file.path(paths$figures_dir, "crop_movements_validated.pdf"),
        fig_movements_validated, width = 10, height = 6)
@@ -470,7 +470,7 @@ fig_impact <- impact_df_combined %>%
     subtitle = paste0("Based on baseline epidemic (R0 = ", default_pars$r0,
                       ") in California, p_symp = 1")
   ) +
-  theme_classic() +
+  theme_classic(base_size = 14) +
   theme(legend.position = "bottom")
 
 ggsave(file.path(paths$figures_dir, "crop_impact_by_peakday.pdf"),
@@ -496,7 +496,7 @@ fig_impact_psymp <- impact_df_combined %>%
     subtitle = bquote("Based on baseline epidemic (R0 = " * .(default_pars$r0) *
                       ") in California, " * p[symp] ~ "= 0.5")
   ) +
-  theme_classic() +
+  theme_classic(base_size = 14) +
   theme(legend.position = "bottom")
 
 ggsave(file.path(paths$figures_dir, "crop_impact_by_peakday_psymp05.pdf"),
@@ -591,9 +591,9 @@ panel_a <- avg_movements_daily %>%
   expand_limits(y = 0) +
   labs(x = NULL, y = "Daily Shipments\n(Million lbs)", color = "Commodity",
        title = "(a) Average daily harvest volume") +
-  theme_classic() +
+  theme_classic(base_size = 14) +
   theme(legend.position = "bottom", axis.text.x = element_blank(),
-        plot.title = element_text(size = 10, face = "bold"))
+        plot.title = element_text(face = "bold"))
 
 # Panel (b): Epidemic curve (I_indiv) for both subpopulations
 panel_b <- ggplot() +
@@ -604,9 +604,9 @@ panel_b <- ggplot() +
   expand_limits(y = 0) +
   labs(x = NULL, y = "Proportion\nInfected",
        title = "(b) Epidemic curve") +
-  theme_classic() +
+  theme_classic(base_size = 14) +
   theme(axis.text.x = element_blank(),
-        plot.title = element_text(size = 10, face = "bold"))
+        plot.title = element_text(face = "bold"))
 
 # Panel (d): Symptomatic infections with shading (p_symp = 0.5)
 panel_d <- epi_mapped %>%
@@ -616,9 +616,9 @@ panel_d <- epi_mapped %>%
   expand_limits(y = 0) +
   labs(x = NULL, y = "Proportion\nSymptomatic",
        title = bquote("(c) Symptomatic agricultural workers (" * p[symp] ~ "= 0.5)")) +
-  theme_classic() +
+  theme_classic(base_size = 14) +
   theme(axis.text.x = element_blank(),
-        plot.title = element_text(size = 10, face = "bold"))
+        plot.title = element_text(face = "bold"))
 
 # Month axis breaks and labels for 4-panel schematic (defined once, reused below)
 month_breaks_sch <- cumsum(c(1, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30))
@@ -646,9 +646,9 @@ panel_c <- ggplot() +
   expand_limits(y = 0) +
   labs(x = NULL, y = "Daily Shipments\n(Million lbs)", color = "Commodity",
        title = "(d) Adjusted harvest volume (accounting for workforce loss)") +
-  theme_classic() +
+  theme_classic(base_size = 14) +
   theme(legend.position = "bottom",
-        plot.title = element_text(size = 10, face = "bold"))
+        plot.title = element_text(face = "bold"))
 
 # Combine panels
 fig_schematic <- patchwork::wrap_plots(panel_a, panel_b, panel_d, panel_c, ncol = 1) +
@@ -657,8 +657,8 @@ fig_schematic <- patchwork::wrap_plots(panel_a, panel_b, panel_d, panel_c, ncol 
     subtitle = paste0("Example: epidemic peak aligned to day ", worst_peakday_straw,
                       " (worst case for strawberries), R0 = ", default_pars$r0),
     theme = theme(
-      plot.title = element_text(face = "bold", size = 13),
-      plot.subtitle = element_text(size = 10, color = "grey40")
+      plot.title = element_text(face = "bold"),
+      plot.subtitle = element_text(color = "grey40")
     )
   )
 
@@ -735,11 +735,11 @@ fig_schematic_combined <- ggplot() +
                       ", R0 = ", default_pars$r0,
                       ", p_symp = ", p_symp)
   ) +
-  theme_classic() +
+  theme_classic(base_size = 14) +
   theme(
     legend.position = "bottom",
-    plot.title = element_text(face = "bold", size = 12),
-    plot.subtitle = element_text(size = 9, color = "grey40"),
+    plot.title = element_text(face = "bold"),
+    plot.subtitle = element_text(color = "grey40"),
     axis.title.y.right = element_text(color = "grey40"),
     axis.text.y.right = element_text(color = "grey40")
   )
@@ -835,11 +835,11 @@ fig_schematic_june <- ggplot() +
                       ", R0 = ", default_pars$r0,
                       ", p_symp = ", p_symp)
   ) +
-  theme_classic() +
+  theme_classic(base_size = 14) +
   theme(
     legend.position = "bottom",
-    plot.title = element_text(face = "bold", size = 12),
-    plot.subtitle = element_text(size = 9, color = "grey40"),
+    plot.title = element_text(face = "bold"),
+    plot.subtitle = element_text(color = "grey40"),
     axis.title.y.right = element_text(color = "grey40"),
     axis.text.y.right = element_text(color = "grey40")
   )

@@ -68,7 +68,7 @@ fig_hhsize_pyramid <- ggplot(data_modified, aes(x = hhSize, y = plot_prop, fill 
     fill = "Data Source",
     col = "Data Source"
   ) +
-  theme_minimal(base_size = 12) +
+  theme_minimal(base_size = 14) +
   theme(
     strip.text = element_text(face = "bold"),
     legend.position = "bottom",
@@ -103,7 +103,7 @@ fig_crowding_hists <- acs_data %>%
     x = "Proportion of Households Crowded",
     y = "Density"
   ) +
-  theme_minimal()
+  theme_minimal(base_size = 14)
 
 ggsave(file.path(paths$figures_dir, "fig_crowding_hists.pdf"),
        fig_crowding_hists, width = 10, height = 6)

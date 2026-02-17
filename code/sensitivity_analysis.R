@@ -266,7 +266,7 @@ plot_sensitivity_overview <- function(diff_df, metric = "attack_rate_diff") {
       y = metric_labels[metric],
       color = "Region"
     ) +
-    theme_classic() +
+    theme_classic(base_size = 17) +
     theme(
       legend.position = "bottom",
       strip.text = element_text(face = "bold"),
@@ -310,7 +310,7 @@ plot_epidemic_curves <- function(all_data, sens_dimension, region = 1) {
       values = c("A" = "solid", "C" = "dashed"),
       labels = c("A" = "Agricultural", "C" = "Community")
     ) +
-    theme_classic() +
+    theme_classic(base_size = 11) +
     theme(legend.position = "bottom")
 
   return(p)
@@ -362,7 +362,7 @@ plot_epidemic_curves_all_regions <- function(all_data, sens_dimension, metric = 
       values = c("A" = "solid", "C" = "dashed"),
       labels = c("A" = "Agricultural", "C" = "Community")
     ) +
-    theme_classic() +
+    theme_classic(base_size = 17) +
     theme(
       legend.position = "bottom",
       strip.text = element_text(face = "bold"),
@@ -407,7 +407,7 @@ plot_relative_infection_all_regions <- function(all_data, sens_dimension) {
       color = sens_labels[sens_dimension],
       title = paste("Relative Infection Rate by Region - Sensitivity to", sens_labels[sens_dimension])
     ) +
-    theme_classic() +
+    theme_classic(base_size = 17) +
     theme(
       legend.position = "bottom",
       strip.text = element_text(face = "bold"),

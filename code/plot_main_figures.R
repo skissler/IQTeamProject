@@ -112,13 +112,13 @@ create_overlay_plot <- function(county_plot, regional_plot, adjust_method) {
       subtitle = paste0("Thick lines: regional average. Thin lines: individual counties. ",
                         "R0 = ", default_pars$r0)
     ) +
-    theme_classic() +
+    theme_classic(base_size = 17) +
     theme(
       legend.position = "bottom",
-      strip.text = element_text(face = "bold", size = 10),
+      strip.text = element_text(face = "bold"),
       panel.grid.minor = element_blank(),
-      plot.title = element_text(face = "bold", size = 12),
-      plot.subtitle = element_text(size = 9, color = "grey40")
+      plot.title = element_text(face = "bold"),
+      plot.subtitle = element_text(color = "grey40")
     ) +
     guides(color = guide_legend(override.aes = list(linewidth = 1.5, alpha = 1)))
 }
@@ -167,13 +167,13 @@ create_cumulative_plot <- function(county_plot, regional_plot, adjust_method) {
       subtitle = paste0("Thick lines: regional average. Thin lines: individual counties. ",
                         "R0 = ", default_pars$r0)
     ) +
-    theme_classic() +
+    theme_classic(base_size = 17) +
     theme(
       legend.position = "bottom",
-      strip.text = element_text(face = "bold", size = 10),
+      strip.text = element_text(face = "bold"),
       panel.grid.minor = element_blank(),
-      plot.title = element_text(face = "bold", size = 12),
-      plot.subtitle = element_text(size = 9, color = "grey40")
+      plot.title = element_text(face = "bold"),
+      plot.subtitle = element_text(color = "grey40")
     ) +
     guides(color = guide_legend(override.aes = list(linewidth = 1.5, alpha = 1)))
 }
@@ -235,13 +235,13 @@ create_relative_infection_plot <- function(county_plot, regional_plot, adjust_me
       subtitle = paste0("Thick lines: regional average. Thin lines: individual counties. ",
                         "R0 = ", default_pars$r0)
     ) +
-    theme_classic() +
+    theme_classic(base_size = 17) +
     theme(
       legend.position = "bottom",
-      strip.text = element_text(face = "bold", size = 10),
+      strip.text = element_text(face = "bold"),
       panel.grid.minor = element_blank(),
-      plot.title = element_text(face = "bold", size = 12),
-      plot.subtitle = element_text(size = 9, color = "grey40")
+      plot.title = element_text(face = "bold"),
+      plot.subtitle = element_text(color = "grey40")
     )
 }
 
@@ -439,9 +439,9 @@ plot_hhsize_histograms <- function(data, method) {
     facet_wrap(~region_label, ncol = 3, scales = "free_y") +
     scale_fill_manual(values = pop_colors, labels = pop_labels, name = "Population") +
     labs(x = "Mean Household Size", y = "Number of Counties") +
-    theme_classic() +
+    theme_classic(base_size = 17) +
     theme(legend.position = "none",
-          strip.text = element_text(face = "bold", size = 9))
+          strip.text = element_text(face = "bold"))
 
   p2 <- ggplot(df, aes(x = prop_hhsize4plus, fill = subpop)) +
     geom_histogram(position = "identity", alpha = 0.5, binwidth = 0.01) +
@@ -451,14 +451,14 @@ plot_hhsize_histograms <- function(data, method) {
     scale_x_continuous(limits = c(0, 1)) +
     scale_fill_manual(values = pop_colors, labels = pop_labels, name = "Population") +
     labs(x = "Proportion of Households Size 4+", y = "Number of Counties") +
-    theme_classic() +
+    theme_classic(base_size = 17) +
     theme(legend.position = "bottom",
-          strip.text = element_text(face = "bold", size = 9))
+          strip.text = element_text(face = "bold"))
 
   patchwork::wrap_plots(p1, p2, ncol = 1) +
     patchwork::plot_annotation(
       title = paste0("Household Size Distributions: ", adjust_labels[method]),
-      theme = theme(plot.title = element_text(face = "bold", size = 13))
+      theme = theme(plot.title = element_text(face = "bold"))
     )
 }
 
@@ -481,11 +481,11 @@ plot_crowding_histograms <- function(data, method) {
       y = "Number of Counties",
       title = paste0("Crowding Distributions: ", adjust_labels[method])
     ) +
-    theme_classic() +
+    theme_classic(base_size = 17) +
     theme(
       legend.position = "bottom",
-      strip.text = element_text(face = "bold", size = 10),
-      plot.title = element_text(face = "bold", size = 13)
+      strip.text = element_text(face = "bold"),
+      plot.title = element_text(face = "bold")
     )
 }
 
