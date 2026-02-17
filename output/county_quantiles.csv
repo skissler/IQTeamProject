@@ -1,0 +1,7 @@
+REGION6,n_counties,peak_prev_ratio_median,peak_prev_ratio_q20,peak_prev_ratio_q80,attack_rate_ratio_median,attack_rate_ratio_q20,attack_rate_ratio_q80,region
+1,748,1.46,1.39,1.53,1.29,1.25,1.33,East
+2,560,1.46,1.4,1.54,1.28,1.25,1.33,Southeast
+3,1055,1.25,1.22,1.28,1.18,1.15,1.2,Midwest
+4,379,1.25,1.21,1.29,1.17,1.14,1.2,Southwest
+5,308,1.46,1.37,1.56,1.29,1.23,1.34,Northwest
+6,58,1.4,1.3,1.57,1.24,1.18,1.33,California

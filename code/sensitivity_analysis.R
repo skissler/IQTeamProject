@@ -578,8 +578,71 @@ run_sensitivity_analysis <- function() {
 }
 
 # ==============================================================================
+# County-Level Summary Statistics
+# ==============================================================================
+
+#' Compute county-level epidemic summary statistics and A/C ratios
+#' @param county_file Path to county simulation CSV (default: additive method)
+#' @return List with county_diff (per-county stats) and county_quantiles (by region)
+calculate_county_summary <- function(county_file = file.path(paths$output_dir, "county_sim_additive.csv")) {
+  if (!file.exists(county_file)) {
+    cat("County simulation file not found:", county_file, "\n")
+    return(NULL)
+  }
+
+  cat("Loading county simulation data...\n")
+  county_data <- read_csv(county_file, show_col_types = FALSE)
+
+  # Per-county summary stats (same metrics as regional)
+  county_stats <- county_data %>%
+    group_by(GEOID, REGION6, subpop) %>%
+    summarise(
+      peak_prevalence = max(I_indiv, na.rm = TRUE),
+      time_to_peak = t[which.max(I_indiv)],
+      final_attack_rate = last(R_indiv),
+      .groups = "drop"
+    )
+
+  # Compute A/C ratios per county
+  county_diff <- county_stats %>%
+    select(GEOID, REGION6, subpop, peak_prevalence, final_attack_rate, time_to_peak) %>%
+    pivot_wider(
+      names_from = subpop,
+      values_from = c(peak_prevalence, final_attack_rate, time_to_peak)
+    ) %>%
+    mutate(
+      peak_prevalence_ratio = peak_prevalence_A / peak_prevalence_C,
+      attack_rate_ratio = final_attack_rate_A / final_attack_rate_C,
+      time_to_peak_diff = time_to_peak_A - time_to_peak_C
+    )
+
+  # Summarize by region: median and 20th/80th percentiles
+  county_quantiles <- county_diff %>%
+    group_by(REGION6) %>%
+    summarise(
+      n_counties = n(),
+      peak_prev_ratio_median = median(peak_prevalence_ratio, na.rm = TRUE),
+      peak_prev_ratio_q20 = quantile(peak_prevalence_ratio, 0.20, na.rm = TRUE),
+      peak_prev_ratio_q80 = quantile(peak_prevalence_ratio, 0.80, na.rm = TRUE),
+      attack_rate_ratio_median = median(attack_rate_ratio, na.rm = TRUE),
+      attack_rate_ratio_q20 = quantile(attack_rate_ratio, 0.20, na.rm = TRUE),
+      attack_rate_ratio_q80 = quantile(attack_rate_ratio, 0.80, na.rm = TRUE),
+      .groups = "drop"
+    )
+
+  write_csv(county_diff, file.path(paths$output_dir, "county_differential.csv"))
+  write_csv(county_quantiles, file.path(paths$output_dir, "county_quantiles.csv"))
+  cat("  Saved: county_differential.csv, county_quantiles.csv\n")
+
+  return(list(county_diff = county_diff, county_quantiles = county_quantiles))
+}
+
+# ==============================================================================
 # Run Analysis
 # ==============================================================================
 # Always run when sourced (the function handles its own error checking)
 
 results <- run_sensitivity_analysis()
+
+# Run county-level summary if county data exists
+county_results <- calculate_county_summary()
