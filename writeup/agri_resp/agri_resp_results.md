@@ -17,15 +17,15 @@ County-level simulations demonstrated geographic heterogeneity in these infectio
 
 The simulated outbreaks yielded substantial productivity losses for all three crops we considered, with the impact varying by outbreak timing relative to peak harvest periods. For strawberries, peak productivity losses were 0.61% with the worst outbreak timing being an epidemic peak on day 143 (approximately late May). For iceberg lettuce, maximum losses were 0.48% for outbreaks that peaked in late May (day 141). For oranges, peak losses were 0.47% for outbreaks peaking in late January (day 30). These translate into peak losses of roughly $21,193,696, $6,018,904, and $4,044,806 USD for strawberries, head lettuce, and oranges, respectively.
 
-**Figure 1.** Household characteristics.
+**Figure 1. Household characteristics by region for agricultural workers and the general community.** (A) Proportion of households of size 1 – 7+ for agricultural workers (blue) and the general community (red). Mean household sizes for each region and sub-population are depicted as circles. (B) Proportion of households that are crowded for agricultural workers (blue) and the general community (red). Histograms for the general community represent county-level differences in household crowding within each region. For agricultural workers, household crowding is available only at the region level, so these are depicted as single bars. Mean household crowding proportions for each region and sub-population are depicted as circles. Data for agricultural workers are extracted from the National Agricultural Workers Survey (NAWS) and data for the general community are extracted from the American Community Survey (ACS). 
 
 ![Household characteristics](../../figures/hh_inkscape.png)
 
-**Figure 2.** Epidemic simulations.
+**Figure 2. Simulated epidemic trajectories by region for agricutural workers and the general community.** Infection prevalence (A), cumulative infections (B), and ratio of agricultural worker to general community infection prevalence (C) for agricultural workers (blue) and the general community (red) in the six NAWS regions. Region-level simulations are depicted as thick lines with black outlines. County-level simulations are depicted as thin, partially transparent lines to illustrate within-region variation. 
 
 ![Epidemic simulations](../../figures/main_epicurves_white.png)
 
-**Figure 3.** Crop impact.
+**Figure 3. Simulated impact of a respiratory virus outbreak on harvesting of strawberries, iceberg lettuce, and oranges in California.** (A) Illustration of the approach for calculating harvest impact. Here, an epidemic peaks in the general community on June 1st, leading to a peak in symptomatic disease among agricultural workers (color??) a few days earlier. The mean daly production of strawberries (magenta), iceberg lettuce (blue), and oranges (orange), averaged across 2018-2024, are depicted as solid lines. Dashed lines with shading depict the simulated production impact caused by the loss of labor due to symptomatic disease. The total impact (i.e., the area of the shaded regions) is summed across the year, yielding a single point in plot (B) representing the overall impact of an epidemic peaking on June 1. (B) Simulated production impact on strawberries (magenta), iceberg lettuce (blue), and oranges (orange) for epidemics peaking in the general community on each day of the year. These impacts assume that 50% of infections cause symptoms severe enough to cause a worker to miss work. 
 
 <!-- ![Crop impact](../../figures/crop_impact.png) --> 
 <div align="center">
