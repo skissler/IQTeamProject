@@ -8,6 +8,7 @@
 ## Competing interests
 
 ## Data availability
+All data and code associated with this manuscript can be accessed at https://github.com/skissler/IQTeamProject
 
 ## References
 
