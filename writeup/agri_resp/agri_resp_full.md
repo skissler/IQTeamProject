@@ -509,17 +509,17 @@ To assess the impact of epidemic timing on crop production, we shifted the epide
 
 ![Crop movements](../../figures/crop_movements_raw.png)
 
-**Figure S12.** Comparison of USDA crop movement data with University of California harvest information for three California crops. Solid lines show normalized average weekly USDA shipment volumes (proportion of total annual volume) for oranges (orange), strawberries (magenta), and iceberg lettuce (blue), averaged across years 2018-2024. The dashed magenta stairstep shows monthly strawberry harvest proportions from the UC report, converted to approximate weekly rates. The orange horizontal bar indicates the reported orange harvest season (November to June). Two blue horizontal bars indicate the lettuce planting season (lighter; December to mid-August) and estimated harvest season (darker; approximately mid-March to early October, derived by shifting the planting window forward by 100 days at the cool-season end and 50 days at the warm-season end to account for maturation time).
+**Figure S12. Average weekly crop movemnts with known harvesting patterns.** Comparison of normalized average weekly crop movements (proportion of total annual volume from 2018-2025; solid lines) with harvest information from University of California Agriculture and Natural Resources Cooperative Extension reports (dashed line, semi-transparent bars) for iceberg lettuce (blue), oranges (orange), and strawberries (magenta) in California. For strawberries, the University of California report gives explicit monthly harvest proportions, which are re-scaled to approximate weekly harvest volumes (dashed magenta line). For oranges, the reported harvest season runs from November to June (semi-transparent orange bar). For iceberg lettuce, the planting season runs from late December to mid-August (lighter semi-transparent blue bar). We computed an approximate harvest season (darker semi-transparent blue bar) by shifting the planting window forward by 100 days at the cool-season (December) end and by 50 days at the warm-season end (August) to account for reported seasonal differences in maturation time. 
 
 ![Crop movements validated](../../figures/crop_movements_validated.png)
 
-**Figure S13.** Estimated annual crop production loss (%) as a function of epidemic peak timing, under baseline parameters ($R_0 = 1.5$, $p_{\text{symp}} = 1$). The horizontal axis shows the day of the year on which the community symptomatic peak occurs; the vertical axis shows the resulting percentage loss in total annual production due to workforce illness. Each colored line represents one commodity. Losses are highest when the epidemic peak coincides with peak harvest periods.
+**Figure S13. Estimated crop production loss as a function of epidemic peak timing when all infections are symptomatic.** Simulated percent of total harvest volume impacted by outbreak-induced labor shortages for iceberg lettuce (blue), strawberries (magenta), and oranges (orange) under baseline parameter values and symptomatic proportion $p_\text{symp} = 1$. The horizontal axis represents the day of the year on which infection prevalence peaks in the general community (peak infections among agricultural workers occur a few days earlier). Production losses for other symptomatic probabilities can be derived by re-scaling these curves by the desired $p_\text{symp}$. 
 
 ![Crop impact by peak day](../../figures/crop_impact_by_peakday.png)
 
 ### Supplementary Tables
 
-**Table S1.** Household characteristics by region for agricultural workers and the general community. Mean household size is the population-weighted average across household sizes 1–7+. The proportion of large households is the fraction with 4 or more members. Crowding proportion is the fraction of households with more than 1 occupant per room. Agricultural worker data are from the National Agricultural Workers Survey (NAWS); general community data are from the American Community Survey (ACS), aggregated to the regional level using population-weighted averages.
+**Table S1. Household characteristics by region for agricultural workers and the general community.** Mean household size is the population-weighted average across household sizes 1–7+. Crowding proportion is the fraction of households with more than 1 occupant per room. Agricultural worker data are from the National Agricultural Workers Survey (NAWS), and general community data are from the American Community Survey (ACS), aggregated to the regional level using population-weighted averages.
 
 | Region | Population | Mean household size | Proportion of households size 4+ | Crowding proportion |
 |:---|:---|:---:|:---:|:---:|
@@ -536,27 +536,27 @@ To assess the impact of epidemic timing on crop production, we shifted the epide
 | California | Agricultural workers | 4.1 | 61.7% | 32.8% |
 | California | General community | 2.8 | 29.3% | 8.3% |
 
-**Table S2.** Baseline and sensitivity analysis parameter values. The baseline parameter set is shown in bold. Each sensitivity analysis varies one parameter at a time while holding all others at baseline values. The within-household transmission rate ($\tau$) is derived from the uncrowded SAR, the crowded household boost ($\tau_{\text{boost}}$) is derived from the difference between crowded and uncrowded SARs, and the between-household transmission rate ($\beta$) is calibrated to achieve the target $R_0$.
+**Table S2. Baseline and sensitivity analysis parameter values for the disease transmission model.**  The baseline parameters are marked in bold. Each sensitivity analysis varies one parameter at a time while holding all others at baseline values. 
 
-| Parameter set | $R_0$ | $\eta$ | SAR (crowded) | Fold diff. | $\tau$ | $\tau_{\text{boost}}$ | $\beta$ | $\gamma$ |
+| Parameter set | $R_0$ | $\eta$ | SAR (crowded) | Fold diff. ($d$) | $\tau$ | $\tau_{\text{boost}}$ | $\beta$ | $\gamma$ |
 |:---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| **r0_1.5 (baseline)** | **1.5** | **0.67** | **40%** | **2** | **0.050** | **0.083** | **calibrated** | **0.200** |
-| r0_1.2 | 1.2 | 0.67 | 40% | 2 | 0.050 | 0.083 | calibrated | 0.200 |
-| r0_2 | 2.0 | 0.67 | 40% | 2 | 0.050 | 0.083 | calibrated | 0.200 |
-| r0_3 | 3.0 | 0.67 | 40% | 2 | 0.050 | 0.083 | calibrated | 0.200 |
-| eps_0.25 | 1.5 | 0.75 | 40% | 2 | 0.050 | 0.083 | calibrated | 0.200 |
-| eps_0.5 | 1.5 | 0.50 | 40% | 2 | 0.050 | 0.083 | calibrated | 0.200 |
-| eps_0.6667 | 1.5 | 0.33 | 40% | 2 | 0.050 | 0.083 | calibrated | 0.200 |
-| eps_0.75 | 1.5 | 0.25 | 40% | 2 | 0.050 | 0.083 | calibrated | 0.200 |
-| eps_1 | 1.5 | 0.00 | 40% | 2 | 0.050 | 0.083 | calibrated | 0.200 |
-| sar_0.2 | 1.5 | 0.67 | 20% | 2 | 0.050 | 0.000 | calibrated | 0.200 |
-| sar_0.3 | 1.5 | 0.67 | 30% | 2 | 0.050 | 0.036 | calibrated | 0.200 |
-| sar_0.5 | 1.5 | 0.67 | 50% | 2 | 0.050 | 0.150 | calibrated | 0.200 |
-| sar_0.6 | 1.5 | 0.67 | 60% | 2 | 0.050 | 0.250 | calibrated | 0.200 |
-| fold_1 | 1.5 | 0.67 | 40% | 1 | 0.050 | 0.083 | calibrated | 0.200 |
-| fold_3 | 1.5 | 0.67 | 40% | 3 | 0.050 | 0.083 | calibrated | 0.200 |
+| **r0_1.5 (baseline)** | **1.5** | **0.67** | **40%** | **2** | **0.050** | **0.083** | **0.2108** | **0.200** |
+| r0_1.2 | 1.2 | 0.67 | 40% | 2 | 0.050 | 0.083 | 0.1546 | 0.200 |
+| r0_2 | 2.0 | 0.67 | 40% | 2 | 0.050 | 0.083 | 0.3078 | 0.200 |
+| r0_3 | 3.0 | 0.67 | 40% | 2 | 0.050 | 0.083 | 0.5054 | 0.200 |
+| eps_0.25 | 1.5 | 0.75 | 40% | 2 | 0.050 | 0.083 | 0.2108 | 0.200 |
+| eps_0.5 | 1.5 | 0.50 | 40% | 2 | 0.050 | 0.083 | 0.2108 | 0.200 |
+| eps_0.6667 | 1.5 | 0.33 | 40% | 2 | 0.050 | 0.083 | 0.2108 | 0.200 |
+| eps_0.75 | 1.5 | 0.25 | 40% | 2 | 0.050 | 0.083 | 0.2108 | 0.200 |
+| eps_1 | 1.5 | 0.00 | 40% | 2 | 0.050 | 0.083 | 0.2108 | 0.200 |
+| sar_0.2 | 1.5 | 0.67 | 20% | 2 | 0.050 | 0.000 | 0.2108 | 0.200 |
+| sar_0.3 | 1.5 | 0.67 | 30% | 2 | 0.050 | 0.036 | 0.2108 | 0.200 |
+| sar_0.5 | 1.5 | 0.67 | 50% | 2 | 0.050 | 0.150 | 0.2108 | 0.200 |
+| sar_0.6 | 1.5 | 0.67 | 60% | 2 | 0.050 | 0.250 | 0.2108 | 0.200 |
+| fold_1 | 1.5 | 0.67 | 40% | 1 | 0.050 | 0.083 | 0.2108 | 0.200 |
+| fold_3 | 1.5 | 0.67 | 40% | 3 | 0.050 | 0.083 | 0.2108 | 0.200 |
 
-**Table S3.** Mixing matrix elements by region and assortativity parameter ($\eta$). For each region, $w_A$ is the proportion of the population that are agricultural workers (derived from ACS data). The mixing matrix governs between-household contact patterns: $m_{AA}$ is the fraction of agricultural workers' between-household contacts that are with other agricultural workers, $m_{AC}$ is the fraction with the general community, and vice versa for $m_{CC}$ and $m_{CA}$. Because $w_A$ is small (0.7–2.2%), $m_{AA} \approx \eta$ and $m_{CC} \approx 1$ across all values of $\eta$. At $\eta = 0$ (proportional mixing), agricultural workers have only $w_A$ of contacts within their own group; the baseline $\eta = 2/3$ is highlighted in bold.
+<!-- **Table S3.** Mixing matrix elements by region and assortativity parameter ($\eta$). For each region, $w_A$ is the proportion of the population that are agricultural workers (derived from ACS data). The mixing matrix governs between-household contact patterns: $m_{AA}$ is the fraction of agricultural workers' between-household contacts that are with other agricultural workers, $m_{AC}$ is the fraction with the general community, and vice versa for $m_{CC}$ and $m_{CA}$. Because $w_A$ is small (0.7–2.2%), $m_{AA} \approx \eta$ and $m_{CC} \approx 1$ across all values of $\eta$. At $\eta = 0$ (proportional mixing), agricultural workers have only $w_A$ of contacts within their own group; the baseline $\eta = 2/3$ is highlighted in bold.
 
 | $\eta$ | Region | $w_A$ (%) | $m_{AA}$ (%) | $m_{AC}$ (%) | $m_{CC}$ (%) | $m_{CA}$ (%) |
 |:---:|:---|:---:|:---:|:---:|:---:|:---:|
@@ -595,9 +595,9 @@ To assess the impact of epidemic timing on crop production, we shifted the epide
 | 3/4 | Midwest | 1.6 | 75.4 | 24.6 | 99.6 | 0.4 |
 | 3/4 | Southwest | 1.0 | 75.2 | 24.8 | 99.8 | 0.2 |
 | 3/4 | Northwest | 2.1 | 75.5 | 24.5 | 99.5 | 0.5 |
-| 3/4 | California | 2.2 | 75.5 | 24.5 | 99.5 | 0.5 |
+| 3/4 | California | 2.2 | 75.5 | 24.5 | 99.5 | 0.5 | -->
 
-**Table S4.** Simulation results: peak prevalence, time to peak, and final size for agricultural workers (A) and the general community (C) across all parameter sets and regions. Results are shown for the baseline additive county-level imputation method.
+**Table S3. Summary statistics for simulated epidemics across regions and parameter sets.** Simulated peak prevalence, time to epidemic peak, and final size for agricultural workers (A) and the general community (C).
 
 | Parameter set | Region | Peak prev. (A) | Peak prev. (C) | Time to peak (A) | Time to peak (C) | Final size (A) | Final size (C) |
 |:---|:---|:---:|:---:|:---:|:---:|:---:|:---:|
@@ -692,105 +692,105 @@ To assess the impact of epidemic timing on crop production, we shifted the epide
 | | Northwest | 9.8% | 7.0% | 43 | 52 | 73.9% | 59.0% |
 | | California | 11.6% | 8.6% | 38 | 46 | 77.1% | 63.7% |
 
-**Table S5.** Differential metrics between agricultural workers and the general community across all parameter sets and regions. Peak prevalence difference (A minus C), final size difference (A minus C), time to peak difference (A minus C, in days; negative values indicate agricultural workers peak earlier), peak prevalence ratio (A/C), final size ratio (A/C), and maximum relative infection rate (the highest instantaneous ratio of agricultural worker to community infection prevalence observed during the simulation).
+**Table S4. Differential metrics between agricultural workers and the general community across regions and parameter sets.** Peak prevalence ratio, final size ratio, peak timing difference, and maximum infection prevalence ratio between agricultural workers and the general community.
 
-| Parameter set | Region | Peak prev. diff. | Final size diff. | Time diff. | Peak prev. ratio | Final size ratio | Max rel. infection |
-|:---|:---|:---:|:---:|:---:|:---:|:---:|:---:|
-| **r0_1.5 (baseline)** | East | 2.6 pp | 14.9 pp | −10 | 1.41 | 1.26 | 2.62 |
-| | Southeast | 2.8 pp | 15.8 pp | −12 | 1.45 | 1.28 | 2.78 |
-| | Midwest | 1.4 pp | 9.5 pp | −6 | 1.24 | 1.17 | 1.74 |
-| | Southwest | 1.6 pp | 9.2 pp | −5 | 1.23 | 1.15 | 1.75 |
-| | Northwest | 2.8 pp | 14.7 pp | −9 | 1.40 | 1.25 | 2.52 |
-| | California | 3.0 pp | 13.3 pp | −8 | 1.35 | 1.21 | 2.38 |
-| r0_1.2 | East | 1.5 pp | 20.3 pp | −28 | 2.05 | 1.69 | 3.41 |
-| | Southeast | 1.6 pp | 21.5 pp | −29 | 2.18 | 1.76 | 3.69 |
-| | Midwest | 0.7 pp | 12.0 pp | −15 | 1.53 | 1.42 | 2.00 |
-| | Southwest | 0.9 pp | 12.5 pp | −12 | 1.46 | 1.36 | 2.00 |
-| | Northwest | 1.6 pp | 20.0 pp | −22 | 1.89 | 1.61 | 3.12 |
-| | California | 1.9 pp | 18.8 pp | −17 | 1.68 | 1.46 | 2.83 |
-| r0_2 | East | 3.1 pp | 7.6 pp | −5 | 1.20 | 1.10 | 2.09 |
-| | Southeast | 3.3 pp | 8.0 pp | −5 | 1.21 | 1.10 | 2.19 |
-| | Midwest | 1.8 pp | 5.0 pp | −2 | 1.12 | 1.06 | 1.52 |
-| | Southwest | 1.9 pp | 4.7 pp | −2 | 1.12 | 1.06 | 1.55 |
-| | Northwest | 3.2 pp | 7.6 pp | −5 | 1.20 | 1.10 | 2.07 |
-| | California | 3.3 pp | 6.9 pp | −3 | 1.19 | 1.08 | 2.01 |
-| r0_3 | East | 2.8 pp | 2.2 pp | −2 | 1.09 | 1.02 | 1.67 |
-| | Southeast | 2.9 pp | 2.3 pp | −2 | 1.09 | 1.02 | 1.73 |
-| | Midwest | 1.6 pp | 1.4 pp | −1 | 1.05 | 1.02 | 1.34 |
-| | Southwest | 1.7 pp | 1.4 pp | −1 | 1.05 | 1.01 | 1.37 |
-| | Northwest | 2.8 pp | 2.2 pp | −1 | 1.09 | 1.02 | 1.68 |
-| | California | 3.0 pp | 2.0 pp | −1 | 1.09 | 1.02 | 1.67 |
-| eps_0.25 ($\eta$ = 0.75) | East | 3.3 pp | 15.6 pp | −13 | 1.52 | 1.27 | 3.14 |
-| | Southeast | 3.5 pp | 16.5 pp | −14 | 1.57 | 1.29 | 3.37 |
-| | Midwest | 1.8 pp | 10.1 pp | −7 | 1.29 | 1.18 | 1.95 |
-| | Southwest | 2.0 pp | 9.7 pp | −7 | 1.27 | 1.16 | 1.96 |
-| | Northwest | 3.4 pp | 15.4 pp | −11 | 1.50 | 1.26 | 3.00 |
-| | California | 3.6 pp | 13.8 pp | −10 | 1.43 | 1.22 | 2.78 |
-| eps_0.5 ($\eta$ = 0.50) | East | 1.9 pp | 13.5 pp | −6 | 1.30 | 1.24 | 1.99 |
-| | Southeast | 2.0 pp | 14.3 pp | −7 | 1.32 | 1.25 | 2.08 |
-| | Midwest | 1.1 pp | 8.5 pp | −3 | 1.18 | 1.15 | 1.48 |
-| | Southwest | 1.3 pp | 8.4 pp | −3 | 1.18 | 1.14 | 1.50 |
-| | Northwest | 2.1 pp | 13.4 pp | −5 | 1.30 | 1.23 | 1.94 |
-| | California | 2.3 pp | 12.3 pp | −5 | 1.27 | 1.19 | 1.88 |
-| eps_0.6667 ($\eta$ = 0.33) | East | 1.6 pp | 12.3 pp | −4 | 1.26 | 1.22 | 1.67 |
-| | Southeast | 1.7 pp | 13.0 pp | −4 | 1.28 | 1.23 | 1.73 |
-| | Midwest | 1.0 pp | 7.6 pp | −2 | 1.16 | 1.14 | 1.35 |
-| | Southwest | 1.1 pp | 7.6 pp | −2 | 1.15 | 1.13 | 1.36 |
-| | Northwest | 1.8 pp | 12.3 pp | −3 | 1.26 | 1.21 | 1.65 |
-| | California | 1.9 pp | 11.4 pp | −3 | 1.23 | 1.18 | 1.61 |
-| eps_0.75 ($\eta$ = 0.25) | East | 1.5 pp | 11.8 pp | −3 | 1.24 | 1.21 | 1.58 |
-| | Southeast | 1.6 pp | 12.5 pp | −4 | 1.26 | 1.22 | 1.62 |
-| | Midwest | 0.9 pp | 7.2 pp | −2 | 1.15 | 1.13 | 1.31 |
-| | Southwest | 1.0 pp | 7.3 pp | −2 | 1.14 | 1.12 | 1.32 |
-| | Northwest | 1.7 pp | 11.8 pp | −2 | 1.24 | 1.20 | 1.55 |
-| | California | 1.8 pp | 11.0 pp | −3 | 1.22 | 1.17 | 1.53 |
-| eps_1 ($\eta$ = 0.00) | East | 1.3 pp | 10.3 pp | −2 | 1.21 | 1.18 | 1.40 |
-| | Southeast | 1.4 pp | 10.9 pp | −2 | 1.22 | 1.19 | 1.42 |
-| | Midwest | 0.8 pp | 6.3 pp | −1 | 1.12 | 1.11 | 1.22 |
-| | Southwest | 0.9 pp | 6.4 pp | −1 | 1.12 | 1.11 | 1.23 |
-| | Northwest | 1.4 pp | 10.4 pp | −1 | 1.21 | 1.18 | 1.39 |
-| | California | 1.6 pp | 9.8 pp | −2 | 1.19 | 1.15 | 1.37 |
-| sar_0.2 | East | 1.7 pp | 11.3 pp | −6 | 1.29 | 1.20 | 1.82 |
-| | Southeast | 1.7 pp | 11.6 pp | −7 | 1.30 | 1.21 | 1.85 |
-| | Midwest | 1.1 pp | 7.5 pp | −3 | 1.18 | 1.13 | 1.45 |
-| | Southwest | 1.1 pp | 6.9 pp | −3 | 1.16 | 1.12 | 1.41 |
-| | Northwest | 1.5 pp | 9.7 pp | −5 | 1.23 | 1.17 | 1.60 |
-| | California | 1.5 pp | 8.8 pp | −3 | 1.21 | 1.15 | 1.55 |
-| sar_0.3 | East | 2.2 pp | 13.4 pp | −8 | 1.36 | 1.24 | 2.19 |
-| | Southeast | 2.3 pp | 14.1 pp | −9 | 1.38 | 1.25 | 2.28 |
-| | Midwest | 1.3 pp | 8.7 pp | −5 | 1.21 | 1.15 | 1.59 |
-| | Southwest | 1.4 pp | 8.3 pp | −5 | 1.20 | 1.14 | 1.58 |
-| | Northwest | 2.2 pp | 12.7 pp | −7 | 1.33 | 1.22 | 2.02 |
-| | California | 2.3 pp | 11.6 pp | −6 | 1.29 | 1.19 | 1.94 |
-| sar_0.5 | East | 2.9 pp | 15.8 pp | −12 | 1.45 | 1.27 | 3.07 |
-| | Southeast | 3.1 pp | 16.8 pp | −14 | 1.50 | 1.30 | 3.32 |
-| | Midwest | 1.6 pp | 10.1 pp | −6 | 1.25 | 1.18 | 1.88 |
-| | Southwest | 1.8 pp | 9.9 pp | −6 | 1.24 | 1.16 | 1.93 |
-| | Northwest | 3.3 pp | 16.0 pp | −11 | 1.46 | 1.27 | 3.08 |
-| | California | 3.5 pp | 14.3 pp | −9 | 1.40 | 1.22 | 2.84 |
-| sar_0.6 | East | 3.2 pp | 16.4 pp | −14 | 1.48 | 1.28 | 3.52 |
-| | Southeast | 3.4 pp | 17.5 pp | −15 | 1.54 | 1.31 | 3.87 |
-| | Midwest | 1.6 pp | 10.6 pp | −8 | 1.26 | 1.19 | 2.02 |
-| | Southwest | 1.9 pp | 10.2 pp | −7 | 1.25 | 1.17 | 2.10 |
-| | Northwest | 3.7 pp | 16.9 pp | −13 | 1.51 | 1.28 | 3.68 |
-| | California | 4.0 pp | 14.8 pp | −10 | 1.43 | 1.23 | 3.31 |
-| fold_1 | East | 2.5 pp | 14.5 pp | −9 | 1.39 | 1.25 | 2.46 |
-| | Southeast | 2.6 pp | 15.3 pp | −10 | 1.43 | 1.27 | 2.60 |
-| | Midwest | 1.4 pp | 9.2 pp | −5 | 1.23 | 1.16 | 1.68 |
-| | Southwest | 1.5 pp | 9.0 pp | −5 | 1.22 | 1.15 | 1.69 |
-| | Northwest | 2.6 pp | 14.3 pp | −9 | 1.38 | 1.24 | 2.38 |
-| | California | 2.8 pp | 12.9 pp | −7 | 1.34 | 1.21 | 2.27 |
-| fold_3 | East | 2.7 pp | 15.1 pp | −11 | 1.42 | 1.26 | 2.70 |
-| | Southeast | 2.9 pp | 16.0 pp | −11 | 1.46 | 1.28 | 2.87 |
-| | Midwest | 1.5 pp | 9.7 pp | −6 | 1.24 | 1.17 | 1.77 |
-| | Southwest | 1.7 pp | 9.4 pp | −6 | 1.23 | 1.16 | 1.78 |
-| | Northwest | 2.8 pp | 14.9 pp | −9 | 1.41 | 1.25 | 2.59 |
-| | California | 3.1 pp | 13.4 pp | −8 | 1.36 | 1.21 | 2.42 |
+| Parameter set | Region | Peak prev. ratio | Final size ratio | Time diff. | Max rel. infection |
+| :--- | :--- | :---: | :---: | :---: | :---: |
+| **r0_1.5 (baseline)** | East | 1.41 | 1.26 | −10 | 2.62 |
+|  | Southeast | 1.45 | 1.28 | −12 | 2.78 |
+|  | Midwest | 1.24 | 1.17 | −6 | 1.74 |
+|  | Southwest | 1.23 | 1.15 | −5 | 1.75 |
+|  | Northwest | 1.40 | 1.25 | −9 | 2.52 |
+|  | California | 1.35 | 1.21 | −8 | 2.38 |
+| r0_1.2 | East | 2.05 | 1.69 | −28 | 3.41 |
+|  | Southeast | 2.18 | 1.76 | −29 | 3.69 |
+|  | Midwest | 1.53 | 1.42 | −15 | 2.00 |
+|  | Southwest | 1.46 | 1.36 | −12 | 2.00 |
+|  | Northwest | 1.89 | 1.61 | −22 | 3.12 |
+|  | California | 1.68 | 1.46 | −17 | 2.83 |
+| r0_2 | East | 1.20 | 1.10 | −5 | 2.09 |
+|  | Southeast | 1.21 | 1.10 | −5 | 2.19 |
+|  | Midwest | 1.12 | 1.06 | −2 | 1.52 |
+|  | Southwest | 1.12 | 1.06 | −2 | 1.55 |
+|  | Northwest | 1.20 | 1.10 | −5 | 2.07 |
+|  | California | 1.19 | 1.08 | −3 | 2.01 |
+| r0_3 | East | 1.09 | 1.02 | −2 | 1.67 |
+|  | Southeast | 1.09 | 1.02 | −2 | 1.73 |
+|  | Midwest | 1.05 | 1.02 | −1 | 1.34 |
+|  | Southwest | 1.05 | 1.01 | −1 | 1.37 |
+|  | Northwest | 1.09 | 1.02 | −1 | 1.68 |
+|  | California | 1.09 | 1.02 | −1 | 1.67 |
+| eps_0.25 ($\eta$ = 0.75) | East | 1.52 | 1.27 | −13 | 3.14 |
+|  | Southeast | 1.57 | 1.29 | −14 | 3.37 |
+|  | Midwest | 1.29 | 1.18 | −7 | 1.95 |
+|  | Southwest | 1.27 | 1.16 | −7 | 1.96 |
+|  | Northwest | 1.50 | 1.26 | −11 | 3.00 |
+|  | California | 1.43 | 1.22 | −10 | 2.78 |
+| eps_0.5 ($\eta$ = 0.50) | East | 1.30 | 1.24 | −6 | 1.99 |
+|  | Southeast | 1.32 | 1.25 | −7 | 2.08 |
+|  | Midwest | 1.18 | 1.15 | −3 | 1.48 |
+|  | Southwest | 1.18 | 1.14 | −3 | 1.50 |
+|  | Northwest | 1.30 | 1.23 | −5 | 1.94 |
+|  | California | 1.27 | 1.19 | −5 | 1.88 |
+| eps_0.6667 ($\eta$ = 0.33) | East | 1.26 | 1.22 | −4 | 1.67 |
+|  | Southeast | 1.28 | 1.23 | −4 | 1.73 |
+|  | Midwest | 1.16 | 1.14 | −2 | 1.35 |
+|  | Southwest | 1.15 | 1.13 | −2 | 1.36 |
+|  | Northwest | 1.26 | 1.21 | −3 | 1.65 |
+|  | California | 1.23 | 1.18 | −3 | 1.61 |
+| eps_0.75 ($\eta$ = 0.25) | East | 1.24 | 1.21 | −3 | 1.58 |
+|  | Southeast | 1.26 | 1.22 | −4 | 1.62 |
+|  | Midwest | 1.15 | 1.13 | −2 | 1.31 |
+|  | Southwest | 1.14 | 1.12 | −2 | 1.32 |
+|  | Northwest | 1.24 | 1.20 | −2 | 1.55 |
+|  | California | 1.22 | 1.17 | −3 | 1.53 |
+| eps_1 ($\eta$ = 0.00) | East | 1.21 | 1.18 | −2 | 1.40 |
+|  | Southeast | 1.22 | 1.19 | −2 | 1.42 |
+|  | Midwest | 1.12 | 1.11 | −1 | 1.22 |
+|  | Southwest | 1.12 | 1.11 | −1 | 1.23 |
+|  | Northwest | 1.21 | 1.18 | −1 | 1.39 |
+|  | California | 1.19 | 1.15 | −2 | 1.37 |
+| sar_0.2 | East | 1.29 | 1.20 | −6 | 1.82 |
+|  | Southeast | 1.30 | 1.21 | −7 | 1.85 |
+|  | Midwest | 1.18 | 1.13 | −3 | 1.45 |
+|  | Southwest | 1.16 | 1.12 | −3 | 1.41 |
+|  | Northwest | 1.23 | 1.17 | −5 | 1.60 |
+|  | California | 1.21 | 1.15 | −3 | 1.55 |
+| sar_0.3 | East | 1.36 | 1.24 | −8 | 2.19 |
+|  | Southeast | 1.38 | 1.25 | −9 | 2.28 |
+|  | Midwest | 1.21 | 1.15 | −5 | 1.59 |
+|  | Southwest | 1.20 | 1.14 | −5 | 1.58 |
+|  | Northwest | 1.33 | 1.22 | −7 | 2.02 |
+|  | California | 1.29 | 1.19 | −6 | 1.94 |
+| sar_0.5 | East | 1.45 | 1.27 | −12 | 3.07 |
+|  | Southeast | 1.50 | 1.30 | −14 | 3.32 |
+|  | Midwest | 1.25 | 1.18 | −6 | 1.88 |
+|  | Southwest | 1.24 | 1.16 | −6 | 1.93 |
+|  | Northwest | 1.46 | 1.27 | −11 | 3.08 |
+|  | California | 1.40 | 1.22 | −9 | 2.84 |
+| sar_0.6 | East | 1.48 | 1.28 | −14 | 3.52 |
+|  | Southeast | 1.54 | 1.31 | −15 | 3.87 |
+|  | Midwest | 1.26 | 1.19 | −8 | 2.02 |
+|  | Southwest | 1.25 | 1.17 | −7 | 2.10 |
+|  | Northwest | 1.51 | 1.28 | −13 | 3.68 |
+|  | California | 1.43 | 1.23 | −10 | 3.31 |
+| fold_1 | East | 1.39 | 1.25 | −9 | 2.46 |
+|  | Southeast | 1.43 | 1.27 | −10 | 2.60 |
+|  | Midwest | 1.23 | 1.16 | −5 | 1.68 |
+|  | Southwest | 1.22 | 1.15 | −5 | 1.69 |
+|  | Northwest | 1.38 | 1.24 | −9 | 2.38 |
+|  | California | 1.34 | 1.21 | −7 | 2.27 |
+| fold_3 | East | 1.42 | 1.26 | −11 | 2.70 |
+|  | Southeast | 1.46 | 1.28 | −11 | 2.87 |
+|  | Midwest | 1.24 | 1.17 | −6 | 1.77 |
+|  | Southwest | 1.23 | 1.16 | −6 | 1.78 |
+|  | Northwest | 1.41 | 1.25 | −9 | 2.59 |
+|  | California | 1.36 | 1.21 | −8 | 2.42 |
 
-**Table S6.** Estimated annual crop production losses due to epidemic-related workforce illness, assuming $p_{\text{symp}} = 0.5$. For each crop, we report the worst-case epidemic peak timing (the day of the year on which the community symptomatic peak would cause the largest production loss), the corresponding maximum production loss as a percentage of total annual production, and the estimated dollar value of that loss based on 2024 California crop values. We also report the minimum and mean production losses across all possible epidemic peak timings.
+**Table S5. Estimated harvest-related crop production losses due to epidemic-induced workforce illness.** For each crop, we report the worst-case epidemic peak timing (the day of the year on which the community symptomatic peak would cause the largest production loss), the corresponding maximum production loss as a percentage of total annual production, and the estimated dollar value of that loss based on 2024 California crop values. Values assume half of all infections are sufficiently symptomatic to cause missed work ($p_\text{symp} = 0.5$). 
 
-| Crop | 2024 value (USD) | Worst peak day | Max loss (%) | Max loss (USD) | Min loss (%) | Mean loss (%) |
-|:---|---:|:---:|:---:|---:|:---:|:---:|
-| Strawberries | $3,456,522,000 | 143 | 0.61% | $21,193,696 | 0.05% | 0.32% |
-| Iceberg lettuce | $1,245,105,000 | 141 | 0.48% | $6,018,904 | 0.07% | 0.32% |
-| Oranges | $852,507,000 | 30 | 0.47% | $4,044,806 | 0.13% | 0.32% |
+| Crop | 2024 value (USD) | Worst peak day | Max loss (%) | Max loss (USD) |
+|:---|---:|:---:|:---:|---:|
+| Strawberries | $3,456,522,000 | 143 | 0.61% | $21,193,696 |
+| Iceberg lettuce | $1,245,105,000 | 141 | 0.48% | $6,018,904 |
+| Oranges | $852,507,000 | 30 | 0.47% | $4,044,806 |
