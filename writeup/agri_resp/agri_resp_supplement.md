@@ -389,8 +389,9 @@ To assess the impact of epidemic timing on crop production, we shifted the epide
 
 **Table S3. Summary statistics for simulated epidemics across regions and parameter sets.** Simulated peak prevalence, time to epidemic peak, and final size for agricultural workers (A) and the general community (C).
 
-| Parameter set | Region | Peak prevalence (A) | Peak prevalence (C) | Time to peak (A) (days) | Time to peak (C) (days) | Final size (A) | Final size (C) |
+| Parameter set | Region | Peak prevalence | | Time to peak (days) | | Final size | |
 |:---|:---|:---:|:---:|:---:|:---:|:---:|:---:|
+| | | Agricultural workers | General community | Agricultural workers | General community | Agricultural workers | General community |
 | **r0_1.5 (baseline)** | East | 8.9% | 6.3% | 45 | 55 | 72.1% | 57.2% |
 | | Southeast | 8.9% | 6.2% | 44 | 56 | 72.3% | 56.5% |
 | | Midwest | 7.6% | 6.1% | 50 | 56 | 65.9% | 56.4% |
