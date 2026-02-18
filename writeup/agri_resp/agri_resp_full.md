@@ -531,11 +531,11 @@ To assess the impact of epidemic timing on crop production, we shifted the epide
 | Northwest | 3.9 | 2.5 | 58.6% | 23.4% | 27.3% | 3.2% |
 | California | 4.1 | 2.8 | 61.7% | 29.3% | 32.8% | 8.3% |
 
-**Table S2. Baseline and sensitivity analysis parameter values for the disease transmission model.** Each sensitivity analysis varies one parameter at a time while holding all others at baseline values. Bold values indicate the parameter(s) being varied in each row.
+**Table S2. Baseline and sensitivity analysis parameter values for the disease transmission model.** Each sensitivity analysis varies one parameter at a time while holding all others at baseline values (first row). Bold values indicate the parameter(s) being varied in each row.
 
 | $R_0$ | $\eta$ | SAR (crowded) | Fold diff. ($d$) | $\tau$ | $\tau_{\text{boost}}$ | $\beta$ | $\gamma$ |
 |:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| **1.5** | 0.67 | 40% | 2 | 0.050 | 0.083 | **0.2108** | 0.200 |
+| 1.5 | 0.67 | 40% | 2 | 0.050 | 0.083 | 0.2108 | 0.200 |
 | **1.2** | 0.67 | 40% | 2 | 0.050 | 0.083 | **0.1546** | 0.200 |
 | **2.0** | 0.67 | 40% | 2 | 0.050 | 0.083 | **0.3078** | 0.200 |
 | **3.0** | 0.67 | 40% | 2 | 0.050 | 0.083 | **0.5054** | 0.200 |
