@@ -470,13 +470,13 @@ To assess the impact of epidemic timing on crop production, we shifted the epide
 | | Southwest | 9.6% | 7.7% | 42 | 49 | 71.3% | 61.1% |
 | | Northwest | 10.9% | 7.2% | 37 | 50 | 76.4% | 59.5% |
 | | California | 13.3% | 9.3% | 32 | 42 | 79.8% | 65.0% |
-| Fold-difference in crowding probability for households size 7+ vs. size 2 ($d$) = 1 | East | 8.7% | 6.3% | 46 | 55 | 71.5% | 57.0% |
+| $d$ = 1 | East | 8.7% | 6.3% | 46 | 55 | 71.5% | 57.0% |
 | | Southeast | 8.7% | 6.1% | 46 | 56 | 71.7% | 56.4% |
 | | Midwest | 7.5% | 6.1% | 51 | 56 | 65.5% | 56.3% |
 | | Southwest | 8.7% | 7.1% | 47 | 52 | 68.9% | 60.0% |
 | | Northwest | 9.4% | 6.8% | 44 | 53 | 73.0% | 58.7% |
 | | California | 11.0% | 8.3% | 40 | 47 | 76.0% | 63.1% |
-| Fold-difference in crowding probability for households size 7+ vs. size 2 ($d$) = 1 | East | 9.1% | 6.4% | 44 | 55 | 72.3% | 57.3% |
+| $d$ = 3 | East | 9.1% | 6.4% | 44 | 55 | 72.3% | 57.3% |
 | | Southeast | 9.1% | 6.2% | 44 | 55 | 72.6% | 56.6% |
 | | Midwest | 7.6% | 6.2% | 50 | 56 | 66.2% | 56.5% |
 | | Southwest | 9.0% | 7.3% | 45 | 51 | 69.7% | 60.3% |
