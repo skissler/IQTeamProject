@@ -205,7 +205,7 @@ To assess the impact of epidemic timing on crop production, we shifted the epide
 ![Mean and four plus household size distributions imputed multiplicative](../../figures/hhsize_distribution_multiplicative.png)
 ![Mean and four plus household size distributions imputed none](../../figures/hhsize_distribution_none.png)
 
-**Figure S4. Sensitivity of epidemic summary statistics to key parameters.** Panels depict the impact of the basic reproduction number (R0), assortativity (eta), secondary attack rate (SAR) in crowded households, and fold-difference in crowding rates between households of size 2 and households of size 7+ ($d$) on (A) the ratio of final sizes, (B) the ratio of peak sizes, (C) the time difference between peaks, and (D) the maximum prevalence ratio between agricultural workers and the general community. All parameter values are held at their baseline values (**Supplementary Table XX**) except for the one being varied in the panel. Colors represent the various NAWS regions. Dashed horizontal lines mark the value indicating "no difference". 
+**Figure S4. Sensitivity of epidemic summary statistics to key parameters.** Panels depict the impact of the basic reproduction number ($R_0$), assortativity ($\eta$), secondary attack rate (SAR) in crowded households, and fold-difference in crowding rates between households of size 2 and households of size 7+ ($d$) on (A) the ratio of final sizes, (B) the ratio of peak sizes, (C) the time difference between peaks, and (D) the maximum prevalence ratio between agricultural workers and the general community. All parameter values are held at their baseline values (**Supplementary Table XX**) except for the one being varied in the panel. Colors represent the various NAWS regions. Dashed horizontal lines mark the value indicating "no difference". 
 
 ![Sensitivity overview attack rate ratio](../../figures/sensitivity_overview_attack_rate_ratio.png)
 
@@ -284,7 +284,7 @@ To assess the impact of epidemic timing on crop production, we shifted the epide
 
 ![Sensitivity fold relative infection](../../figures/sensitivity_fold_relative_infection_all_regions.png)
  -->
-**Figure S9.** County-level epidemic dynamics under the multiplicative county-level imputation method for agricultural worker household characteristics. Each of the six panels corresponds to one NAWS region. Thin semi-transparent lines show individual county trajectories; thick lines with black outlines show the population-weighted regional average. Blue lines represent agricultural workers (A); red lines represent the general community (C). Top row: proportion currently infected over time. Middle row: cumulative proportion infected over time. Bottom row: relative infection rate (A/C ratio) over time, with purple lines for the regional average and grey lines for individual counties; a horizontal dashed line at 1.0 indicates equal infection rates.
+**Figure S9. Epidemic trajectories under the multiplicative county-level imputation method for agricultural worker household characteristics.** (A) Simulated infection prevalence over time for agricultural workers (blue) and the general community (red) for the six NAWS regions, with simulations at both the region level (thick lines with borders) and county level (thin, semi-transparent lines). (B) Cumulative infections over time for agricultural workers (blue) and the general community (red) for the six NAWS regions, with simulations at both the region level (thick lines with borders) and county level (thin, semi-transparent lines). (C) Prevalence ratio between agricultural workers and the general community for the six NAWS regions, with simulations at both the region level (thick lines with borders) and county level (thin, semi-transparent lines). County-level household attributes for agricultural workers are imputed using the "multiplicative" method, in which regional NAWS household attributes are adjusted by the ratio between the county-level ACS values and the regional ACS mean. 
 
 ![Epidemic multiplicative](../../figures/main_overlay_multiplicative.png)
 
@@ -292,7 +292,7 @@ To assess the impact of epidemic timing on crop production, we shifted the epide
 
 ![Relative infections multiplicative](../../figures/main_relative_infection_multiplicative.png)
 
-**Figure S10.** County-level epidemic dynamics under the null county-level imputation method (regional NAWS values used directly for all counties within a region, with no county-level adjustment). Visual encoding is as in Figure S9.
+**Figure S10. Epidemic trajectories under the "none" county-level imputation method for agricultural worker household characteristics.** (A) Simulated infection prevalence over time for agricultural workers (blue) and the general community (red) for the six NAWS regions, with simulations at both the region level (thick lines with borders) and county level (thin, semi-transparent lines). (B) Cumulative infections over time for agricultural workers (blue) and the general community (red) for the six NAWS regions, with simulations at both the region level (thick lines with borders) and county level (thin, semi-transparent lines). (C) Prevalence ratio between agricultural workers and the general community for the six NAWS regions, with simulations at both the region level (thick lines with borders) and county level (thin, semi-transparent lines). County-level household attributes for agricultural workers are imputed using the "none" method, in which county-level household attributes for agricultural workers are taken to be equal to the regional NAWS value, with no adjustment. 
 
 ![Epidemic none](../../figures/main_overlay_none.png)
 
@@ -300,7 +300,7 @@ To assess the impact of epidemic timing on crop production, we shifted the epide
 
 ![Relative infections none](../../figures/main_relative_infection_none.png)
 
-**Figure S11.** Weekly crop shipments (in million pounds) for iceberg lettuce, oranges, and strawberries originating from California, 2018–2025. Each commodity is shown as a separate colored line: oranges in orange, strawberries in magenta, and iceberg lettuce in blue.
+**Figure S11. Weekly crop movements for three labor-intensive California crops** Weekly point-to-point crop shipments (in million pounds) originating in California for iceberg lettuce (blue), oranges (orange), and strawberries (magenta), from 2018–2025. 
 
 ![Crop movements](../../figures/crop_movements_raw.png)
 
