@@ -326,25 +326,25 @@ To assess the impact of epidemic timing on crop production, we shifted the epide
 | Northwest | 3.9 | 2.5 | 58.6% | 23.4% | 27.3% | 3.2% |
 | California | 4.1 | 2.8 | 61.7% | 29.3% | 32.8% | 8.3% |
 
-**Table S2. Baseline and sensitivity analysis parameter values for the disease transmission model.**  The baseline parameters are marked in bold. Each sensitivity analysis varies one parameter at a time while holding all others at baseline values. 
+**Table S2. Baseline and sensitivity analysis parameter values for the disease transmission model.** Each sensitivity analysis varies one parameter at a time while holding all others at baseline values. Bold values indicate the parameter(s) being varied in each row.
 
-| Parameter set | $R_0$ | $\eta$ | SAR (crowded) | Fold diff. ($d$) | $\tau$ | $\tau_{\text{boost}}$ | $\beta$ | $\gamma$ |
-|:---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| **r0_1.5 (baseline)** | **1.5** | **0.67** | **40%** | **2** | **0.050** | **0.083** | **0.2108** | **0.200** |
-| r0_1.2 | 1.2 | 0.67 | 40% | 2 | 0.050 | 0.083 | 0.1546 | 0.200 |
-| r0_2 | 2.0 | 0.67 | 40% | 2 | 0.050 | 0.083 | 0.3078 | 0.200 |
-| r0_3 | 3.0 | 0.67 | 40% | 2 | 0.050 | 0.083 | 0.5054 | 0.200 |
-| eps_0.25 | 1.5 | 0.75 | 40% | 2 | 0.050 | 0.083 | 0.2108 | 0.200 |
-| eps_0.5 | 1.5 | 0.50 | 40% | 2 | 0.050 | 0.083 | 0.2108 | 0.200 |
-| eps_0.6667 | 1.5 | 0.33 | 40% | 2 | 0.050 | 0.083 | 0.2108 | 0.200 |
-| eps_0.75 | 1.5 | 0.25 | 40% | 2 | 0.050 | 0.083 | 0.2108 | 0.200 |
-| eps_1 | 1.5 | 0.00 | 40% | 2 | 0.050 | 0.083 | 0.2108 | 0.200 |
-| sar_0.2 | 1.5 | 0.67 | 20% | 2 | 0.050 | 0.000 | 0.2108 | 0.200 |
-| sar_0.3 | 1.5 | 0.67 | 30% | 2 | 0.050 | 0.036 | 0.2108 | 0.200 |
-| sar_0.5 | 1.5 | 0.67 | 50% | 2 | 0.050 | 0.150 | 0.2108 | 0.200 |
-| sar_0.6 | 1.5 | 0.67 | 60% | 2 | 0.050 | 0.250 | 0.2108 | 0.200 |
-| fold_1 | 1.5 | 0.67 | 40% | 1 | 0.050 | 0.083 | 0.2108 | 0.200 |
-| fold_3 | 1.5 | 0.67 | 40% | 3 | 0.050 | 0.083 | 0.2108 | 0.200 |
+| $R_0$ | $\eta$ | SAR (crowded) | Fold diff. ($d$) | $\tau$ | $\tau_{\text{boost}}$ | $\beta$ | $\gamma$ |
+|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+| **1.5** | 0.67 | 40% | 2 | 0.050 | 0.083 | **0.2108** | 0.200 |
+| **1.2** | 0.67 | 40% | 2 | 0.050 | 0.083 | **0.1546** | 0.200 |
+| **2.0** | 0.67 | 40% | 2 | 0.050 | 0.083 | **0.3078** | 0.200 |
+| **3.0** | 0.67 | 40% | 2 | 0.050 | 0.083 | **0.5054** | 0.200 |
+| 1.5 | **0.75** | 40% | 2 | 0.050 | 0.083 | 0.2108 | 0.200 |
+| 1.5 | **0.50** | 40% | 2 | 0.050 | 0.083 | 0.2108 | 0.200 |
+| 1.5 | **0.33** | 40% | 2 | 0.050 | 0.083 | 0.2108 | 0.200 |
+| 1.5 | **0.25** | 40% | 2 | 0.050 | 0.083 | 0.2108 | 0.200 |
+| 1.5 | **0.00** | 40% | 2 | 0.050 | 0.083 | 0.2108 | 0.200 |
+| 1.5 | 0.67 | **20%** | 2 | 0.050 | **0.000** | 0.2108 | 0.200 |
+| 1.5 | 0.67 | **30%** | 2 | 0.050 | **0.036** | 0.2108 | 0.200 |
+| 1.5 | 0.67 | **50%** | 2 | 0.050 | **0.150** | 0.2108 | 0.200 |
+| 1.5 | 0.67 | **60%** | 2 | 0.050 | **0.250** | 0.2108 | 0.200 |
+| 1.5 | 0.67 | 40% | **1** | 0.050 | 0.083 | 0.2108 | 0.200 |
+| 1.5 | 0.67 | 40% | **3** | 0.050 | 0.083 | 0.2108 | 0.200 |
 
 <!-- **Table S3.** Mixing matrix elements by region and assortativity parameter ($\eta$). For each region, $w_A$ is the proportion of the population that are agricultural workers (derived from ACS data). The mixing matrix governs between-household contact patterns: $m_{AA}$ is the fraction of agricultural workers' between-household contacts that are with other agricultural workers, $m_{AC}$ is the fraction with the general community, and vice versa for $m_{CC}$ and $m_{CA}$. Because $w_A$ is small (0.7–2.2%), $m_{AA} \approx \eta$ and $m_{CC} \approx 1$ across all values of $\eta$. At $\eta = 0$ (proportional mixing), agricultural workers have only $w_A$ of contacts within their own group; the baseline $\eta = 2/3$ is highlighted in bold.
 
