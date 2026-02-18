@@ -521,20 +521,15 @@ To assess the impact of epidemic timing on crop production, we shifted the epide
 
 **Table S1. Household characteristics by region for agricultural workers and the general community.** Mean household size is the population-weighted average across household sizes 1–7+. Crowding proportion is the fraction of households with more than 1 occupant per room. Agricultural worker data are from the National Agricultural Workers Survey (NAWS), and general community data are from the American Community Survey (ACS), aggregated to the regional level using population-weighted averages.
 
-| Region | Population | Mean household size | Proportion of households size 4+ | Crowding proportion |
-|:---|:---|:---:|:---:|:---:|
-| East | Agricultural workers | 3.9 | 54.7% | 20.3% |
-| East | General community | 2.4 | 21.7% | 2.8% |
-| Southeast | Agricultural workers | 3.9 | 52.3% | 22.4% |
-| Southeast | General community | 2.4 | 20.6% | 2.6% |
-| Midwest | Agricultural workers | 3.3 | 41.1% | 11.2% |
-| Midwest | General community | 2.4 | 20.7% | 1.9% |
-| Southwest | Agricultural workers | 3.3 | 45.1% | 14.8% |
-| Southwest | General community | 2.6 | 25.5% | 4.5% |
-| Northwest | Agricultural workers | 3.9 | 58.6% | 27.3% |
-| Northwest | General community | 2.5 | 23.4% | 3.2% |
-| California | Agricultural workers | 4.1 | 61.7% | 32.8% |
-| California | General community | 2.8 | 29.3% | 8.3% |
+| Region | Mean household size | | Prop. of households size 4+ | | Crowding proportion | |
+|:---|:---:|:---:|:---:|:---:|:---:|:---:|
+| | Agricultural workers | General community | Agricultural workers | General community | Agricultural workers | General community |
+| East | 3.9 | 2.4 | 54.7% | 21.7% | 20.3% | 2.8% |
+| Southeast | 3.9 | 2.4 | 52.3% | 20.6% | 22.4% | 2.6% |
+| Midwest | 3.3 | 2.4 | 41.1% | 20.7% | 11.2% | 1.9% |
+| Southwest | 3.3 | 2.6 | 45.1% | 25.5% | 14.8% | 4.5% |
+| Northwest | 3.9 | 2.5 | 58.6% | 23.4% | 27.3% | 3.2% |
+| California | 4.1 | 2.8 | 61.7% | 29.3% | 32.8% | 8.3% |
 
 **Table S2. Baseline and sensitivity analysis parameter values for the disease transmission model.**  The baseline parameters are marked in bold. Each sensitivity analysis varies one parameter at a time while holding all others at baseline values. 
 
@@ -599,7 +594,7 @@ To assess the impact of epidemic timing on crop production, we shifted the epide
 
 **Table S3. Summary statistics for simulated epidemics across regions and parameter sets.** Simulated peak prevalence, time to epidemic peak, and final size for agricultural workers (A) and the general community (C).
 
-| Parameter set | Region | Peak prev. (A) | Peak prev. (C) | Time to peak (A) | Time to peak (C) | Final size (A) | Final size (C) |
+| Parameter set | Region | Peak prevalence (A) | Peak prevalence (C) | Time to peak (A) (days) | Time to peak (C) (days) | Final size (A) | Final size (C) |
 |:---|:---|:---:|:---:|:---:|:---:|:---:|:---:|
 | **r0_1.5 (baseline)** | East | 8.9% | 6.3% | 45 | 55 | 72.1% | 57.2% |
 | | Southeast | 8.9% | 6.2% | 44 | 56 | 72.3% | 56.5% |
@@ -694,7 +689,7 @@ To assess the impact of epidemic timing on crop production, we shifted the epide
 
 **Table S4. Differential metrics between agricultural workers and the general community across regions and parameter sets.** Peak prevalence ratio, final size ratio, peak timing difference, and maximum infection prevalence ratio between agricultural workers and the general community.
 
-| Parameter set | Region | Peak prev. ratio | Final size ratio | Time diff. | Max rel. infection |
+| Parameter set | Region | Peak prevalence ratio | Final size ratio | Time difference (days) | Max prevalence ratio |
 | :--- | :--- | :---: | :---: | :---: | :---: |
 | **r0_1.5 (baseline)** | East | 1.41 | 1.26 | −10 | 2.62 |
 |  | Southeast | 1.45 | 1.28 | −12 | 2.78 |
