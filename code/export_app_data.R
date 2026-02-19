@@ -8,7 +8,7 @@
 #   - app/data/acs_data_regional.csv  (42 rows, 6 regions x 7 HH sizes)
 #   - app/data/naws_data.csv          (42 rows, 6 regions x 7 HH sizes)
 #   - app/data/region_map.csv         (6 rows)
-#   - app/data/avg_movements_daily.csv (all CA commodities from movements_all.csv)
+#   - app/data/avg_movements_daily.csv (CA commodities from data/movements_*.csv)
 #
 # Run from project root:
 #   source('code/export_app_data.R')
@@ -51,25 +51,37 @@ cat("Saved: app/data/naws_data.csv\n")
 # ==============================================================================
 # 4. Average Daily Crop Movements (California)
 # ==============================================================================
+# Reads all data/movements_*.csv files (one per commodity), filters to
+# California origins, averages across years using actual week-of-year, and
+# expands to daily resolution.
 
 cat("Processing crop movement data...\n")
 
-movements_all <- read_csv(paths$movements_all, show_col_types = FALSE)
+# Read all individual movement files (exclude movements_all.csv)
+movement_files <- list.files("data", pattern = "^movements_", full.names = TRUE)
+movement_files <- movement_files[!grepl("movements_all", movement_files)]
 
-# Filter to California origins, aggregate by week
-movements <- movements_all %>%
+cat("  Found", length(movement_files), "movement files\n")
+
+movements_raw <- map(movement_files, ~ read_csv(.x, show_col_types = FALSE)) %>%
+  bind_rows()
+
+# Filter to California origins, restrict to 2018-2025, aggregate by week
+movements <- movements_raw %>%
   filter(grepl("California", origin)) %>%
   group_by(begin_date, commodity) %>%
   summarise(lbs = sum(`1_lb_units`), .groups = "drop") %>%
   mutate(begin_date = mdy(begin_date)) %>%
+  filter(!is.na(begin_date),
+         begin_date >= ymd("2018-01-01"),
+         begin_date < ymd("2025-01-01")) %>%
   arrange(commodity, begin_date)
 
-# Average across years
+cat("  Commodities with CA data:", length(unique(movements$commodity)), "\n")
+
+# Average across years using actual week-of-year (not sequential 1:n())
 avg_movements <- movements %>%
-  mutate(year = year(begin_date)) %>%
-  arrange(commodity, begin_date) %>%
-  group_by(commodity, year) %>%
-  mutate(week = 1:n()) %>%
+  mutate(week = week(begin_date)) %>%
   group_by(commodity, week) %>%
   summarise(lbs = mean(lbs, na.rm = TRUE), .groups = "drop") %>%
   filter(week <= 52)
@@ -84,6 +96,8 @@ avg_movements_daily <- avg_movements %>%
   bind_rows() %>%
   mutate(lbs = lbs / 7) %>%
   select(commodity, week, day, lbs)
+
+cat("  Commodities:", paste(sort(unique(avg_movements_daily$commodity)), collapse = ", "), "\n")
 
 write_csv(avg_movements_daily, "app/data/avg_movements_daily.csv")
 cat("Saved: app/data/avg_movements_daily.csv\n")

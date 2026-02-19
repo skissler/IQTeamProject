@@ -301,11 +301,11 @@ To assess the impact of epidemic timing on crop production, we shifted the epide
 
 ![Relative infections none](../../figures/main_relative_infection_none.png)
 
-**Figure S11. Weekly crop movements for three labor-intensive California crops** Weekly point-to-point crop shipments (in million pounds) originating in California for iceberg lettuce (blue), oranges (orange), and strawberries (magenta), from 2018–2025. 
+**Figure S11. Weekly crop movements for three labor-intensive California crops** Weekly point-to-point crop shipments (in million pounds) originating in California for iceberg lettuce (blue), oranges (orange), and strawberries (magenta), from 2018–2024. 
 
 ![Crop movements](../../figures/crop_movements_raw.png)
 
-**Figure S12. Average weekly crop movements with known harvesting patterns.** Comparison of normalized average weekly crop movements (proportion of total annual volume from 2018-2025; solid lines) with harvest information from University of California Agriculture and Natural Resources Cooperative Extension reports (dashed line, semi-transparent bars) for iceberg lettuce (blue), oranges (orange), and strawberries (magenta) in California. For strawberries, the University of California report gives explicit monthly harvest proportions, which are re-scaled to approximate weekly harvest volumes (dashed magenta line). For oranges, the reported harvest season runs from November to June (semi-transparent orange bar). For iceberg lettuce, the planting season runs from late December to mid-August (lighter semi-transparent blue bar). We computed an approximate harvest season (darker semi-transparent blue bar) by shifting the planting window forward by 100 days at the cool-season (December) end and by 50 days at the warm-season end (August) to account for reported seasonal differences in maturation time. 
+**Figure S12. Average weekly crop movements with known harvesting patterns.** Comparison of normalized average weekly crop movements (proportion of total annual volume from 2018-2024; solid lines) with harvest information from University of California Agriculture and Natural Resources Cooperative Extension reports (dashed line, semi-transparent bars) for iceberg lettuce (blue), oranges (orange), and strawberries (magenta) in California. For strawberries, the University of California report gives explicit monthly harvest proportions, which are re-scaled to approximate weekly harvest volumes (dashed magenta line). For oranges, the reported harvest season runs from November to June (semi-transparent orange bar). For iceberg lettuce, the planting season runs from late December to mid-August (lighter semi-transparent blue bar). We computed an approximate harvest season (darker semi-transparent blue bar) by shifting the planting window forward by 100 days at the cool-season (December) end and by 50 days at the warm-season end (August) to account for reported seasonal differences in maturation time. 
 
 ![Crop movements validated](../../figures/crop_movements_validated.png)
 
@@ -583,6 +583,6 @@ To assess the impact of epidemic timing on crop production, we shifted the epide
 
 | Crop | 2024 value (USD) | Worst peak day | Max loss (%) | Max loss (USD) |
 |:---|---:|:---:|:---:|---:|
-| Strawberries | $3,456,522,000 | 143 | 0.61% | $21,193,696 |
-| Iceberg lettuce | $1,245,105,000 | 141 | 0.48% | $6,018,904 |
-| Oranges | $852,507,000 | 30 | 0.47% | $4,044,806 |
+| Strawberries | $3,456,522,000 | 147 | 0.62% | $21,511,907 |
+| Iceberg lettuce | $1,245,105,000 | 148 | 0.50% | $6,257,962 |
+| Oranges | $852,507,000 | 29 | 0.50% | $4,275,115 |

@@ -15,7 +15,7 @@ County-level simulations demonstrated geographic heterogeneity in these infectio
 
 ### Respiratory disease outbreaks among agricultural workers can lead to substantial productivity losses.
 
-The simulated outbreaks yielded substantial productivity losses for all three crops we considered, with the impact varying by outbreak timing relative to peak harvest periods (**Figure 3, Supplementary Figure S13, Supplementary Table S5**). For strawberries, peak productivity losses were 0.61% with the worst outbreak timing being an epidemic peak on day 143 (approximately late May). For iceberg lettuce, maximum losses were 0.48% for outbreaks that peaked in late May (day 141). For oranges, peak losses were 0.47% for outbreaks peaking in late January (day 30). These translate into peak losses of roughly $21,193,696, $6,018,904, and $4,044,806 USD for strawberries, head lettuce, and oranges, respectively.
+The simulated outbreaks yielded substantial productivity losses for all three crops we considered, with the impact varying by outbreak timing relative to peak harvest periods (**Figure 3, Supplementary Figure S13, Supplementary Table S5**). For strawberries, peak productivity losses were 0.62% with the worst outbreak timing being an epidemic peak on day 147 (approximately late May). For iceberg lettuce, maximum losses were 0.50% for outbreaks that peaked in late May (day 148). For oranges, peak losses were 0.50% for outbreaks peaking in late January (day 29). These translate into peak losses of roughly $21,511,907, $6,257,962, and $4,275,115 USD for strawberries, head lettuce, and oranges, respectively.
 
 ### Main figures
 
@@ -37,15 +37,15 @@ The simulated outbreaks yielded substantial productivity losses for all three cr
 
 
 
-<!--- 
+<!---
 
 2024 California head lettuce value: $1,245,105,000 (https://www.nass.usda.gov/Publications/Todays_Reports/reports/vegean25.pdf)
 2024 California orange value: $852,507,000
 2024 California strawberry value: $3,456,522,000
 
-Losses: 
-39,404,351 strawberries
-11,205,945 head lettuce 
-7,502,062 oranges
+Losses (p_symp = 0.5, using 2018-2024 averaged movements):
+$21,511,907 strawberries (0.62%, peak day 147)
+$6,257,962 head lettuce (0.50%, peak day 148)
+$4,275,115 oranges (0.50%, peak day 29)
 ---> 
 

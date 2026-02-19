@@ -369,8 +369,8 @@ get_impact_for_app <- function(peakday, p_symp, movements_daily, epidf_with_symp
   impact_df <- labor_shortage_df %>%
     dplyr::group_by(commodity) %>%
     dplyr::summarise(
-      lbs_total = sum(lbs),
-      lbs_adjusted = sum(lbs_adj),
+      lbs_total = sum(lbs, na.rm = TRUE),
+      lbs_adjusted = sum(lbs_adj, na.rm = TRUE),
       .groups = "drop"
     ) %>%
     dplyr::mutate(pct_loss = (1 - lbs_adjusted / lbs_total) * 100)

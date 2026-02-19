@@ -44,12 +44,13 @@ lettuce <- read_csv(paths$movements_lettuce, show_col_types = FALSE)
 strawberries <- read_csv(paths$movements_strawberries, show_col_types = FALSE)
 oranges <- read_csv(paths$movements_oranges, show_col_types = FALSE)
 
-# Combine and filter to California origins
+# Combine and filter to California origins, restrict to 2018-2025
 movements <- bind_rows(lettuce, strawberries, oranges) %>%
   filter(grepl("California", origin)) %>%
   group_by(begin_date, commodity) %>%
   summarise(lbs = sum(`1_lb_units`), .groups = "drop") %>%
   mutate(begin_date = mdy(begin_date)) %>%
+  filter(begin_date >= ymd("2018-01-01"), begin_date < ymd("2025-01-01")) %>%
   arrange(commodity, begin_date)
 
 # Create averaged weekly pattern (across years)
