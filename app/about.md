@@ -44,7 +44,9 @@ This matches the color scheme used in the manuscript figures.
 
 ### Crop Impact Assessment
 
-The **Crop Impact** tab estimates agricultural production losses by overlaying epidemic dynamics with seasonal crop harvesting schedules for California crops (lettuce, strawberries, oranges).
+The **Crop Impact** tab estimates agricultural production losses by overlaying epidemic dynamics with seasonal crop harvesting schedules for California crops.
+
+**79 commodities** are available from the bundled USDA AMS movements data. Use the commodity selector to choose which crops to include in the analysis. The three default crops (strawberries, iceberg lettuce, oranges) are highlighted in the manuscript.
 
 **Methodology:**
 1. Compute daily symptomatic infections (symptoms last days 1-3 after onset)
@@ -55,13 +57,11 @@ The **Crop Impact** tab estimates agricultural production losses by overlaying e
 
 Because production loss scales linearly with p_symp, you can explore different assumptions about the fraction of infections that cause symptoms severe enough to prevent work.
 
-**CSV Upload:** You can upload additional USDA AMS movements CSV files to add crops to the analysis. Files must contain columns: `origin`, `begin_date`, `commodity`, `1_lb_units`. California origins are filtered automatically.
-
 ### Data Sources
 
 - **General population**: American Community Survey (ACS) 2022 5-year estimates — household size distributions, crowding rates, agricultural employment, population by county, aggregated to NAWS regions
 - **Agricultural workers**: National Agricultural Workers Survey (NAWS) 2018-2022 — household size distributions and crowding rates by region
-- **Crop movements**: USDA Agricultural Marketing Service (AMS) — weekly shipment data for lettuce, strawberries, and oranges from California origins
+- **Crop movements**: USDA Agricultural Marketing Service (AMS) — weekly shipment data for 79 fruit and vegetable commodities from California origins
 
 ### NAWS Regions
 

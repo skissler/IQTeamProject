@@ -49,6 +49,12 @@ crop_colors <- c(
   "Lettuce, Iceberg" = "blue"
 )
 
+# All available commodities from bundled data
+all_commodities <- sort(unique(avg_movements_daily$commodity))
+
+# Default commodities to show
+default_commodities <- c("Strawberries", "Lettuce, Iceberg", "Oranges")
+
 CALENDAR_DAYS <- 364
 
 # ==============================================================================
@@ -515,12 +521,13 @@ ui <- fluidPage(
                      sliderInput("p_symp", "Proportion Symptomatic",
                                  min = 0.1, max = 1.0, value = 0.5, step = 0.05),
                      tags$hr(),
-                     h5("Upload Additional Crop Data"),
-                     fileInput("upload_movements", "Upload USDA Movements CSV",
-                               accept = c(".csv")),
-                     helpText("Upload a USDA AMS movements CSV file. Must contain columns: ",
-                              "origin, begin_date, commodity, 1_lb_units. ",
-                              "California origins will be filtered automatically.")
+                     h5("Commodities"),
+                     selectizeInput("selected_commodities", "Select Commodities",
+                                    choices = all_commodities,
+                                    selected = default_commodities,
+                                    multiple = TRUE,
+                                    options = list(placeholder = "Type to search...")),
+                     helpText("Select one or more California commodities to include in the impact analysis.")
                    ),
                    column(8,
                      plotlyOutput("impact_by_peakday_plot", height = "350px"),
@@ -555,8 +562,11 @@ server <- function(input, output, session) {
   # ---- Reactive: symptomatic data (computed from sim results) ----
   symp_data <- reactiveVal(NULL)
 
-  # ---- Reactive: movements data (bundled + uploaded) ----
-  movements_data <- reactiveVal(avg_movements_daily)
+  # ---- Reactive: movements data (filtered by selected commodities) ----
+  movements_data <- reactive({
+    req(input$selected_commodities)
+    avg_movements_daily %>% dplyr::filter(commodity %in% input$selected_commodities)
+  })
 
   # ---- Run simulation on button click ----
   observeEvent(input$run_sim, {
@@ -590,68 +600,6 @@ server <- function(input, output, session) {
       symp <- compute_symptomatic(result)
       symp_data(symp)
     }
-  })
-
-  # ---- Handle CSV upload ----
-  observeEvent(input$upload_movements, {
-    req(input$upload_movements)
-    tryCatch({
-      uploaded <- read_csv(input$upload_movements$datapath, show_col_types = FALSE)
-
-      # Validate required columns
-      required_cols <- c("origin", "begin_date", "commodity", "1_lb_units")
-      missing <- setdiff(required_cols, names(uploaded))
-      if (length(missing) > 0) {
-        showNotification(
-          paste("Missing required columns:", paste(missing, collapse = ", ")),
-          type = "error", duration = 8
-        )
-        return()
-      }
-
-      # Process: filter California, aggregate, average, expand daily
-      processed <- uploaded %>%
-        dplyr::filter(grepl("California", origin)) %>%
-        dplyr::group_by(begin_date, commodity) %>%
-        dplyr::summarise(lbs = sum(`1_lb_units`), .groups = "drop") %>%
-        dplyr::mutate(begin_date = lubridate::mdy(begin_date)) %>%
-        dplyr::arrange(commodity, begin_date) %>%
-        dplyr::mutate(year = lubridate::year(begin_date)) %>%
-        dplyr::group_by(commodity, year) %>%
-        dplyr::mutate(week = 1:dplyr::n()) %>%
-        dplyr::group_by(commodity, week) %>%
-        dplyr::summarise(lbs = mean(lbs, na.rm = TRUE), .groups = "drop") %>%
-        dplyr::filter(week <= 52)
-
-      # Expand to daily
-      uploaded_daily <- processed %>%
-        split(.$commodity) %>%
-        purrr::map(~ split(., .$week)) %>%
-        purrr::map(~ purrr::map(., ~ tidyr::crossing(., tibble(day_of_week = 1:7)))) %>%
-        purrr::map(~ purrr::map(., ~ dplyr::mutate(., day = (week - 1) * 7 + day_of_week))) %>%
-        purrr::map(~ dplyr::bind_rows(.)) %>%
-        dplyr::bind_rows() %>%
-        dplyr::mutate(lbs = lbs / 7) %>%
-        dplyr::select(commodity, week, day, lbs)
-
-      if (nrow(uploaded_daily) == 0) {
-        showNotification("No California origin data found in uploaded file.", type = "warning")
-        return()
-      }
-
-      # Combine with existing data
-      combined <- dplyr::bind_rows(avg_movements_daily, uploaded_daily)
-      movements_data(combined)
-
-      new_commodities <- setdiff(unique(uploaded_daily$commodity), unique(avg_movements_daily$commodity))
-      showNotification(
-        paste("Added", length(new_commodities), "new commodity(ies):",
-              paste(new_commodities, collapse = ", ")),
-        type = "message", duration = 5
-      )
-    }, error = function(e) {
-      showNotification(paste("Error processing file:", e$message), type = "error")
-    })
   })
 
   # ===========================================================================
@@ -815,7 +763,7 @@ server <- function(input, output, session) {
     all_commodities <- unique(idf$commodity)
     known <- intersect(all_commodities, names(crop_colors))
     unknown <- setdiff(all_commodities, names(crop_colors))
-    extra_colors <- setNames(scales::hue_pal()(length(unknown)), unknown)
+    extra_colors <- if (length(unknown) > 0) setNames(scales::hue_pal()(length(unknown)), unknown) else character(0)
     all_colors <- c(crop_colors[known], extra_colors)
 
     p <- idf %>%
@@ -842,7 +790,7 @@ server <- function(input, output, session) {
     all_commodities <- unique(sch$crop_original$commodity)
     known <- intersect(all_commodities, names(crop_colors))
     unknown <- setdiff(all_commodities, names(crop_colors))
-    extra_colors <- setNames(scales::hue_pal()(length(unknown)), unknown)
+    extra_colors <- if (length(unknown) > 0) setNames(scales::hue_pal()(length(unknown)), unknown) else character(0)
     all_colors <- c(crop_colors[known], extra_colors)
 
     ribbon_data <- sch$crop_adjusted %>%

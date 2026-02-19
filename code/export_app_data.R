@@ -8,7 +8,7 @@
 #   - app/data/acs_data_regional.csv  (42 rows, 6 regions x 7 HH sizes)
 #   - app/data/naws_data.csv          (42 rows, 6 regions x 7 HH sizes)
 #   - app/data/region_map.csv         (6 rows)
-#   - app/data/avg_movements_daily.csv (~1,092 rows)
+#   - app/data/avg_movements_daily.csv (all CA commodities from movements_all.csv)
 #
 # Run from project root:
 #   source('code/export_app_data.R')
@@ -54,12 +54,10 @@ cat("Saved: app/data/naws_data.csv\n")
 
 cat("Processing crop movement data...\n")
 
-lettuce <- read_csv(paths$movements_lettuce, show_col_types = FALSE)
-strawberries <- read_csv(paths$movements_strawberries, show_col_types = FALSE)
-oranges <- read_csv(paths$movements_oranges, show_col_types = FALSE)
+movements_all <- read_csv(paths$movements_all, show_col_types = FALSE)
 
-# Combine, filter to California origins, aggregate by week
-movements <- bind_rows(lettuce, strawberries, oranges) %>%
+# Filter to California origins, aggregate by week
+movements <- movements_all %>%
   filter(grepl("California", origin)) %>%
   group_by(begin_date, commodity) %>%
   summarise(lbs = sum(`1_lb_units`), .groups = "drop") %>%
