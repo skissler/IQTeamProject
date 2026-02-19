@@ -245,7 +245,7 @@ plot_sensitivity_overview <- function(diff_df, metric = "attack_rate_diff") {
     "attack_rate_diff" = "Difference in Final Size\n(Agricultural - Community)",
     "peak_prevalence_diff" = "Peak Prevalence Difference\n(Agricultural - Community)",
     "time_to_peak_diff" = "Peak Timing Difference in Days\n(Agricultural - Community)",
-    "max_relative_infection" = "Peak Relative Infection Rate\n(Agricultural / Community)",
+    "max_relative_infection" = "Max Relative Prevalence\n(Agricultural / Community)",
     "peak_prevalence_ratio" = "Peak Prevalence Ratio\n(Agricultural / Community)",
     "attack_rate_ratio" = "Final Size Ratio\n(Agricultural / Community)",
     "final_attack_rate_A" = "Final Size\n(Agricultural Workers)"
@@ -413,9 +413,9 @@ plot_relative_infection_all_regions <- function(all_data, sens_dimension) {
     scale_color_manual(values = cb_palette[1:n_levels]) +
     labs(
       x = "Time (days)",
-      y = "Relative Infection Rate (Agricultural / Community)",
+      y = "Relative Prevalence (Agricultural / Community)",
       color = sens_labels[sens_dimension],
-      title = paste("Relative Infection Rate by Region - Sensitivity to", sens_labels[sens_dimension])
+      title = paste("Relative Prevalence by Region - Sensitivity to", sens_labels[sens_dimension])
     ) +
     theme_classic(base_size = 17) +
     theme(

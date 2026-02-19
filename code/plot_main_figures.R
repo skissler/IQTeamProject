@@ -13,7 +13,7 @@
 # Outputs (for each adjustment method):
 #   - figures/main_overlay_{method}.pdf/.png - Current infections
 #   - figures/main_cumulative_{method}.pdf/.png - Cumulative infections
-#   - figures/main_relative_infection_{method}.pdf/.png - Relative infection rate (A/C)
+#   - figures/main_relative_infection_{method}.pdf/.png - Relative prevalence (A/C)
 # ==============================================================================
 
 # Load dependencies
@@ -230,8 +230,8 @@ create_relative_infection_plot <- function(county_plot, regional_plot, adjust_me
     expand_limits(y = 0.5) +
     labs(
       x = "Time (days)",
-      y = "Relative Infection Rate (Agricultural / Community)",
-      title = paste0("Relative Infection Rate: ", adjust_labels[adjust_method]),
+      y = "Relative Prevalence (Agricultural / Community)",
+      title = paste0("Relative Prevalence: ", adjust_labels[adjust_method]),
       subtitle = paste0("Thick lines: regional average. Thin lines: individual counties. ",
                         "R0 = ", default_pars$r0)
     ) +
