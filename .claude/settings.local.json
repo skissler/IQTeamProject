@@ -12,7 +12,8 @@
       "WebFetch(domain:www.dol.gov)",
       "Bash(curl:*)",
       "Bash(python3:*)",
-      "Bash(cd:*)"
+      "Bash(cd:*)",
+      "WebSearch"
     ]
   }
 }
