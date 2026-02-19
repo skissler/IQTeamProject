@@ -1,6 +1,23 @@
 
 ## Discussion
 
+Differences in household size and household crowding are sufficient to produce substantial disparities in the timing and severity of respiratory disease outbreaks between agricultural workers and the general population. In our baseline scenario, representing a pandemic influenza-like virus ($R_0$ = 1.5), peak disease prevalence among agricultural workers occurred 5-12 days earlier and was 23%-45% higher than in the general community, with cumulative infections 15%-28% higher, depending on the region. At the point of maximum divergence, prevalence among agricultural workers was 74% - 178% higher than in the general community. These disparities were most pronounced at lower $R_0$ values. Our findings indicate that community-wide disease indicators may substantially underestimate the burden of disease among agricultural workers, particularly during the early stages of an epidemic. 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 Differences in household size and household crowding between agricultural workers and the general community are enough to create substantial disparities in the timing and intensity of respiratory disease outbreaks. At baseline parameter values, representing a pandemic influenza-like virus, peak disease prevalence occurred 5-12 days earlier and was 23%-45% higher than in the general community, with a final outbreak size between 15% and 28% higher than in the general community, depending on the region. The highest instantaneous difference in prevalence between agricultural workers and the general community ranged from 74% to 178%, occurring during the epidemic's upswing. These findings indicate that disease surveillance in the general community may vastly under-estimate prevalence among agricultural workers, especially in the early part of an epidemic. 
 
 Disease among agricultural workers may lead to substantial food production losses due to missed work. For three labor-intensive crops in California, we found that a respiratory disease outbreak could impact between 0.50% and 0.62% of the crop's harvest if the outbreak coincided with the crop's peak harvest season. While these are small relative numbers, they translate into tens of millions of dollars in threatened revenue. For a more transmissible or clinically severe pathogen, losses could be much higher. 

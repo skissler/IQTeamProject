@@ -28,8 +28,8 @@ naws_regional  <- read_csv("data/naws_data.csv", show_col_types = FALSE)
 region_map     <- read_csv("data/region_map.csv", show_col_types = FALSE)
 avg_movements_daily <- read_csv("data/avg_movements_daily.csv", show_col_types = FALSE)
 
-# Region choices for dropdown (named vector: display name -> REGION6 code)
-region_choices <- setNames(region_map$REGION6, region_map$REGION_NAME)
+# Region display order (matches manuscript)
+region_order <- c("East", "Southeast", "Midwest", "Southwest", "Northwest", "California")
 
 # ==============================================================================
 # Calibrated Beta Values
@@ -438,11 +438,6 @@ ui <- fluidPage(
     sidebarPanel(
       width = 3,
 
-      h4("Region"),
-      selectInput("region", "NAWS Region",
-                  choices = region_choices, selected = 6),
-
-      tags$hr(),
       h4("Transmission Parameters"),
 
       selectInput("r0", "Basic Reproduction Number (R0)",
@@ -485,33 +480,20 @@ ui <- fluidPage(
         # Tab 1: Epidemic Curves
         tabPanel("Epidemic Curves",
                  tags$br(),
-                 plotlyOutput("infection_plot", height = "400px"),
+                 plotOutput("infection_plot", height = "450px"),
                  tags$br(),
-                 plotlyOutput("cumulative_plot", height = "400px")
+                 plotOutput("cumulative_plot", height = "450px"),
+                 tags$br(),
+                 plotOutput("prevalence_ratio_plot", height = "450px")
         ),
 
         # Tab 2: Summary Statistics
         tabPanel("Summary Statistics",
                  tags$br(),
-                 fluidRow(
-                   column(6, tableOutput("summary_table")),
-                   column(6, plotOutput("comparison_plot", height = "350px"))
-                 ),
-                 tags$hr(),
-                 h4("Interpretation"),
-                 textOutput("interpretation")
+                 tableOutput("summary_table")
         ),
 
-        # Tab 3: Prevalence Ratio
-        tabPanel("Prevalence Ratio",
-                 tags$br(),
-                 plotlyOutput("prevalence_ratio_plot", height = "400px"),
-                 tags$hr(),
-                 helpText("Prevalence ratio shows how much higher prevalence is among ",
-                          "agricultural workers compared to the general population over time.")
-        ),
-
-        # Tab 4: Crop Impact
+        # Tab 3: Crop Impact
         tabPanel("Crop Impact",
                  tags$br(),
                  fluidRow(
@@ -530,9 +512,9 @@ ui <- fluidPage(
                      helpText("Select one or more California commodities to include in the impact analysis.")
                    ),
                    column(8,
-                     plotlyOutput("impact_by_peakday_plot", height = "350px"),
+                     plotOutput("impact_by_peakday_plot", height = "350px"),
                      tags$br(),
-                     plotOutput("schematic_plot", height = "500px"),
+                     plotOutput("schematic_plot", height = "350px"),
                      tags$br(),
                      h4("Impact Summary"),
                      tableOutput("impact_table")
@@ -540,7 +522,7 @@ ui <- fluidPage(
                  )
         ),
 
-        # Tab 5: About
+        # Tab 4: About
         tabPanel("About the Model",
                  tags$br(),
                  includeMarkdown("about.md")
@@ -570,20 +552,32 @@ server <- function(input, output, session) {
 
   # ---- Run simulation on button click ----
   observeEvent(input$run_sim, {
-    withProgress(message = "Running simulation...", {
-      result <- run_simulation(
-        region = as.numeric(input$region),
-        r0 = input$r0,
-        eta = input$eta,
-        sar_uncrowded = input$sar_uncrowded,
-        sar_crowded = input$sar_crowded,
-        crowding_fold_diff = input$crowding_fold,
-        sim_days = input$sim_days
-      )
+    withProgress(message = "Running simulation...", value = 0, {
+      regions <- region_map$REGION6
+      results_list <- lapply(seq_along(regions), function(i) {
+        reg <- regions[i]
+        reg_name <- region_map$REGION_NAME[region_map$REGION6 == reg]
+        incProgress(1 / length(regions), detail = paste0("Region: ", reg_name))
+        res <- run_simulation(
+          region = reg,
+          r0 = input$r0,
+          eta = input$eta,
+          sar_uncrowded = input$sar_uncrowded,
+          sar_crowded = input$sar_crowded,
+          crowding_fold_diff = input$crowding_fold,
+          sim_days = input$sim_days
+        )
+        res$REGION6 <- reg
+        res
+      })
+      result <- dplyr::bind_rows(results_list) %>%
+        dplyr::left_join(region_map, by = "REGION6") %>%
+        dplyr::mutate(REGION_NAME = factor(REGION_NAME, levels = region_order))
       sim_results(result)
 
-      incProgress(0.7, detail = "Computing symptomatic dynamics...")
-      symp <- compute_symptomatic(result)
+      # Compute symptomatic dynamics for California only (crop impact)
+      ca_result <- result %>% dplyr::filter(REGION6 == 6) %>% dplyr::select(-REGION6, -REGION_NAME)
+      symp <- compute_symptomatic(ca_result)
       symp_data(symp)
     })
   })
@@ -591,13 +585,22 @@ server <- function(input, output, session) {
   # ---- Run initial simulation on app load ----
   observe({
     if (is.null(sim_results())) {
-      result <- run_simulation(
-        region = 6, r0 = "1.5", eta = 0.67,
-        sar_uncrowded = 0.20, sar_crowded = 0.40,
-        crowding_fold_diff = 2, sim_days = 365
-      )
+      results_list <- lapply(region_map$REGION6, function(reg) {
+        res <- run_simulation(
+          region = reg, r0 = "1.5", eta = 0.67,
+          sar_uncrowded = 0.20, sar_crowded = 0.40,
+          crowding_fold_diff = 2, sim_days = 365
+        )
+        res$REGION6 <- reg
+        res
+      })
+      result <- dplyr::bind_rows(results_list) %>%
+        dplyr::left_join(region_map, by = "REGION6") %>%
+        dplyr::mutate(REGION_NAME = factor(REGION_NAME, levels = region_order))
       sim_results(result)
-      symp <- compute_symptomatic(result)
+
+      ca_result <- result %>% dplyr::filter(REGION6 == 6) %>% dplyr::select(-REGION6, -REGION_NAME)
+      symp <- compute_symptomatic(ca_result)
       symp_data(symp)
     }
   })
@@ -606,36 +609,40 @@ server <- function(input, output, session) {
   # Tab 1: Epidemic Curves
   # ===========================================================================
 
-  output$infection_plot <- renderPlotly({
+  # Shared theme for faceted epidemic plots
+  facet_theme <- theme_minimal(base_size = 14) +
+    theme(legend.position = "bottom",
+          strip.text = element_text(face = "bold", size = 14),
+          axis.text = element_text(size = 12),
+          axis.title = element_text(size = 13),
+          plot.title = element_text(size = 15))
+
+  output$infection_plot <- renderPlot({
     req(sim_results())
     df <- sim_results()
 
-    p <- df %>%
+    df %>%
       ggplot(aes(x = t, y = I_indiv * 100, color = subpop)) +
-      geom_line(linewidth = 1) +
+      geom_line(linewidth = 0.8) +
+      facet_wrap(~REGION_NAME, nrow = 2) +
       scale_color_manual(values = pop_colors, labels = pop_labels) +
       labs(title = "Disease Prevalence Over Time",
            x = "Days", y = "Infected (%)", color = "Population") +
-      theme_minimal() +
-      theme(legend.position = "bottom")
-
-    ggplotly(p) %>% layout(legend = list(orientation = "h", y = -0.15))
+      facet_theme
   })
 
-  output$cumulative_plot <- renderPlotly({
+  output$cumulative_plot <- renderPlot({
     req(sim_results())
     df <- sim_results()
 
-    p <- df %>%
+    df %>%
       ggplot(aes(x = t, y = R_indiv * 100, color = subpop)) +
-      geom_line(linewidth = 1) +
+      geom_line(linewidth = 0.8) +
+      facet_wrap(~REGION_NAME, nrow = 2) +
       scale_color_manual(values = pop_colors, labels = pop_labels) +
       labs(title = "Cumulative Final Size",
            x = "Days", y = "Cumulative Infected (%)", color = "Population") +
-      theme_minimal() +
-      theme(legend.position = "bottom")
-
-    ggplotly(p) %>% layout(legend = list(orientation = "h", y = -0.15))
+      facet_theme
   })
 
   # ===========================================================================
@@ -646,97 +653,58 @@ server <- function(input, output, session) {
     req(sim_results())
     df <- sim_results()
 
-    df %>%
-      dplyr::group_by(subpop) %>%
+    long <- df %>%
+      dplyr::group_by(REGION_NAME, subpop) %>%
       dplyr::summarise(
-        `Peak Prevalence (%)` = round(max(I_indiv) * 100, 2),
-        `Time to Peak (days)` = t[which.max(I_indiv)],
-        `Final Size (%)` = round(dplyr::last(R_indiv) * 100, 2),
-        .groups = "drop"
-      ) %>%
-      dplyr::mutate(Population = dplyr::if_else(subpop == "A", "Agricultural Workers", "General Population")) %>%
-      dplyr::select(Population, everything(), -subpop)
-  }, striped = TRUE, hover = TRUE, bordered = TRUE)
-
-  output$comparison_plot <- renderPlot({
-    req(sim_results())
-    df <- sim_results()
-
-    summary_df <- df %>%
-      dplyr::group_by(subpop) %>%
-      dplyr::summarise(
-        peak = max(I_indiv) * 100,
-        final_size = dplyr::last(R_indiv) * 100,
-        .groups = "drop"
-      ) %>%
-      dplyr::mutate(Population = dplyr::if_else(subpop == "A", "Agricultural\nWorkers", "General\nPopulation"))
-
-    summary_df %>%
-      tidyr::pivot_longer(cols = c(peak, final_size), names_to = "metric", values_to = "value") %>%
-      dplyr::mutate(metric = dplyr::if_else(metric == "peak", "Peak Prevalence (%)", "Final Size (%)")) %>%
-      ggplot(aes(x = Population, y = value, fill = Population)) +
-      geom_col(width = 0.6) +
-      facet_wrap(~metric, scales = "free_y") +
-      scale_fill_manual(values = c("Agricultural\nWorkers" = "#377EB8", "General\nPopulation" = "#E41A1C")) +
-      labs(y = "Percent", x = NULL) +
-      theme_minimal() +
-      theme(legend.position = "none", strip.text = element_text(face = "bold"))
-  })
-
-  output$interpretation <- renderText({
-    req(sim_results())
-    df <- sim_results()
-
-    summary_df <- df %>%
-      dplyr::group_by(subpop) %>%
-      dplyr::summarise(
-        peak = max(I_indiv) * 100,
-        final_size = dplyr::last(R_indiv) * 100,
+        peak = round(max(I_indiv) * 100, 2),
+        time_peak = t[which.max(I_indiv)],
+        final_size = round(dplyr::last(R_indiv) * 100, 2),
         .groups = "drop"
       )
 
-    ag_fs <- summary_df$final_size[summary_df$subpop == "A"]
-    gen_fs <- summary_df$final_size[summary_df$subpop == "C"]
-    diff <- ag_fs - gen_fs
+    ag <- long %>% dplyr::filter(subpop == "A") %>%
+      dplyr::select(REGION_NAME,
+                    `Peak Prevalence, A (%)` = peak,
+                    `Time to Peak, A (days)` = time_peak,
+                    `Final Size, A (%)` = final_size)
 
-    region_name <- region_map$REGION_NAME[region_map$REGION6 == as.numeric(input$region)]
+    gen <- long %>% dplyr::filter(subpop == "C") %>%
+      dplyr::select(REGION_NAME,
+                    `Peak Prevalence, C (%)` = peak,
+                    `Time to Peak, C (days)` = time_peak,
+                    `Final Size, C (%)` = final_size)
 
-    paste0(
-      "In the ", region_name, " region, agricultural workers experience a final size of ",
-      round(ag_fs, 1), "% compared to ", round(gen_fs, 1),
-      "% in the general population — a difference of ", round(diff, 1),
-      " percentage points. This differential is driven by higher household crowding ",
-      "rates among agricultural workers, which increases within-household transmission."
-    )
-  })
+    dplyr::left_join(ag, gen, by = "REGION_NAME") %>%
+      dplyr::select(Region = REGION_NAME,
+                    `Peak Prevalence, A (%)`, `Peak Prevalence, C (%)`,
+                    `Time to Peak, A (days)`, `Time to Peak, C (days)`,
+                    `Final Size, A (%)`, `Final Size, C (%)`)
+  }, striped = TRUE, hover = TRUE, bordered = TRUE)
 
-  # ===========================================================================
-  # Tab 3: Prevalence Ratio
-  # ===========================================================================
 
-  output$prevalence_ratio_plot <- renderPlotly({
+  output$prevalence_ratio_plot <- renderPlot({
     req(sim_results())
     df <- sim_results()
 
     rel_df <- df %>%
-      dplyr::select(t, subpop, I_indiv) %>%
-      tidyr::pivot_wider(names_from = subpop, values_from = I_indiv) %>%
+      dplyr::select(t, subpop, I_indiv, REGION_NAME) %>%
+      tidyr::pivot_wider(id_cols = c(t, REGION_NAME), names_from = subpop, values_from = I_indiv) %>%
       dplyr::mutate(prevalence_ratio = A / C) %>%
       dplyr::filter(is.finite(prevalence_ratio), C > 0.001)
 
-    p <- rel_df %>%
+    rel_df %>%
       ggplot(aes(x = t, y = prevalence_ratio)) +
-      geom_line(linewidth = 1, color = "#984ea3") +
+      geom_line(linewidth = 0.8, color = "#984ea3") +
       geom_hline(yintercept = 1, linetype = "dashed", color = "gray50") +
+      facet_wrap(~REGION_NAME, nrow = 2) +
       labs(title = "Prevalence Ratio (Agricultural Workers / General Population)",
            x = "Days", y = "Prevalence Ratio") +
-      theme_minimal()
-
-    ggplotly(p)
+      facet_theme +
+      theme(legend.position = "none")
   })
 
   # ===========================================================================
-  # Tab 4: Crop Impact
+  # Tab 3: Crop Impact
   # ===========================================================================
 
   # Reactive: impact across all peak days
@@ -752,7 +720,7 @@ server <- function(input, output, session) {
     }))
   })
 
-  output$impact_by_peakday_plot <- renderPlotly({
+  output$impact_by_peakday_plot <- renderPlot({
     req(impact_all_peakdays())
     idf <- impact_all_peakdays()
 
@@ -766,7 +734,7 @@ server <- function(input, output, session) {
     extra_colors <- if (length(unknown) > 0) setNames(scales::hue_pal()(length(unknown)), unknown) else character(0)
     all_colors <- c(crop_colors[known], extra_colors)
 
-    p <- idf %>%
+    idf %>%
       ggplot(aes(x = peakday, y = pct_loss, color = commodity)) +
       geom_line(linewidth = 0.8, alpha = 0.8) +
       scale_color_manual(values = all_colors) +
@@ -775,10 +743,8 @@ server <- function(input, output, session) {
       labs(x = "Epidemic Peak Timing", y = "Production Loss (%)",
            color = "Commodity",
            title = paste0("Production Loss by Peak Day (p_symp = ", input$p_symp, ")")) +
-      theme_minimal() +
+      theme_minimal(base_size = 13) +
       theme(legend.position = "bottom")
-
-    ggplotly(p) %>% layout(legend = list(orientation = "h", y = -0.15))
   })
 
   output$schematic_plot <- renderPlot({
@@ -800,62 +766,44 @@ server <- function(input, output, session) {
     month_labels <- c("Jan", "Feb", "Mar", "Apr", "May", "Jun",
                       "Jul", "Aug", "Sep", "Oct", "Nov", "Dec")
 
-    # Panel (a): Crop movements
-    panel_a <- sch$crop_original %>%
-      ggplot(aes(x = day, y = lbs / 1e6, color = commodity)) +
-      geom_line(linewidth = 0.6, alpha = 0.8) +
-      scale_color_manual(values = all_colors) +
-      expand_limits(y = 0) +
-      labs(x = NULL, y = "Daily Shipments\n(Million lbs)", color = "Commodity",
-           title = "(a) Average daily harvest volume") +
-      theme_classic(base_size = 12) +
-      theme(legend.position = "bottom", axis.text.x = element_blank(),
-            plot.title = element_text(face = "bold"))
-
-    # Panel (b): Epidemic curve
-    panel_b <- ggplot() +
+    # Panel (a): Epidemic curve with symptomatic overlay
+    panel_a <- ggplot() +
       geom_line(data = sch$epi_A, aes(x = calendar_day, y = I_indiv),
                 color = "#377EB8", linewidth = 0.8) +
       geom_line(data = sch$epi_C, aes(x = calendar_day, y = I_indiv),
                 color = "#E41A1C", linewidth = 0.8) +
+      geom_area(data = sch$epi_A, aes(x = calendar_day, y = symp_adj),
+                fill = "#377EB8", alpha = 0.15) +
+      geom_line(data = sch$epi_A, aes(x = calendar_day, y = symp_adj),
+                color = "#377EB8", linewidth = 0.6, linetype = "dashed") +
       expand_limits(y = 0) +
-      labs(x = NULL, y = "Proportion\nInfected",
-           title = "(b) Epidemic curve (blue=A, red=C)") +
+      labs(x = NULL, y = "Proportion",
+           title = paste0("(a) Epidemic curve & symptomatic ag workers",
+                          " (blue=A, red=C, dashed=symptomatic, p_symp=", input$p_symp, ")")) +
       theme_classic(base_size = 12) +
       theme(axis.text.x = element_blank(), plot.title = element_text(face = "bold"))
 
-    # Panel (c): Symptomatic
-    panel_c <- sch$epi_A %>%
-      ggplot(aes(x = calendar_day, y = symp_adj)) +
-      geom_area(fill = "#377EB8", alpha = 0.2) +
-      geom_line(color = "#377EB8", linewidth = 0.8) +
-      expand_limits(y = 0) +
-      labs(x = NULL, y = "Proportion\nSymptomatic",
-           title = paste0("(c) Symptomatic ag workers (p_symp = ", input$p_symp, ")")) +
-      theme_classic(base_size = 12) +
-      theme(axis.text.x = element_blank(), plot.title = element_text(face = "bold"))
-
-    # Panel (d): Adjusted movements
-    panel_d <- ggplot() +
+    # Panel (b): Adjusted movements
+    panel_b <- ggplot() +
       geom_ribbon(data = ribbon_data,
                   aes(x = day, ymin = lbs_adj_m, ymax = lbs_orig, fill = commodity),
                   alpha = 0.15) +
       geom_line(data = sch$crop_original,
                 aes(x = day, y = lbs / 1e6, color = commodity),
-                linewidth = 0.4, alpha = 0.3, linetype = "dashed") +
+                linewidth = 0.6, alpha = 0.8) +
       geom_line(data = sch$crop_adjusted,
                 aes(x = day, y = lbs_adj / 1e6, color = commodity),
-                linewidth = 0.6, alpha = 0.8) +
+                linewidth = 0.4, alpha = 0.3, linetype = "dashed") +
       scale_color_manual(values = all_colors) +
       scale_fill_manual(values = all_colors, guide = "none") +
       scale_x_continuous(breaks = month_breaks, labels = month_labels, minor_breaks = NULL) +
       expand_limits(y = 0) +
       labs(x = NULL, y = "Daily Shipments\n(Million lbs)", color = "Commodity",
-           title = "(d) Adjusted harvest volume (accounting for workforce loss)") +
+           title = "(b) Adjusted harvest volume (accounting for workforce loss)") +
       theme_classic(base_size = 12) +
       theme(legend.position = "bottom", plot.title = element_text(face = "bold"))
 
-    patchwork::wrap_plots(panel_a, panel_b, panel_c, panel_d, ncol = 1)
+    patchwork::wrap_plots(panel_a, panel_b, ncol = 1)
   })
 
   output$impact_table <- renderTable({
