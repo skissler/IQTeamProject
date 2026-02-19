@@ -9,6 +9,7 @@
 #   - app/data/naws_data.csv          (42 rows, 6 regions x 7 HH sizes)
 #   - app/data/region_map.csv         (6 rows)
 #   - app/data/avg_movements_daily.csv (CA commodities from data/movements_*.csv)
+#   - app/data/calibrated_betas.csv   (28 rows, R0 x SAR x fold_diff -> beta)
 #
 # Run from project root:
 #   source('code/export_app_data.R')
@@ -101,5 +102,18 @@ cat("  Commodities:", paste(sort(unique(avg_movements_daily$commodity)), collaps
 
 write_csv(avg_movements_daily, "app/data/avg_movements_daily.csv")
 cat("Saved: app/data/avg_movements_daily.csv\n")
+
+# ==============================================================================
+# 5. Calibrated Beta Values
+# ==============================================================================
+# Copy from output/ (produced by calibrate_model.R) to app/data/
+
+calibrated_betas_path <- file.path(paths$output_dir, "calibrated_betas.csv")
+if (file.exists(calibrated_betas_path)) {
+  file.copy(calibrated_betas_path, "app/data/calibrated_betas.csv", overwrite = TRUE)
+  cat("Saved: app/data/calibrated_betas.csv\n")
+} else {
+  cat("WARNING: output/calibrated_betas.csv not found. Run calibrate_model.R first.\n")
+}
 
 cat("\nAll app data exported successfully.\n")

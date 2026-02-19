@@ -35,7 +35,22 @@ region_order <- c("East", "Southeast", "Midwest", "Southwest", "Northwest", "Cal
 # Calibrated Beta Values
 # ==============================================================================
 # Produced by code/calibrate_model.R using bisection search
-calibrated_betas <- c("1.2" = 0.1546, "1.5" = 0.2108, "2" = 0.3078, "3" = 0.5054)
+# Full grid of (R0, SAR, fold_diff) -> beta for recalibrated sensitivity runs
+calibrated_betas_df <- read_csv("data/calibrated_betas.csv", show_col_types = FALSE)
+
+#' Look up calibrated beta using nearest match on SAR and fold_diff
+#'
+#' @param df Data frame with columns r0, sar_crowded, fold_diff, beta
+#' @param r0 Target R0 (exact match on discrete values)
+#' @param sar_crowded SAR for crowded households
+#' @param fold_diff Crowding fold difference
+#' @return Calibrated beta value (nearest match)
+lookup_beta_app <- function(df, r0, sar_crowded, fold_diff) {
+  df_r0 <- df[df$r0 == as.numeric(r0), ]
+  if (nrow(df_r0) == 0) stop("No calibrated beta found for R0 = ", r0)
+  df_r0$dist <- abs(df_r0$sar_crowded - sar_crowded) + abs(df_r0$fold_diff - fold_diff)
+  df_r0$beta[which.min(df_r0$dist)]
+}
 
 # ==============================================================================
 # Color Convention: A = blue, C = red (matches manuscript)
@@ -240,7 +255,7 @@ run_simulation <- function(region, r0, eta, sar_uncrowded, sar_crowded,
 
   gamma <- 1 / 5
   eps <- 1 - eta  # Convert eta (assortativity) to eps (mixing parameter)
-  beta <- calibrated_betas[as.character(r0)]
+  beta <- lookup_beta_app(calibrated_betas_df, r0, sar_crowded, crowding_fold_diff)
   tau <- calculate_tau(sar_uncrowded, gamma)
   tau_boost <- calculate_tau_boost(sar_crowded, gamma, tau)
   init_prev <- 0.001

@@ -28,7 +28,11 @@
 #   beta values are then used in the full two-population model.
 #
 # Outputs:
-#   - calibrated_betas: Named vector (R0 → beta) for use in parameters.R
+#   - calibrated_betas_df: Data frame (r0, sar_crowded, fold_diff, beta) for
+#     all one-at-a-time sensitivity combinations (28 rows). Written to
+#     output/calibrated_betas.csv.
+#   - calibrated_betas: Named vector (R0 → beta) for backward compatibility
+#     (baseline SAR/fold only)
 #   - fig_calibration_verification: Diagnostic plot of epidemic curves
 #
 # ==============================================================================
@@ -246,6 +250,7 @@ find_bounds_from_history <- function(eval_history, target_final_size,
 
 # Base parameters for calibration, derived from default_pars in config.R
 # Beta will be set during calibration; eps=0 for single-population calibration
+# SAR, fold_diff, tau, and tau_boost are overridden per-grid-row below
 base_pars <- list(
   gamma = default_pars$gamma,
   sar_uncrowded = default_pars$sar_uncrowded,
@@ -260,6 +265,21 @@ base_pars <- list(
 # Compute derived tau parameters from SAR values
 base_pars$tau <- calculate_tau(base_pars$sar_uncrowded, base_pars$gamma)
 base_pars$tau_boost <- calculate_tau_boost(base_pars$sar_crowded, base_pars$gamma, base_pars$tau)
+
+#' Build base_pars variant for a specific (sar_crowded, fold_diff) combination
+#'
+#' @param sar_crowded SAR for crowded households
+#' @param fold_diff Crowding fold difference
+#' @return A copy of base_pars with tau, tau_boost, sar_crowded, and
+#'         crowding_fold_diff updated
+make_calibration_pars <- function(sar_crowded, fold_diff) {
+  pars <- base_pars
+  pars$sar_crowded <- sar_crowded
+  pars$crowding_fold_diff <- fold_diff
+  pars$tau <- calculate_tau(pars$sar_uncrowded, pars$gamma)
+  pars$tau_boost <- calculate_tau_boost(sar_crowded, pars$gamma, pars$tau)
+  pars
+}
 
 # ==============================================================================
 # Calibration Simulation Function
@@ -362,52 +382,80 @@ run_calibration_sim <- function(pars, nat_data) {
 }
 
 # ==============================================================================
-# Run Calibration: Bisection Search for All R0 Targets
+# Run Calibration: Bisection Search Over (R0, SAR, fold_diff) Grid
 # ==============================================================================
 #
-# Calibrates beta values for R0 = 1.2, 1.5, 2.0, and 3.0 using bisection
-# search. The algorithm finds beta values that produce final attack rates
-# matching the theoretical predictions within tolerance (0.0005).
+# Calibrates beta values for all one-at-a-time sensitivity combinations of
+# R0, SAR in crowded households, and crowding fold difference.
+#
+# One-at-a-time design: at most one of SAR/fold_diff differs from baseline.
+# eps does not affect calibration (eps=0 for single-population model).
 
-# R0 values to calibrate (must be in increasing order for warm-start optimization)
 r0_targets <- c(1.2, 1.5, 2.0, 3.0)
+sar_crowded_values <- c(0.20, 0.30, 0.40, 0.50, 0.60)
+fold_diff_values <- c(1, 2, 3)
+
+# Build one-at-a-time calibration grid
+calibration_grid <- expand.grid(
+  r0 = r0_targets,
+  sar_crowded = sar_crowded_values,
+  fold_diff = fold_diff_values,
+  stringsAsFactors = FALSE
+) %>%
+  # Keep rows where at most one of SAR/fold differs from baseline
+  filter(
+    (sar_crowded == default_pars$sar_crowded) | (fold_diff == default_pars$crowding_fold_diff)
+  ) %>%
+  arrange(sar_crowded, fold_diff, r0)
 
 cat("\n========================================\n")
 cat("Starting Calibration via Bisection Search\n")
 cat("========================================\n")
 cat("R0 targets:", paste(r0_targets, collapse = ", "), "\n")
+cat("SAR crowded values:", paste(sar_crowded_values, collapse = ", "), "\n")
+cat("Fold diff values:", paste(fold_diff_values, collapse = ", "), "\n")
+cat("Total calibrations:", nrow(calibration_grid), "\n")
 cat("Convergence tolerance: 0.0005\n")
-cat("Using warm-start: evaluation history informs bounds for subsequent R0s\n")
 cat("========================================\n\n")
 
-# Run calibration for each R0, using evaluation history to warm-start bounds
-calibration_results <- list()
-all_eval_history <- data.frame(beta = numeric(), final_size = numeric())
+# Run calibration for each row with cold-start bounds.
+# Warm-starting across rows is invalid because changing SAR or fold_diff
+# alters the beta-to-final-size mapping, making prior bounds misleading.
+calibration_results <- vector("list", nrow(calibration_grid))
 
-for (i in seq_along(r0_targets)) {
-  r0 <- r0_targets[i]
-  target_final_size <- solve_final_size(r0)
+for (i in seq_len(nrow(calibration_grid))) {
+  row <- calibration_grid[i, ]
+  cal_pars <- make_calibration_pars(row$sar_crowded, row$fold_diff)
 
-  # Find bounds from all previous evaluations
-  default_lower <- 0.01 * base_pars$gamma
-  default_upper <- 10.0 * base_pars$gamma
-  bounds <- find_bounds_from_history(all_eval_history, target_final_size,
-                                     default_lower = default_lower,
-                                     default_upper = default_upper)
+  cat(sprintf("\n--- Grid row %d/%d: R0=%.1f, SAR_crowded=%.2f, fold_diff=%d ---\n",
+              i, nrow(calibration_grid), row$r0, row$sar_crowded, row$fold_diff))
 
-  result <- calibrate_beta(r0, base_pars, nat_data,
-                           tol = 0.0005,
-                           beta_lower = bounds$beta_lower,
-                           beta_upper = bounds$beta_upper)
+  result <- calibrate_beta(row$r0, cal_pars, nat_data, tol = 0.0005)
+
+  result$sar_crowded <- row$sar_crowded
+  result$fold_diff <- row$fold_diff
   calibration_results[[i]] <- result
-
-  # Accumulate evaluation history for subsequent calibrations
-  all_eval_history <- rbind(all_eval_history, result$eval_history)
 }
 
-# Extract calibrated betas as a named vector
-calibrated_betas <- sapply(calibration_results, `[[`, "beta")
-names(calibrated_betas) <- r0_targets
+# Build calibrated_betas data frame (primary output)
+calibrated_betas_df <- tibble(
+  r0 = sapply(calibration_results, `[[`, "r0"),
+  sar_crowded = sapply(calibration_results, `[[`, "sar_crowded"),
+  fold_diff = sapply(calibration_results, `[[`, "fold_diff"),
+  beta = sapply(calibration_results, `[[`, "beta"),
+  target_final_size = sapply(calibration_results, `[[`, "target_final_size"),
+  simulated_final_size = sapply(calibration_results, `[[`, "simulated_final_size"),
+  iterations = sapply(calibration_results, `[[`, "iterations")
+)
+
+# Write to CSV
+write_csv(calibrated_betas_df, file.path(paths$output_dir, "calibrated_betas.csv"))
+
+# Backward-compatible named vector (baseline SAR + fold only)
+baseline_rows <- calibrated_betas_df %>%
+  filter(sar_crowded == default_pars$sar_crowded,
+         fold_diff == default_pars$crowding_fold_diff)
+calibrated_betas <- setNames(baseline_rows$beta, as.character(baseline_rows$r0))
 
 # ==============================================================================
 # Calibration Results Summary
@@ -416,15 +464,19 @@ names(calibrated_betas) <- r0_targets
 cat("\n========================================\n")
 cat("Calibration Results Summary\n")
 cat("========================================\n")
-cat(sprintf("%-8s %-15s %-15s %-15s %-15s %-10s\n",
-            "R0", "beta", "beta/gamma", "target_size", "sim_size", "iters"))
-cat("---------------------------------------------\n")
-for (res in calibration_results) {
-  cat(sprintf("%-8.1f %-15.4f %-15.4f %-15.4f %-15.4f %-10d\n",
-              res$r0, res$beta, res$beta / base_pars$gamma,
-              res$target_final_size, res$simulated_final_size, res$iterations))
+cat(sprintf("%-6s %-10s %-6s %-12s %-12s %-12s %-12s %-6s\n",
+            "R0", "SAR_crow", "fold", "beta", "beta/gamma", "target", "sim_size", "iters"))
+cat(strrep("-", 80), "\n")
+for (i in seq_len(nrow(calibrated_betas_df))) {
+  row <- calibrated_betas_df[i, ]
+  cat(sprintf("%-6.1f %-10.2f %-6d %-12.4f %-12.4f %-12.4f %-12.4f %-6d\n",
+              row$r0, row$sar_crowded, row$fold_diff,
+              row$beta, row$beta / base_pars$gamma,
+              row$target_final_size, row$simulated_final_size, row$iterations))
 }
 cat("========================================\n")
+cat("Total calibrations:", nrow(calibrated_betas_df), "\n")
+cat("Saved to:", file.path(paths$output_dir, "calibrated_betas.csv"), "\n")
 
 # ==============================================================================
 # Diagnostic Plot: Verify Final Calibration
@@ -468,4 +520,6 @@ fig_calibration_verification <- verification_df %>%
 ggsave(file.path(paths$figures_dir, "calibration_verification.pdf"),
        fig_calibration_verification, width = 8, height = 5)
 
-# The key output is `calibrated_betas`, a named vector (R0 → beta) used by parameters.R
+# Key outputs:
+# - calibrated_betas_df: Data frame with all (R0, SAR, fold_diff, beta) combos
+# - calibrated_betas: Named vector (R0 → beta) for backward compat (baseline SAR/fold only)

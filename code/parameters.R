@@ -13,17 +13,33 @@
 # ==============================================================================
 
 # ==============================================================================
-# Guard: calibrated_betas must be available
+# Guard: calibrated_betas and calibrated_betas_df must be available
 # ==============================================================================
 
-if (!exists("calibrated_betas")) {
-  stop("calibrated_betas not found. Run calibrate_model.R first.")
+if (!exists("calibrated_betas") || !exists("calibrated_betas_df")) {
+  stop("calibrated_betas / calibrated_betas_df not found. Run calibrate_model.R first.")
 }
 
 # ==============================================================================
 # Helper Functions
 # ==============================================================================
 # Note: calculate_tau() and calculate_tau_boost() are defined in utils.R
+
+#' Look up calibrated beta from the calibration grid
+#'
+#' @param df Data frame with columns r0, sar_crowded, fold_diff, beta
+#' @param r0 Target R0
+#' @param sar_crowded SAR for crowded households
+#' @param fold_diff Crowding fold difference
+#' @return Calibrated beta value
+lookup_beta <- function(df, r0, sar_crowded, fold_diff) {
+  row <- df[df$r0 == r0 & df$sar_crowded == sar_crowded & df$fold_diff == fold_diff, ]
+  if (nrow(row) == 0) {
+    stop(sprintf("No calibrated beta found for r0=%.1f, sar_crowded=%.2f, fold_diff=%d",
+                 r0, sar_crowded, fold_diff))
+  }
+  row$beta[1]
+}
 
 #' Create a parameter set with descriptive naming
 #' @param sens_type Character. Sensitivity dimension: "r0", "eps", "sar", "fold"
@@ -133,6 +149,7 @@ for (eps in eps_values[eps_values != default_pars$eps]) {
 
 # --- SAR in Crowded Households Sensitivity ---
 # Skip 40% since it's already in R0 sensitivity at baseline R0
+# Beta is recalibrated for each SAR value to hold R0 constant
 for (sar in sar_crowded_values[sar_crowded_values != default_pars$sar_crowded]) {
   parset_counter <- parset_counter + 1
   pars_list[[parset_counter]] <- create_parset(
@@ -142,7 +159,7 @@ for (sar in sar_crowded_values[sar_crowded_values != default_pars$sar_crowded]) 
     gamma = default_pars$gamma,
     sar_uncrowded = default_pars$sar_uncrowded,
     sar_crowded = sar,
-    beta = calibrated_betas[as.character(default_pars$r0)],
+    beta = lookup_beta(calibrated_betas_df, default_pars$r0, sar, default_pars$crowding_fold_diff),
     eps = default_pars$eps,
     crowding_fold_diff = default_pars$crowding_fold_diff,
     max_hh_size = default_pars$max_hh_size,
@@ -153,6 +170,7 @@ for (sar in sar_crowded_values[sar_crowded_values != default_pars$sar_crowded]) 
 
 # --- Crowding Fold Difference Sensitivity ---
 # Skip fold_diff=2 since it's already in R0 sensitivity at baseline R0
+# Beta is recalibrated for each fold_diff value to hold R0 constant
 for (fold in fold_diff_values[fold_diff_values != default_pars$crowding_fold_diff]) {
   parset_counter <- parset_counter + 1
   pars_list[[parset_counter]] <- create_parset(
@@ -162,7 +180,7 @@ for (fold in fold_diff_values[fold_diff_values != default_pars$crowding_fold_dif
     gamma = default_pars$gamma,
     sar_uncrowded = default_pars$sar_uncrowded,
     sar_crowded = default_pars$sar_crowded,
-    beta = calibrated_betas[as.character(default_pars$r0)],
+    beta = lookup_beta(calibrated_betas_df, default_pars$r0, default_pars$sar_crowded, fold),
     eps = default_pars$eps,
     crowding_fold_diff = fold,
     max_hh_size = default_pars$max_hh_size,
