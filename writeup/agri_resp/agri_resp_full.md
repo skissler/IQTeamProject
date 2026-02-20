@@ -55,6 +55,34 @@ Other to do:
 
 ## Introduction
 
+Respiratory disease outbreaks can cause societal and economic disruptions that cascade beyond their direct public health burden. The food system, which encompassess food production, processing, and distribution, is particularly susceptible to labor-driven shocks. During the COVID-19 pandemic, agricultural labor shortfalls contributed to an estimated $309,000,000 reduction in U.S. farm output. Meanwhile, outbreaks in meat packing plants forced facility closures that affected billions of pounds of processing capacity, and shifts in demand and the closure of schools and restaurants caused distribution bottlenecks and shortages of staple goods. Agricultural workers, a workforce of approximately [3.2 million people](https://www.ers.usda.gov/topics/farm-economy/farm-labor), are at the foundation of the food system, and their health determines its capacity to function. 
+
+Agricultural workers in the United States face various health vulnerabilities that put them at elevated risk during respiratory disease outbreaks. Many have restricted access to healthcare and high rates of chronic conditions including diabetes and obesity, along with high rates of baseline respiratory illnesses linked to occupational pesticide and dust exposure. Furthermore, housing conditions, including household size and crowding, may contribute to an elevated risk of infection. Household crowding was a primary risk factor for SARS-CoV-2 infection among farmworkers [x] and is associated with hgiher COVID-19 incidence and mortality across U.S. counties more broadly [x]. This may help explain why COVID-19 infection rates were found to be consistently higher among agricultural workers vs. the broader community during the first year of the COVID-19 pandemic [x,x]. 
+
+Compounding these issues, conducting effective public health surveillance in agricultural workers has proven challenging. Various important efforts are underway to bridge this gap, including the CDC-supported network of farmeworker-serving organizations formed during the COVID-19 pandemic [x]. Nevertheless, agricultural workers remain a difficult population to reach: agricultural workers may be more likely to mistrust authorities, especially those who are undocumented or on temporary visas, socioeconomic barriers oftne prevent workers from presenting to care, and seasonal migration complicates longitudinal follow-up. These barriers underscore the need for modeling tools that can anticipate the burden of disease among agricultural workers from more readily-available community-level data. However, we currently lack quantitative frameworks for translating known disease transmission risk factors into preductions of how outbreaks will unfold among agricultural workers and what the downstream effects on food production may be. 
+
+This study aims to address these gaps by developing a household-structured disease transmission model that quantifies the differential impacts of resipratory disease outbreaks on agricultural workers relative to the general U.S. population. Using household size and crowding distributions from national surveys, we simulated epidemic dynamics under a range of epidemiological scenarios, assessing the impact of differences in transmissibility, within-household secondary attack rates, and population mixing patterns. We then translate the resulting labor impacts into crop-specific production losses for thre economically important, labor-intensive California crops with distinct harvest seasonalities: strawberries, iceberg lettuce, and oranges. Our analysis provides both a quantitative assessment of how outbreaks with varying characteristics might impact agricultural productio and a general framework, accompanied by an interactive simulation tool, for anticipating the food system consequences of future respiratory disease outbreaks. 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 
 Respiratory disease outbreaks can cause societal and economic disruptions that cascade beyond their immediate public health impacts. The COVID-19 pandemic illustrated this impact across the full food system, impacting production, processing, and demand. Agricultural workers, the bedrock of the food system, face major vulnerabilities to disease: they have limited access to care, face elevated risk of infection, and have comorbiditeis that make infections more severe. This puts both agricultural workers and the food system itself at risk. 
 
 Despite documented impacts of disease on agricultural labor and food production, the extent and drivers of disease transmission among agricultural workers is less well understood. Household characteristics are known to be a key predictor of disease transmission, and these do differ between agricultural workers and the general population, yet we lack rigorous modeling frameworks for anticipating these impacts -- which would allow us to better understand the extent of unobserved disease transmission among agricultural workers and to assess the potential impact of housing-based interventions on reducing the risk of infection to the health of agricultural workers and the functioning of the food system. 
@@ -62,7 +90,7 @@ Despite documented impacts of disease on agricultural labor and food production,
 Agricultural workers are a vulnerable population in multiple senses: they face elevated risks of clinical disease, are economically disadvantaged, and many agricultural workers face language barriers and lack trust in authorities. Success stories include xxx and xxx, but major challenges still remain, as evidenced by xxx. The vulnerabilities faced by agricultural workers not only exacerbate the impact of outbreaks on the agricultural workforce, but also makes it difficult to reliably know what's going on among agricultural workers. There is a critical need to interpret how community disease metrics can be translated into impacts on agricultural workers. 
 
 This study addresses these gaps by developing a disease transmission model specifically designed to anticipate the differential impacts of respiratory virus outbreaks on agricultural workers relative to the general U.S. population. Focusing on household size and crowding – two well-established predictors of respiratory disease transmission – we quantify the relative rate of infections and assess potential impacts on harvesting operations. We apply this framework to three economically important, labor-intensive crops with different harvest seasonalities: oranges, lettuce, and strawberries. Our analysis provides both a quantitative assessment of how outbreaks with varying characteristics might impact the agricultural sector and a generalizable framework for future assessments of disease impacts on agricultural production. 
-
+ -->
 
 
 
@@ -74,7 +102,7 @@ While differences in health outcomes may be straightforward to account for -- th
 <!-- Efforts to do outreach to agricultural workers, both for protecting health and surveillance, are varied, including xxx and xxx. Still, we lack a clear understanding of how disease transmission dynamics differ between agricultural workers and the general population. More importantly, we lack predictive tools for anticipating how novel respiratory outbreaks might impact agricultural workers before they occur. Likewise, analytical frameworks for translating these labor impacts into commodity-specific production impacts remain underdeveloped.  -->
 
 <!-- This study addresses these gaps by developing a disease transmission model specifically designed to anticipate the differential impacts of respiratory virus outbreaks on agricultural workers relative to the general U.S. population. Focusing on household size and crowding – two well-established predictors of respiratory disease transmission – we quantify the relative rate of infections and assess potential impacts on harvesting operations. We apply this framework to three economically important, labor-intensive crops with different harvest seasonalities: oranges, lettuce, and strawberries. Our analysis provides both a quantitative assessment of how outbreaks with varying characteristics might impact the agricultural sector and a generalizable framework for future assessments of disease impacts on agricultural production.  -->
-
+<!-- 
 
 ## Introduction (v3)
 
@@ -87,7 +115,7 @@ These differences in household structure have implications that go beyond increa
 Efforts to conduct disease surveillance and outreach among agricultural workers have yielded important but limited progress. Community health worker (*promotora*) programs have improved health literacy and care access in some regions [x], and the CDC-supported network of farmworker-serving organizations formed during the COVID-19 pandemic demonstrated the feasibility of community-based surveillance partnerships [Bates et al. 2023]. Yet agricultural workers remain among the most difficult populations to reach: immigration-related fears discourage engagement with authorities, seasonal migration complicates longitudinal follow-up, and the absence of paid sick leave means workers often continue working while symptomatic [Handal et al. 2020]. The ongoing challenges in monitoring H5N1 avian influenza exposure among U.S. dairy and poultry workers illustrate these surveillance gaps in a current and ongoing context [x]. These barriers underscore the need for modeling tools that can anticipate the likely burden on agricultural workers from more readily observable community-level data and from known differences in household characteristics.
 
 This study addresses these gaps by developing a household-structured disease transmission model designed to quantify the differential impacts of respiratory virus outbreaks on agricultural workers relative to the general U.S. population. Using household size and crowding distributions from the American Community Survey and the National Agricultural Workers Survey, we simulate epidemic dynamics under a range of scenarios varying in transmissibility, within-household secondary attack rates, and population mixing patterns. We then translate the resulting labor impacts into crop-specific production losses for three economically important, labor-intensive California crops with distinct harvest seasonalities: strawberries, iceberg lettuce, and oranges. Our analysis provides both a quantitative assessment of how outbreaks with varying characteristics might impact agricultural production and a generalizable framework -- accompanied by an interactive simulation tool -- for anticipating the food system consequences of future respiratory disease outbreaks.
-
+ -->
 
 
 ## Methods
