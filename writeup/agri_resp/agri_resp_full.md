@@ -527,19 +527,19 @@ To assess the impact of epidemic timing on crop production, we shifted the epide
 
 **Figure S3. County-level household size distributions for agricultural workers and the general community under three imputation methods.** Histograms depict the mean household size (A, C, E) and the proportion of households with 4 or more occupants (B, D, F) in counties within each of the six NAWS regions, for agricultural workers (blue) and the general community (red). County-level household size distributions are taken from the ACS. County-level household size distributions for agricultural workers are imputed using three different methods: (A) an additive adjustment, where county-level household size distributions for agricultural workers are shifted by the difference between county-level and regional mean ACS values and re-normalized; (B) a multiplicative adjustment, where county-level household size distributions for agricultural workers are shifted by the ratio between county-level and regional mean ACS values and re-normalized; and (C) no adjustment, where household size distributions across counties for agricultural workers are equal to the regional mean. Red dashed vertical lines indicate the regional ACS mean, and blue dashed vertical lines indicate the regional NAWS estimate for agricultural workers.
 
-![Mean and four plus household size distributions imputed additive](../../figures/hhsize_distribution_additive.png)
-![Mean and four plus household size distributions imputed multiplicative](../../figures/hhsize_distribution_multiplicative.png)
-![Mean and four plus household size distributions imputed none](../../figures/hhsize_distribution_none.png)
+**(A)** ![Mean and four plus household size distributions imputed additive](../../figures/hhsize_distribution_additive.png)
+**(B)** ![Mean and four plus household size distributions imputed multiplicative](../../figures/hhsize_distribution_multiplicative.png)
+**(C)** ![Mean and four plus household size distributions imputed none](../../figures/hhsize_distribution_none.png)
 
 **Figure S4. Sensitivity of epidemic summary statistics to key parameters.** Panels depict the impact of the basic reproduction number ($R_0$), assortativity ($\eta$), secondary attack rate (SAR) in crowded households, and fold-difference in crowding rates between households of size 2 and households of size 7+ ($d$) on (A) the ratio of final sizes, (B) the ratio of peak sizes, (C) the time difference between peaks, and (D) the maximum prevalence ratio between agricultural workers and the general community. All parameter values are held at their baseline values (**Supplementary Table S2**) except for the one being varied in the panel. Colors represent the various NAWS regions. Dashed horizontal lines mark the value indicating "no difference". 
 
-![Sensitivity overview attack rate ratio](../../figures/sensitivity_overview_attack_rate_ratio.png)
+**(A)** ![Sensitivity overview attack rate ratio](../../figures/sensitivity_overview_attack_rate_ratio.png)
 
-![Sensitivity overview peak prevalence ratio](../../figures/sensitivity_overview_peak_prevalence_ratio.png)
+**(B)** ![Sensitivity overview peak prevalence ratio](../../figures/sensitivity_overview_peak_prevalence_ratio.png)
 
-![Sensitivity overview peak timing](../../figures/sensitivity_overview_peaktiming.png)
+**(C)** ![Sensitivity overview peak timing](../../figures/sensitivity_overview_peaktiming.png)
 
-![Sensitivity overview max relative infection](../../figures/sensitivity_overview_max_relative_infection.png)
+**(D)** ![Sensitivity overview max relative infection](../../figures/sensitivity_overview_max_relative_infection.png)
 
 <!-- Sensitivity of final size to the basic reproduction number ($R_0$), assortativity ($\eta$), secondary attack rate in crowded households (SAR), and crowding fold difference. Each panel shows one sensitivity dimension, with parameter values on the horizontal axis and final size (proportion of the population ultimately infected) on the vertical axis. Colored lines connect results across parameter values for each of the six NAWS regions (East, Southeast, Midwest, Southwest, Northwest, California), using an Okabe-Ito colorblind-friendly palette. Solid lines with points represent agricultural workers (A); dashed lines with open points represent the general community (C). A horizontal gray dashed reference line indicates the baseline value. -->
 
@@ -612,19 +612,19 @@ To assess the impact of epidemic timing on crop production, we shifted the epide
  -->
 **Figure S9. Epidemic trajectories under the multiplicative county-level imputation method for agricultural worker household characteristics.** (A) Simulated infection prevalence over time for agricultural workers (blue) and the general community (red) for the six NAWS regions, with simulations at both the region level (thick lines with borders) and county level (thin, semi-transparent lines). (B) Cumulative infections over time for agricultural workers (blue) and the general community (red) for the six NAWS regions, with simulations at both the region level (thick lines with borders) and county level (thin, semi-transparent lines). (C) Prevalence ratio between agricultural workers and the general community for the six NAWS regions, with simulations at both the region level (thick lines with borders) and county level (thin, semi-transparent lines). County-level household attributes for agricultural workers are imputed using the "multiplicative" method, in which regional NAWS household attributes are adjusted by the ratio between the county-level ACS values and the regional ACS mean. 
 
-![Epidemic multiplicative](../../figures/main_overlay_multiplicative.png)
+**(A)** ![Epidemic multiplicative](../../figures/main_overlay_multiplicative.png)
 
-![Cumulative infections multiplicative](../../figures/main_cumulative_multiplicative.png)
+**(B)** ![Cumulative infections multiplicative](../../figures/main_cumulative_multiplicative.png)
 
-![Relative infections multiplicative](../../figures/main_relative_infection_multiplicative.png)
+**(C)** ![Relative infections multiplicative](../../figures/main_relative_infection_multiplicative.png)
 
 **Figure S10. Epidemic trajectories under the "null" county-level imputation method for agricultural worker household characteristics.** (A) Simulated infection prevalence over time for agricultural workers (blue) and the general community (red) for the six NAWS regions, with simulations at both the region level (thick lines with borders) and county level (thin, semi-transparent lines). (B) Cumulative infections over time for agricultural workers (blue) and the general community (red) for the six NAWS regions, with simulations at both the region level (thick lines with borders) and county level (thin, semi-transparent lines). (C) Prevalence ratio between agricultural workers and the general community for the six NAWS regions, with simulations at both the region level (thick lines with borders) and county level (thin, semi-transparent lines). County-level household attributes for agricultural workers are imputed using the "null" method, in which county-level household attributes for agricultural workers are taken to be equal to the regional NAWS value, with no adjustment. 
 
-![Epidemic none](../../figures/main_overlay_none.png)
+**(A)** ![Epidemic none](../../figures/main_overlay_none.png)
 
-![Cumulative infections none](../../figures/main_cumulative_none.png)
+**(B)** ![Cumulative infections none](../../figures/main_cumulative_none.png)
 
-![Relative infections none](../../figures/main_relative_infection_none.png)
+**(C)** ![Relative infections none](../../figures/main_relative_infection_none.png)
 
 **Figure S11. Weekly crop movements for three labor-intensive California crops** Weekly point-to-point crop shipments (in million pounds) originating in California for iceberg lettuce (blue), oranges (orange), and strawberries (magenta), from 2018–2024. 
 
