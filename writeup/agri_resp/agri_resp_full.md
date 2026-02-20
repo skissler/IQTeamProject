@@ -48,20 +48,20 @@ Other to do:
 
 **Methods:** We developed a household-structured susceptible-infectious-recovered (SIR) transmission model to compare disease dynamics between agricultural workers and the general U.S. population. Using data from the American Community Survey and National Agricultural Workers Survey, we parameterized household size and crowding distributions across six regions. We simulated outbreaks with reproduction numbers ranging from 1.2 to 3.0 across various assumptions on household secondary attack rate and assortative mixing. We assessed productivity losses for three labor-intensive crops (oranges, lettuce, strawberries) with different harvest seasonalities. 
 
-**Results:** Compared to the general population, agricultural worker households are substantially larger (mean household size: 3.3-4.1 vs. 2.4-2.8 across regions) and more crowded (proportion of households crowded: 11-33% vs. 2-8% across regions). For a baseline reproduction number of $R_0$ = 1.5, peak disease prevalence among agricultural workers was 1.23-1.45 times higher than that of the general population across regions, and final outbreak sizes were 1.15 to 1.28 times higher. Under baseline assumptions, maximum productivity losses were estimated at 0.62% for strawberries, 0.50% for lettuce, and 0.50% for oranges, translating to $21,511,907, $6,257,962, and $4,275,115 USD, respectively
+**Results:** Compared to the general population, agricultural worker households are substantially larger (mean household size: 3.3-4.1 vs. 2.4-2.8 across regions) and more crowded (proportion of households crowded: 11-33% vs. 2-8% across regions). For a baseline reproduction number of $R_0$ = 1.5, peak disease prevalence among agricultural workers was 1.23-1.45 times higher than that of the general population across regions, and final outbreak sizes were 1.15 to 1.28 times higher. Under baseline assumptions, maximum productivity losses were estimated at 0.62% for strawberries, 0.50% for lettuce, and 0.50% for oranges, translating to $21,511,907, $6,257,962, and $4,275,115 USD, respectively.
 
 **Conclusions:** Household crowding may lead to disproportionate respiratory disease burden among agricultural workers, potentially generating substantial food production losses. These findings highlight the need for targeted outbreak preparedness and mitigation strategies in the agricultural sector to maintain food system resilience. 
 
 
 ## Introduction
 
-Respiratory disease outbreaks can cause societal and economic disruptions that cascade beyond their direct public health burden. The food system, which encompassess food production, processing, and distribution, is particularly susceptible to labor-driven shocks. During the COVID-19 pandemic, agricultural labor shortfalls contributed to an estimated $309,000,000 reduction in U.S. farm output. Meanwhile, outbreaks in meat packing plants forced facility closures that affected billions of pounds of processing capacity, and shifts in demand and the closure of schools and restaurants caused distribution bottlenecks and shortages of staple goods. Agricultural workers, a workforce of approximately [3.2 million people](https://www.ers.usda.gov/topics/farm-economy/farm-labor), are at the foundation of the food system, and their health determines its capacity to function. 
+Respiratory disease outbreaks can cause societal and economic disruptions that cascade beyond their direct public health burden. The food system, which encompasses food production, processing, and distribution, is particularly susceptible to labor-driven shocks. During the COVID-19 pandemic, agricultural labor shortfalls contributed to an estimated $309,000,000 reduction in U.S. farm output. Meanwhile, outbreaks in meat packing plants forced facility closures that affected billions of pounds of processing capacity, and shifts in demand and the closure of schools and restaurants caused distribution bottlenecks and shortages of staple goods. Agricultural workers, a workforce of approximately [3.2 million people](https://www.ers.usda.gov/topics/farm-economy/farm-labor), are at the foundation of the food system, and their health determines its capacity to function. 
 
-Agricultural workers in the United States face various health vulnerabilities that put them at elevated risk during respiratory disease outbreaks. Many have restricted access to healthcare and high rates of chronic conditions including diabetes and obesity, along with high rates of baseline respiratory illnesses linked to occupational pesticide and dust exposure. Furthermore, housing conditions, including household size and crowding, may contribute to an elevated risk of infection. Household crowding was a primary risk factor for SARS-CoV-2 infection among farmworkers [x] and is associated with hgiher COVID-19 incidence and mortality across U.S. counties more broadly [x]. This may help explain why COVID-19 infection rates were found to be consistently higher among agricultural workers vs. the broader community during the first year of the COVID-19 pandemic [x,x]. 
+Agricultural workers in the United States face various health vulnerabilities that put them at elevated risk during respiratory disease outbreaks. Many have restricted access to healthcare and high rates of chronic conditions including diabetes and obesity, along with high rates of baseline respiratory illnesses linked to occupational pesticide and dust exposure. Furthermore, housing conditions, including household size and crowding, may contribute to an elevated risk of infection. Household crowding was a primary risk factor for SARS-CoV-2 infection among farmworkers [x] and is associated with higher COVID-19 incidence and mortality across U.S. counties more broadly [x]. This may help explain why COVID-19 infection rates were found to be consistently higher among agricultural workers vs. the broader community during the first year of the COVID-19 pandemic [x,x]. 
 
-Compounding these issues, conducting effective public health surveillance in agricultural workers has proven challenging. Various important efforts are underway to bridge this gap, including the CDC-supported network of farmeworker-serving organizations formed during the COVID-19 pandemic [x]. Nevertheless, agricultural workers remain a difficult population to reach: agricultural workers may be more likely to mistrust authorities, especially those who are undocumented or on temporary visas, socioeconomic barriers oftne prevent workers from presenting to care, and seasonal migration complicates longitudinal follow-up. These barriers underscore the need for modeling tools that can anticipate the burden of disease among agricultural workers from more readily-available community-level data. However, we currently lack quantitative frameworks for translating known disease transmission risk factors into preductions of how outbreaks will unfold among agricultural workers and what the downstream effects on food production may be. 
+Compounding these issues, conducting effective public health surveillance in agricultural workers has proven challenging. Various important efforts are underway to bridge this gap, including the CDC-supported network of farmworker-serving organizations formed during the COVID-19 pandemic [x]. Nevertheless, agricultural workers remain a difficult population to reach: agricultural workers may be more likely to mistrust authorities, especially those who are undocumented or on temporary visas, socioeconomic barriers often prevent workers from presenting to care, and seasonal migration complicates longitudinal follow-up. These barriers underscore the need for modeling tools that can anticipate the burden of disease among agricultural workers from more readily-available community-level data. However, we currently lack quantitative frameworks for translating known disease transmission risk factors into predictions of how outbreaks will unfold among agricultural workers and what the downstream effects on food production may be. 
 
-This study aims to address these gaps by developing a household-structured disease transmission model that quantifies the differential impacts of resipratory disease outbreaks on agricultural workers relative to the general U.S. population. Using household size and crowding distributions from national surveys, we simulated epidemic dynamics under a range of epidemiological scenarios, assessing the impact of differences in transmissibility, within-household secondary attack rates, and population mixing patterns. We then translate the resulting labor impacts into crop-specific production losses for thre economically important, labor-intensive California crops with distinct harvest seasonalities: strawberries, iceberg lettuce, and oranges. Our analysis provides both a quantitative assessment of how outbreaks with varying characteristics might impact agricultural productio and a general framework, accompanied by an interactive simulation tool, for anticipating the food system consequences of future respiratory disease outbreaks. 
+This study aims to address these gaps by developing a household-structured disease transmission model that quantifies the differential impacts of respiratory disease outbreaks on agricultural workers relative to the general U.S. population. Using household size and crowding distributions from national surveys, we simulated epidemic dynamics under a range of epidemiological scenarios, assessing the impact of differences in transmissibility, within-household secondary attack rates, and population mixing patterns. We then translate the resulting labor impacts into crop-specific production losses for three economically important, labor-intensive California crops with distinct harvest seasonalities: strawberries, iceberg lettuce, and oranges. Our analysis provides both a quantitative assessment of how outbreaks with varying characteristics might impact agricultural production and a general framework, accompanied by an interactive simulation tool, for anticipating the food system consequences of future respiratory disease outbreaks. 
 
 
 
@@ -198,7 +198,7 @@ To translate disease dynamics into agricultural productivity impacts, we estimat
 
 ### Household size and crowding lead to higher modeled disease prevalence among agricultural workers.
 
-Agricultural worker households are substantially larger and more crowded on average than the general U.S. population (**Figure 1, Supplementary Table S1**). The mean household size among agricultural workers ranged from 3.3 to 4.1 people across regions, compared to 2.4 to 2.8 people for the general population. The proportion of households of size 4 or greater ranged from 41% to 62% among agricultural workers vs. 20% to 30% for the general population. The proportion of crowded households ranged from 11.2%-32.8% for agricultural workers compared to 1.9%-8.3% in the general population. This translated into crowding rates that were 3.9 to 8.8 times higher among agricultural workers than the general population across the six regions. 
+Agricultural worker households are substantially larger and more crowded on average than the general U.S. population (**Figure 1, Supplementary Table S1**). The mean household size among agricultural workers ranged from 3.3 to 4.1 people across regions, compared to 2.4 to 2.8 people for the general population. The proportion of households of size 4 or greater ranged from 41% to 62% among agricultural workers vs. 20% to 30% for the general population. The proportion of crowded households ranged from 11.2%-32.8% for agricultural workers compared to 1.9%-8.3% in the general population. This translated into crowding rates that were 3.3 to 8.6 times higher among agricultural workers than the general population across the six regions. 
 
 Simulations of respiratory disease outbreaks at the regional level revealed consistently higher disease burden among agricultural workers than in the general population (**Figure 2, Supplementary Tables S3-S4**). Under baseline assumptions ($R_0$ = 1.5, SAR = 20%/40% for uncrowded/crowded households, $\eta$ = 2/3), peak prevalence among agricultural workers was 1.23 to 1.45 times that of the general population across regions. Final sizes were 1.15 to 1.28 times higher among agricultural workers, with final sizes of 66–77% among agricultural workers compared to 56–64% in the general population. Outbreaks peaked between 5 and 12 days earlier in agricultural workers across regions. At the point of maximum prevalence difference, the prevalence in agricultural workers was 1.74 to 2.78 times higher in agricultural workers vs. the general community. 
 
@@ -206,7 +206,7 @@ These differences were sensitive to the basic reproduction number (**Supplementa
 
 Increasing SAR in crowded households generally led to greater differences in final size, peak prevalence, and peak timing. Increasing assortativity (more within-group mixing; $\eta \rightarrow 1$) generally had a similar effect. The simulated epidemics were largely insensitive to the fold-difference in crowding between the largest and smallest households ($d$) (**Supplementary Figures S4–S8, Supplementary Tables S3-S4**)
 
-County-level simulations demonstrated geographic heterogeneity in these infection disparities. Under the baseline parameter values, the median [20th, 80th percentile] county-level peak prevalence ratio ranged from 1.25 [1.22, 1.28] in the Midwest to 1.46 [1.37, 1.56] in the Northwest. Similarly, the median [20th, 80th percentile] county-level final size ratio ranged from 1.17 [1.14, 1.20] in the Southwest to 1.29 [1.25, 1.33] in the East. These results were sensitive to how household sizes and crowding rates were assigned to the agricultural worker population at the county level, with the "multiplicative" method generally yielding more variation in county-level simulations and the "none" method yielding less (**Supplementary Figures S9–S10**).
+County-level simulations demonstrated geographic heterogeneity in these infection disparities. Under the baseline parameter values, the median [20th, 80th percentile] county-level peak prevalence ratio ranged from 1.25 [1.22, 1.28] in the Midwest to 1.46 [1.37, 1.56] in the Northwest. Similarly, the median [20th, 80th percentile] county-level final size ratio ranged from 1.17 [1.14, 1.20] in the Southwest to 1.29 [1.25, 1.33] in the East. These results were sensitive to how household sizes and crowding rates were assigned to the agricultural worker population at the county level, with the "multiplicative" method generally yielding more variation in county-level simulations and the "null" method yielding less (**Supplementary Figures S9–S10**).
 
 ### Respiratory disease outbreaks among agricultural workers can lead to substantial productivity losses.
 
@@ -222,7 +222,7 @@ The simulated outbreaks yielded substantial productivity losses for all three cr
 
 ![Epidemic simulations](../../figures/main_epicurves_white.png)
 
-**Figure 3. Simulated impact of a respiratory virus outbreak on harvesting of strawberries, iceberg lettuce, and oranges in California.** (A) Illustration of the approach for calculating harvest impact. Here, an epidemic peaks in the general community on June 1st, leading to a peak in symptomatic disease among agricultural workers (color??) a few days earlier. The mean daily production of strawberries (magenta), iceberg lettuce (blue), and oranges (orange), averaged across 2018-2024, are depicted as solid lines. Dashed lines with shading depict the simulated production impact caused by the loss of labor due to symptomatic disease. The total impact (i.e., the area of the shaded regions) is summed across the year, yielding a single point in plot (B) representing the overall impact of an epidemic peaking on June 1. (B) Simulated production impact on strawberries (magenta), iceberg lettuce (blue), and oranges (orange) for epidemics peaking in the general community on each day of the year. These impacts assume that 50% of infections cause symptoms severe enough to cause a worker to miss work. 
+**Figure 3. Simulated impact of a respiratory virus outbreak on harvesting of strawberries, iceberg lettuce, and oranges in California.** (A) Illustration of the approach for calculating harvest impact. Here, an epidemic peaks in the general community on June 1st, leading to a peak in symptomatic disease among agricultural workers a few days earlier. The mean daily production of strawberries (magenta), iceberg lettuce (blue), and oranges (orange), averaged across 2018-2024, are depicted as solid lines. Dashed lines with shading depict the simulated production impact caused by the loss of labor due to symptomatic disease. The total impact (i.e., the area of the shaded regions) is summed across the year, yielding a single point in plot (B) representing the overall impact of an epidemic peaking on June 1. (B) Simulated production impact on strawberries (magenta), iceberg lettuce (blue), and oranges (orange) for epidemics peaking in the general community on each day of the year. These impacts assume that 50% of infections cause symptoms severe enough to cause a worker to miss work. 
 
 <!-- ![Crop impact](../../figures/crop_impact.png) --> 
 <div align="center">
@@ -251,17 +251,17 @@ $4,275,115 oranges (0.50%, peak day 29)
 
 Differences in household size and household crowding are sufficient to produce substantial disparities in the timing and severity of respiratory disease outbreaks between agricultural workers and the general population. In our baseline scenario, representing a pandemic influenza-like virus ($R_0$ = 1.5), peak disease prevalence among agricultural workers occurred 5-12 days earlier and was 23%-45% higher than in the general community, with cumulative infections 15%-28% higher, depending on the region. At the point of maximum divergence, prevalence among agricultural workers was 74% - 178% higher than in the general community. Our findings indicate that community-wide disease indicators may substantially underestimate the burden of disease among agricultural workers, particularly during the early stages of an epidemic. 
 
-Disease among agricultural workers translates into lost labor and, consequently, reduced food production. For three labor-intensive California crops -- strawberries, iceberg lettuce, and oranges -- we esitmated that a respiratory disease outbreak could reduce harvest volumes by 0.50% - 0.62% if its peak coincided with peak harvest periods, assuming half of infections caused symptoms severe enough to prevent work. While these are modest reductions, they translate into estimated revenue losses of approximately $4 - $21 million USD per crop, depending on the commodity. For a more transmissible or clinically severe pathogen, losses could be much higher. 
+Disease among agricultural workers translates into lost labor and, consequently, reduced food production. For three labor-intensive California crops -- strawberries, iceberg lettuce, and oranges -- we estimated that a respiratory disease outbreak could reduce harvest volumes by 0.50% - 0.62% if its peak coincided with peak harvest periods, assuming half of infections caused symptoms severe enough to prevent work. While these are modest reductions, they translate into estimated revenue losses of approximately $4 - $21 million USD per crop, depending on the commodity. For a more transmissible or clinically severe pathogen, losses could be much higher. 
 
 These findings are consistent with a growing body of evidence revealing the disproportionate impacts of respiratory disease on agricultural and food system workers. XXXXX 
 
 <!-- Agricultural workers face health vulnerabilities beyond household crowding. XXX. Limited healthcare access, economic and social barriers to seeking care, and frequent geograhpic migration further compound these risks. These factors suggest that the disparities we estimate based on household structure alone may represent a lower bound on the true differential in disease burden.  -->
 
-Despite evidence on the impact of respitory infections on agricultural workers from past outbreaks, prospective tools for anticipating how respiratory disease outbreaks may unfold in agricultural communities have been lacking. This study provides a framework for such a prospective assessment, explicitly linking househokld-level predictors of disease transmission to population-level epidemic dynamics and agricultural impacts. To accompany this study, we have developed an interactive simulation tool to allow planners and resesarchers to simulate how outbreaks with different epidemiological characteristics and timing might affect various crops, supporting scenario-based preparedness efforts.
+Despite evidence on the impact of respiratory infections on agricultural workers from past outbreaks, prospective tools for anticipating how respiratory disease outbreaks may unfold in agricultural communities have been lacking. This study provides a framework for such a prospective assessment, explicitly linking household-level predictors of disease transmission to population-level epidemic dynamics and agricultural impacts. To accompany this study, we have developed an interactive simulation tool to allow planners and researchers to simulate how outbreaks with different epidemiological characteristics and timing might affect various crops, supporting scenario-based preparedness efforts.
 
-Our approach has several limitations. First, we did not incorporate seasonal variation in pathogen transmissibility (e.g., higher transmission during winter months). Incorporating seasonality would likely increase the expected impact on oranges, which are primarily harvested from November through June, and decrease the expected impact on strawberries and lettuce, which are harvested mainly in the summer. Second, our crop impact analysis considered only harvest-phase labor. Outbreaks could also disrupt planting, tending, and post-harvest processing, leading to additional production losses. More broadly, the impact of respiratory disase on the food system extends well beyond farm-level labor: the COVID-19 pandemic caused severe disruptions in meat and poultry processing facilities [x] and demand-side effects such as panic buying and shifts from food service to at-home food consmption. Third, we modeled the effect of household size and crowding on transmission but did not account for other factors that differ between agricultural workers and the general population, including occupational exposures that elevate baseline rates of respiratory disease, higher rates of comorbidities such as diabetes, and limited access to healthcare. On the other hand, respiratory pathogens generally spread less well outdoors, suggesting that agricultural workers may face lower workplace exposures to infection, which we also did not model. Fourth, we assumed that labor losses during harvest translate directly into proportional production losses. This assumption is more defensible for crops with narrow harvest windows, like strawberries and lettuce which must be picked within days of maturity, but less so for oranges, which can remain on the tree for weeks, allowing workers to recover before harvesting resumes. Fifth, data limitations constrained several aspects of the analysis. County-level household characteristics for agricultural workers are not available in the NAWS dataset, limiting the resolution of our geographic analysis. The assortativity of contacts between agricultural workers and the general community is poorly understood. Our use of point-to-point crop shipments as a proxy for harvest volumes may introduce a timing bias, particularly for crops like oranges that can be stored before shipment. Finally, our analysis assessed state- and region-level impacts, but farm-level impacts may differ considerably. Individual farms often harvest during concentrated windows, and an epidemic coinciding with such a window could devastate that farm's production, while an epidemic at another time might have minimal effect. The smaller the geographic or operational scale, the more likely it is to see such "all or nothing" dynamics. 
+Our approach has several limitations. First, we did not incorporate seasonal variation in pathogen transmissibility (e.g., higher transmission during winter months). Incorporating seasonality would likely increase the expected impact on oranges, which are primarily harvested from November through June, and decrease the expected impact on strawberries and lettuce, which are harvested mainly in the summer. Second, our crop impact analysis considered only harvest-phase labor. Outbreaks could also disrupt planting, tending, and post-harvest processing, leading to additional production losses. More broadly, the impact of respiratory disease on the food system extends well beyond farm-level labor: the COVID-19 pandemic caused severe disruptions in meat and poultry processing facilities [x] and demand-side effects such as panic buying and shifts from food service to at-home food consumption. Third, we modeled the effect of household size and crowding on transmission but did not account for other factors that differ between agricultural workers and the general population, including occupational exposures that elevate baseline rates of respiratory disease, higher rates of comorbidities such as diabetes, and limited access to healthcare. On the other hand, respiratory pathogens generally spread less well outdoors, suggesting that agricultural workers may face lower workplace exposures to infection, which we also did not model. Fourth, we assumed that labor losses during harvest translate directly into proportional production losses. This assumption is more defensible for crops with narrow harvest windows, like strawberries and lettuce which must be picked within days of maturity, but less so for oranges, which can remain on the tree for weeks, allowing workers to recover before harvesting resumes. Fifth, data limitations constrained several aspects of the analysis. County-level household characteristics for agricultural workers are not available in the NAWS dataset, limiting the resolution of our geographic analysis. The assortativity of contacts between agricultural workers and the general community is poorly understood. Our use of point-to-point crop shipments as a proxy for harvest volumes may introduce a timing bias, particularly for crops like oranges that can be stored before shipment. Finally, our analysis assessed state- and region-level impacts, but farm-level impacts may differ considerably. Individual farms often harvest during concentrated windows, and an epidemic coinciding with such a window could devastate that farm's production, while an epidemic at another time might have minimal effect. The smaller the geographic or operational scale, the more likely it is to see such "all or nothing" dynamics. 
 
-Effective disease surveillance among agricultural workers is essential both for protecting this population and for safeguarding the food supply, yet it presents major challenges. Agricultural workers in the United States often face laguange barriers, lack trust in authorities, and lack paid sick leave, all of which impede surveillance and care-seeking. XXXX. Ultimately, reducing the vulnerability of agricultural workers to respiratory disease outbreaks will require structural interventions, including improveements in housing conditions, access to healthcare, provision of personal protective equipment, and paid sick leave policies, alongisde the epidemiological tools for anticipating and responding to outbreaks that this study aims to provide. 
+Effective disease surveillance among agricultural workers is essential both for protecting this population and for safeguarding the food supply, yet it presents major challenges. Agricultural workers in the United States often face language barriers, lack trust in authorities, and lack paid sick leave, all of which impede surveillance and care-seeking. XXXX. Ultimately, reducing the vulnerability of agricultural workers to respiratory disease outbreaks will require structural interventions, including improvements in housing conditions, access to healthcare, provision of personal protective equipment, and paid sick leave policies, alongside the epidemiological tools for anticipating and responding to outbreaks that this study aims to provide. 
 
 
 
@@ -384,7 +384,7 @@ where the constant $\xi$ is chosen so that the total proportion of crowded house
 <!-- $$\xi = \frac{P_{\text{crowded}}}{\sum_n p(n) \cdot w(n)}$$ -->
 $$\xi = \frac{P_{\text{crowded}}}{\sum_n p(n) \cdot w(n)}$$
 
-For example, for household size proportions $p(n) = \\{ 0.1, 0.2, 0.3, 0.2, 0.1, 0.05, 0.05\\}$ for $n \in \\{1, 2, ..., n\\}$, and for an overall crowding fraction of $$P_\text{crowded} = 0.2$$, we have 
+For example, for household size proportions $p(n) = \\{ 0.1, 0.2, 0.3, 0.2, 0.1, 0.05, 0.05\\}$ for $n \in \\{1, 2, ..., 7\\}$, and for an overall crowding fraction of $$P_\text{crowded} = 0.2$$, we have 
 
 $$ \xi = \frac{0.2}{(0.1)(0) + (0.2)(1) + (0.3)(1.2) + (0.2)(1.4) + (0.1)(1.6) + (0.05)(1.8) + (0.05)(2)}$$
 $$ = 0.168$$
@@ -521,9 +521,9 @@ To assess the impact of epidemic timing on crop production, we shifted the epide
 
 **Figure S2. County-level household crowding distributions for agricultural workers and the general community under three imputation methods** Histograms depict the proportion of households crowded in counties within each of the six NAWS regions, for agricultural workers (blue) and the general community (red). County-level crowding rates for the general community are taken from the ACS. County-level crowding rates for agricultural workers are imputed using three different methods: (A) an additive adjustment, where county-level crowding rates for agricultural workers are shifted by the difference between county-level and regional mean ACS values; (B) a multiplicative adjustment, where county-level crowding rates for agricultural workers are shifted by the ratio between county-level and regional mean ACS values; and (C) no adjustment, where crowding rates across counties for agricultural workers are equal to the regional mean. Red dashed vertical lines indicate the regional ACS mean, and blue dashed vertical lines indicate the regional NAWS estimate for agricultural workers.
 
-![Crowding distributions imputed additive](../../figures/crowding_distribution_additive.png)
-![Crowding distributions imputed multiplicative](../../figures/crowding_distribution_multiplicative.png)
-![Crowding distributions imputed none](../../figures/crowding_distribution_none.png)
+**(A)** ![Crowding distributions imputed additive](../../figures/crowding_distribution_additive.png)
+**(B)** ![Crowding distributions imputed multiplicative](../../figures/crowding_distribution_multiplicative.png)
+**(C)** ![Crowding distributions imputed none](../../figures/crowding_distribution_none.png)
 
 **Figure S3. County-level household size distributions for agricultural workers and the general community under three imputation methods.** Histograms depict the mean household size (A, C, E) and the proportion of households with 4 or more occupants (B, D, F) in counties within each of the six NAWS regions, for agricultural workers (blue) and the general community (red). County-level household size distributions are taken from the ACS. County-level household size distributions for agricultural workers are imputed using three different methods: (A) an additive adjustment, where county-level household size distributions for agricultural workers are shifted by the difference between county-level and regional mean ACS values and re-normalized; (B) a multiplicative adjustment, where county-level household size distributions for agricultural workers are shifted by the ratio between county-level and regional mean ACS values and re-normalized; and (C) no adjustment, where household size distributions across counties for agricultural workers are equal to the regional mean. Red dashed vertical lines indicate the regional ACS mean, and blue dashed vertical lines indicate the regional NAWS estimate for agricultural workers.
 
@@ -618,7 +618,7 @@ To assess the impact of epidemic timing on crop production, we shifted the epide
 
 ![Relative infections multiplicative](../../figures/main_relative_infection_multiplicative.png)
 
-**Figure S10. Epidemic trajectories under the "none" county-level imputation method for agricultural worker household characteristics.** (A) Simulated infection prevalence over time for agricultural workers (blue) and the general community (red) for the six NAWS regions, with simulations at both the region level (thick lines with borders) and county level (thin, semi-transparent lines). (B) Cumulative infections over time for agricultural workers (blue) and the general community (red) for the six NAWS regions, with simulations at both the region level (thick lines with borders) and county level (thin, semi-transparent lines). (C) Prevalence ratio between agricultural workers and the general community for the six NAWS regions, with simulations at both the region level (thick lines with borders) and county level (thin, semi-transparent lines). County-level household attributes for agricultural workers are imputed using the "none" method, in which county-level household attributes for agricultural workers are taken to be equal to the regional NAWS value, with no adjustment. 
+**Figure S10. Epidemic trajectories under the "null" county-level imputation method for agricultural worker household characteristics.** (A) Simulated infection prevalence over time for agricultural workers (blue) and the general community (red) for the six NAWS regions, with simulations at both the region level (thick lines with borders) and county level (thin, semi-transparent lines). (B) Cumulative infections over time for agricultural workers (blue) and the general community (red) for the six NAWS regions, with simulations at both the region level (thick lines with borders) and county level (thin, semi-transparent lines). (C) Prevalence ratio between agricultural workers and the general community for the six NAWS regions, with simulations at both the region level (thick lines with borders) and county level (thin, semi-transparent lines). County-level household attributes for agricultural workers are imputed using the "null" method, in which county-level household attributes for agricultural workers are taken to be equal to the regional NAWS value, with no adjustment. 
 
 ![Epidemic none](../../figures/main_overlay_none.png)
 
@@ -665,12 +665,12 @@ To assess the impact of epidemic timing on crop production, we shifted the epide
 | 1.5 | **0.33** | 40% | 2 | 0.050 | 0.083 | 0.2108 | 0.200 |
 | 1.5 | **0.25** | 40% | 2 | 0.050 | 0.083 | 0.2108 | 0.200 |
 | 1.5 | **0.00** | 40% | 2 | 0.050 | 0.083 | 0.2108 | 0.200 |
-| 1.5 | 0.67 | **20%** | 2 | 0.050 | **0.000** | 0.2108 | 0.200 |
-| 1.5 | 0.67 | **30%** | 2 | 0.050 | **0.036** | 0.2108 | 0.200 |
-| 1.5 | 0.67 | **50%** | 2 | 0.050 | **0.150** | 0.2108 | 0.200 |
-| 1.5 | 0.67 | **60%** | 2 | 0.050 | **0.250** | 0.2108 | 0.200 |
-| 1.5 | 0.67 | 40% | **1** | 0.050 | 0.083 | 0.2108 | 0.200 |
-| 1.5 | 0.67 | 40% | **3** | 0.050 | 0.083 | 0.2108 | 0.200 |
+| 1.5 | 0.67 | **20%** | 2 | 0.050 | **0.000** | **0.2142** | 0.200 |
+| 1.5 | 0.67 | **30%** | 2 | 0.050 | **0.036** | **0.2122** | 0.200 |
+| 1.5 | 0.67 | **50%** | 2 | 0.050 | **0.150** | **0.2096** | 0.200 |
+| 1.5 | 0.67 | **60%** | 2 | 0.050 | **0.250** | **0.2086** | 0.200 |
+| 1.5 | 0.67 | 40% | **1** | 0.050 | 0.083 | **0.2113** | 0.200 |
+| 1.5 | 0.67 | 40% | **3** | 0.050 | 0.083 | **0.2103** | 0.200 |
 
 <!-- **Table S3.** Mixing matrix elements by region and assortativity parameter ($\eta$). For each region, $w_A$ is the proportion of the population that are agricultural workers (derived from ACS data). The mixing matrix governs between-household contact patterns: $m_{AA}$ is the fraction of agricultural workers' between-household contacts that are with other agricultural workers, $m_{AC}$ is the fraction with the general community, and vice versa for $m_{CC}$ and $m_{CA}$. Because $w_A$ is small (0.7–2.2%), $m_{AA} \approx \eta$ and $m_{CC} \approx 1$ across all values of $\eta$. At $\eta = 0$ (proportional mixing), agricultural workers have only $w_A$ of contacts within their own group; the baseline $\eta = 2/3$ is highlighted in bold.
 
@@ -772,42 +772,42 @@ To assess the impact of epidemic timing on crop production, we shifted the epide
 | | Southwest | 8.1% | 7.2% | 50 | 51 | 66.6% | 60.2% |
 | | Northwest | 8.3% | 6.9% | 51 | 52 | 69.4% | 59.0% |
 | | California | 10.1% | 8.5% | 45 | 47 | 73.4% | 63.6% |
-| Crowded SAR = 20% | East | 7.7% | 6.0% | 51 | 57 | 67.4% | 56.2% |
-| | Southeast | 7.6% | 5.9% | 51 | 58 | 67.2% | 55.6% |
-| | Midwest | 7.0% | 5.9% | 54 | 57 | 63.2% | 55.7% |
-| | Southwest | 7.7% | 6.7% | 51 | 54 | 65.5% | 58.6% |
-| | Northwest | 8.0% | 6.5% | 50 | 55 | 67.4% | 57.7% |
-| | California | 8.9% | 7.3% | 48 | 51 | 69.6% | 60.8% |
-| Crowded SAR = 30% | East | 8.4% | 6.2% | 48 | 56 | 70.2% | 56.7% |
-| | Southeast | 8.3% | 6.0% | 48 | 57 | 70.2% | 56.1% |
-| | Midwest | 7.3% | 6.0% | 52 | 57 | 64.8% | 56.1% |
-| | Southwest | 8.4% | 7.0% | 48 | 53 | 67.8% | 59.5% |
-| | Northwest | 8.9% | 6.7% | 47 | 54 | 71.0% | 58.4% |
-| | California | 10.2% | 7.9% | 43 | 49 | 73.9% | 62.3% |
-| Crowded SAR = 50% | East | 9.4% | 6.5% | 42 | 54 | 73.3% | 57.5% |
-| | Southeast | 9.4% | 6.3% | 41 | 55 | 73.7% | 56.9% |
-| | Midwest | 7.8% | 6.2% | 49 | 55 | 66.8% | 56.6% |
-| | Southwest | 9.3% | 7.5% | 44 | 50 | 70.6% | 60.7% |
-| | Northwest | 10.3% | 7.1% | 40 | 51 | 75.3% | 59.3% |
-| | California | 12.4% | 8.9% | 35 | 44 | 78.6% | 64.3% |
-| Crowded SAR = 60% | East | 9.8% | 6.6% | 39 | 53 | 74.2% | 57.8% |
-| | Southeast | 9.8% | 6.4% | 39 | 54 | 74.6% | 57.1% |
-| | Midwest | 7.9% | 6.3% | 47 | 55 | 67.4% | 56.8% |
-| | Southwest | 9.6% | 7.7% | 42 | 49 | 71.3% | 61.1% |
-| | Northwest | 10.9% | 7.2% | 37 | 50 | 76.4% | 59.5% |
-| | California | 13.3% | 9.3% | 32 | 42 | 79.8% | 65.0% |
-| $d$ = 1 | East | 8.7% | 6.3% | 46 | 55 | 71.5% | 57.0% |
-| | Southeast | 8.7% | 6.1% | 46 | 56 | 71.7% | 56.4% |
-| | Midwest | 7.5% | 6.1% | 51 | 56 | 65.5% | 56.3% |
-| | Southwest | 8.7% | 7.1% | 47 | 52 | 68.9% | 60.0% |
-| | Northwest | 9.4% | 6.8% | 44 | 53 | 73.0% | 58.7% |
-| | California | 11.0% | 8.3% | 40 | 47 | 76.0% | 63.1% |
-| $d$ = 3 | East | 9.1% | 6.4% | 44 | 55 | 72.3% | 57.3% |
-| | Southeast | 9.1% | 6.2% | 44 | 55 | 72.6% | 56.6% |
-| | Midwest | 7.6% | 6.2% | 50 | 56 | 66.2% | 56.5% |
-| | Southwest | 9.0% | 7.3% | 45 | 51 | 69.7% | 60.3% |
-| | Northwest | 9.8% | 7.0% | 43 | 52 | 73.9% | 59.0% |
-| | California | 11.6% | 8.6% | 38 | 46 | 77.1% | 63.7% |
+| Crowded SAR = 20% | East | 8.1% | 6.3% | 50 | 56 | 68.4% | 57.4% |
+| | Southeast | 8.0% | 6.2% | 50 | 56 | 68.2% | 56.8% |
+| | Midwest | 7.3% | 6.2% | 52 | 56 | 64.2% | 56.9% |
+| | Southwest | 8.1% | 7.0% | 50 | 53 | 66.5% | 59.8% |
+| | Northwest | 8.3% | 6.8% | 49 | 53 | 68.4% | 58.9% |
+| | California | 9.2% | 7.7% | 47 | 50 | 70.5% | 61.8% |
+| Crowded SAR = 30% | East | 8.5% | 6.3% | 47 | 55 | 70.5% | 57.2% |
+| | Southeast | 8.5% | 6.2% | 47 | 56 | 70.6% | 56.6% |
+| | Midwest | 7.4% | 6.2% | 52 | 56 | 65.2% | 56.6% |
+| | Southwest | 8.5% | 7.1% | 48 | 52 | 68.2% | 60.0% |
+| | Northwest | 9.0% | 6.8% | 46 | 53 | 71.4% | 58.9% |
+| | California | 10.4% | 8.1% | 43 | 48 | 74.2% | 62.8% |
+| Crowded SAR = 50% | East | 9.3% | 6.3% | 42 | 55 | 73.0% | 57.1% |
+| | Southeast | 9.3% | 6.2% | 42 | 55 | 73.4% | 56.4% |
+| | Midwest | 7.7% | 6.1% | 49 | 56 | 66.4% | 56.2% |
+| | Southwest | 9.1% | 7.3% | 44 | 50 | 70.3% | 60.3% |
+| | Northwest | 10.2% | 7.0% | 40 | 52 | 75.0% | 58.8% |
+| | California | 12.3% | 8.8% | 36 | 45 | 78.4% | 64.0% |
+| Crowded SAR = 60% | East | 9.5% | 6.4% | 40 | 54 | 73.7% | 57.0% |
+| | Southeast | 9.6% | 6.2% | 39 | 55 | 74.1% | 56.3% |
+| | Midwest | 7.7% | 6.1% | 48 | 56 | 66.8% | 56.1% |
+| | Southwest | 9.3% | 7.4% | 42 | 49 | 70.8% | 60.4% |
+| | Northwest | 10.6% | 7.0% | 37 | 51 | 76.0% | 58.8% |
+| | California | 13.0% | 9.0% | 33 | 43 | 79.4% | 64.4% |
+| $d$ = 1 | East | 8.8% | 6.3% | 46 | 55 | 71.6% | 57.2% |
+| | Southeast | 8.8% | 6.2% | 46 | 56 | 71.8% | 56.6% |
+| | Midwest | 7.5% | 6.1% | 51 | 56 | 65.7% | 56.5% |
+| | Southwest | 8.7% | 7.2% | 47 | 52 | 69.1% | 60.1% |
+| | Northwest | 9.5% | 6.9% | 44 | 53 | 73.1% | 58.9% |
+| | California | 11.1% | 8.3% | 40 | 47 | 76.1% | 63.3% |
+| $d$ = 3 | East | 9.0% | 6.3% | 44 | 55 | 72.2% | 57.1% |
+| | Southeast | 9.0% | 6.2% | 44 | 56 | 72.5% | 56.4% |
+| | Midwest | 7.6% | 6.1% | 50 | 56 | 66.0% | 56.3% |
+| | Southwest | 8.9% | 7.3% | 46 | 51 | 69.6% | 60.2% |
+| | Northwest | 9.7% | 6.9% | 43 | 52 | 73.8% | 58.8% |
+| | California | 11.6% | 8.5% | 38 | 46 | 77.0% | 63.6% |
 
 **Table S4. Differential metrics between agricultural workers and the general community across regions and parameter sets.** Peak prevalence ratio, final size ratio, peak timing difference, and maximum infection prevalence ratio between agricultural workers and the general community.
 
@@ -867,40 +867,40 @@ To assess the impact of epidemic timing on crop production, we shifted the epide
 |  | Southwest | 1.12 | 1.11 | −1 | 1.23 |
 |  | Northwest | 1.21 | 1.18 | −1 | 1.39 |
 |  | California | 1.19 | 1.15 | −2 | 1.37 |
-| Crowded SAR = 20% | East | 1.29 | 1.20 | −6 | 1.82 |
-|  | Southeast | 1.30 | 1.21 | −7 | 1.85 |
-|  | Midwest | 1.18 | 1.13 | −3 | 1.45 |
-|  | Southwest | 1.16 | 1.12 | −3 | 1.41 |
-|  | Northwest | 1.23 | 1.17 | −5 | 1.60 |
-|  | California | 1.21 | 1.15 | −3 | 1.55 |
-| Crowded SAR = 30% | East | 1.36 | 1.24 | −8 | 2.19 |
-|  | Southeast | 1.38 | 1.25 | −9 | 2.28 |
-|  | Midwest | 1.21 | 1.15 | −5 | 1.59 |
-|  | Southwest | 1.20 | 1.14 | −5 | 1.58 |
-|  | Northwest | 1.33 | 1.22 | −7 | 2.02 |
-|  | California | 1.29 | 1.19 | −6 | 1.94 |
-| Crowded SAR = 50% | East | 1.45 | 1.27 | −12 | 3.07 |
-|  | Southeast | 1.50 | 1.30 | −14 | 3.32 |
-|  | Midwest | 1.25 | 1.18 | −6 | 1.88 |
+| Crowded SAR = 20% | East | 1.28 | 1.19 | −6 | 1.80 |
+|  | Southeast | 1.29 | 1.20 | −6 | 1.83 |
+|  | Midwest | 1.17 | 1.13 | −4 | 1.44 |
+|  | Southwest | 1.16 | 1.11 | −3 | 1.41 |
+|  | Northwest | 1.23 | 1.16 | −4 | 1.59 |
+|  | California | 1.20 | 1.14 | −3 | 1.54 |
+| Crowded SAR = 30% | East | 1.35 | 1.23 | −8 | 2.18 |
+|  | Southeast | 1.38 | 1.25 | −9 | 2.27 |
+|  | Midwest | 1.21 | 1.15 | −4 | 1.58 |
+|  | Southwest | 1.20 | 1.14 | −4 | 1.57 |
+|  | Northwest | 1.32 | 1.21 | −7 | 2.01 |
+|  | California | 1.29 | 1.18 | −5 | 1.93 |
+| Crowded SAR = 50% | East | 1.46 | 1.28 | −13 | 3.08 |
+|  | Southeast | 1.51 | 1.30 | −13 | 3.33 |
+|  | Midwest | 1.25 | 1.18 | −7 | 1.89 |
 |  | Southwest | 1.24 | 1.16 | −6 | 1.93 |
-|  | Northwest | 1.46 | 1.27 | −11 | 3.08 |
-|  | California | 1.40 | 1.22 | −9 | 2.84 |
-| Crowded SAR = 60% | East | 1.48 | 1.28 | −14 | 3.52 |
-|  | Southeast | 1.54 | 1.31 | −15 | 3.87 |
-|  | Midwest | 1.26 | 1.19 | −8 | 2.02 |
-|  | Southwest | 1.25 | 1.17 | −7 | 2.10 |
-|  | Northwest | 1.51 | 1.28 | −13 | 3.68 |
-|  | California | 1.43 | 1.23 | −10 | 3.31 |
+|  | Northwest | 1.47 | 1.27 | −12 | 3.09 |
+|  | California | 1.40 | 1.22 | −9 | 2.85 |
+| Crowded SAR = 60% | East | 1.49 | 1.29 | −14 | 3.54 |
+|  | Southeast | 1.55 | 1.32 | −16 | 3.90 |
+|  | Midwest | 1.27 | 1.19 | −8 | 2.03 |
+|  | Southwest | 1.26 | 1.17 | −7 | 2.11 |
+|  | Northwest | 1.52 | 1.29 | −14 | 3.69 |
+|  | California | 1.44 | 1.23 | −10 | 3.33 |
 | $d$ = 1 | East | 1.39 | 1.25 | −9 | 2.46 |
-|  | Southeast | 1.43 | 1.27 | −10 | 2.60 |
-|  | Midwest | 1.23 | 1.16 | −5 | 1.68 |
+|  | Southeast | 1.42 | 1.27 | −10 | 2.60 |
+|  | Midwest | 1.23 | 1.16 | −5 | 1.67 |
 |  | Southwest | 1.22 | 1.15 | −5 | 1.69 |
-|  | Northwest | 1.38 | 1.24 | −9 | 2.38 |
-|  | California | 1.34 | 1.21 | −7 | 2.27 |
+|  | Northwest | 1.38 | 1.24 | −9 | 2.37 |
+|  | California | 1.33 | 1.20 | −7 | 2.26 |
 | $d$ = 3 | East | 1.42 | 1.26 | −11 | 2.70 |
-|  | Southeast | 1.46 | 1.28 | −11 | 2.87 |
+|  | Southeast | 1.46 | 1.28 | −12 | 2.88 |
 |  | Midwest | 1.24 | 1.17 | −6 | 1.77 |
-|  | Southwest | 1.23 | 1.16 | −6 | 1.78 |
+|  | Southwest | 1.23 | 1.16 | −5 | 1.79 |
 |  | Northwest | 1.41 | 1.25 | −9 | 2.59 |
 |  | California | 1.36 | 1.21 | −8 | 2.42 |
 

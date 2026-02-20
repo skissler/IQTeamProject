@@ -59,7 +59,7 @@ where the constant $\xi$ is chosen so that the total proportion of crowded house
 <!-- $$\xi = \frac{P_{\text{crowded}}}{\sum_n p(n) \cdot w(n)}$$ -->
 $$\xi = \frac{P_{\text{crowded}}}{\sum_n p(n) \cdot w(n)}$$
 
-For example, for household size proportions $p(n) = \\{ 0.1, 0.2, 0.3, 0.2, 0.1, 0.05, 0.05\\}$ for $n \in \\{1, 2, ..., n\\}$, and for an overall crowding fraction of $$P_\text{crowded} = 0.2$$, we have 
+For example, for household size proportions $p(n) = \\{ 0.1, 0.2, 0.3, 0.2, 0.1, 0.05, 0.05\\}$ for $n \in \\{1, 2, ..., 7\\}$, and for an overall crowding fraction of $$P_\text{crowded} = 0.2$$, we have 
 
 $$ \xi = \frac{0.2}{(0.1)(0) + (0.2)(1) + (0.3)(1.2) + (0.2)(1.4) + (0.1)(1.6) + (0.05)(1.8) + (0.05)(2)}$$
 $$ = 0.168$$
@@ -196,9 +196,9 @@ To assess the impact of epidemic timing on crop production, we shifted the epide
 
 **Figure S2. County-level household crowding distributions for agricultural workers and the general community under three imputation methods** Histograms depict the proportion of households crowded in counties within each of the six NAWS regions, for agricultural workers (blue) and the general community (red). County-level crowding rates for the general community are taken from the ACS. County-level crowding rates for agricultural workers are imputed using three different methods: (A) an additive adjustment, where county-level crowding rates for agricultural workers are shifted by the difference between county-level and regional mean ACS values; (B) a multiplicative adjustment, where county-level crowding rates for agricultural workers are shifted by the ratio between county-level and regional mean ACS values; and (C) no adjustment, where crowding rates across counties for agricultural workers are equal to the regional mean. Red dashed vertical lines indicate the regional ACS mean, and blue dashed vertical lines indicate the regional NAWS estimate for agricultural workers.
 
-![Crowding distributions imputed additive](../../figures/crowding_distribution_additive.png)
-![Crowding distributions imputed multiplicative](../../figures/crowding_distribution_multiplicative.png)
-![Crowding distributions imputed none](../../figures/crowding_distribution_none.png)
+**(A)** ![Crowding distributions imputed additive](../../figures/crowding_distribution_additive.png)
+**(B)** ![Crowding distributions imputed multiplicative](../../figures/crowding_distribution_multiplicative.png)
+**(C)** ![Crowding distributions imputed none](../../figures/crowding_distribution_none.png)
 
 **Figure S3. County-level household size distributions for agricultural workers and the general community under three imputation methods.** Histograms depict the mean household size (A, C, E) and the proportion of households with 4 or more occupants (B, D, F) in counties within each of the six NAWS regions, for agricultural workers (blue) and the general community (red). County-level household size distributions are taken from the ACS. County-level household size distributions for agricultural workers are imputed using three different methods: (A) an additive adjustment, where county-level household size distributions for agricultural workers are shifted by the difference between county-level and regional mean ACS values and re-normalized; (B) a multiplicative adjustment, where county-level household size distributions for agricultural workers are shifted by the ratio between county-level and regional mean ACS values and re-normalized; and (C) no adjustment, where household size distributions across counties for agricultural workers are equal to the regional mean. Red dashed vertical lines indicate the regional ACS mean, and blue dashed vertical lines indicate the regional NAWS estimate for agricultural workers.
 
@@ -293,7 +293,7 @@ To assess the impact of epidemic timing on crop production, we shifted the epide
 
 ![Relative infections multiplicative](../../figures/main_relative_infection_multiplicative.png)
 
-**Figure S10. Epidemic trajectories under the "none" county-level imputation method for agricultural worker household characteristics.** (A) Simulated infection prevalence over time for agricultural workers (blue) and the general community (red) for the six NAWS regions, with simulations at both the region level (thick lines with borders) and county level (thin, semi-transparent lines). (B) Cumulative infections over time for agricultural workers (blue) and the general community (red) for the six NAWS regions, with simulations at both the region level (thick lines with borders) and county level (thin, semi-transparent lines). (C) Prevalence ratio between agricultural workers and the general community for the six NAWS regions, with simulations at both the region level (thick lines with borders) and county level (thin, semi-transparent lines). County-level household attributes for agricultural workers are imputed using the "none" method, in which county-level household attributes for agricultural workers are taken to be equal to the regional NAWS value, with no adjustment. 
+**Figure S10. Epidemic trajectories under the "null" county-level imputation method for agricultural worker household characteristics.** (A) Simulated infection prevalence over time for agricultural workers (blue) and the general community (red) for the six NAWS regions, with simulations at both the region level (thick lines with borders) and county level (thin, semi-transparent lines). (B) Cumulative infections over time for agricultural workers (blue) and the general community (red) for the six NAWS regions, with simulations at both the region level (thick lines with borders) and county level (thin, semi-transparent lines). (C) Prevalence ratio between agricultural workers and the general community for the six NAWS regions, with simulations at both the region level (thick lines with borders) and county level (thin, semi-transparent lines). County-level household attributes for agricultural workers are imputed using the "null" method, in which county-level household attributes for agricultural workers are taken to be equal to the regional NAWS value, with no adjustment. 
 
 ![Epidemic none](../../figures/main_overlay_none.png)
 
@@ -340,12 +340,12 @@ To assess the impact of epidemic timing on crop production, we shifted the epide
 | 1.5 | **0.33** | 40% | 2 | 0.050 | 0.083 | 0.2108 | 0.200 |
 | 1.5 | **0.25** | 40% | 2 | 0.050 | 0.083 | 0.2108 | 0.200 |
 | 1.5 | **0.00** | 40% | 2 | 0.050 | 0.083 | 0.2108 | 0.200 |
-| 1.5 | 0.67 | **20%** | 2 | 0.050 | **0.000** | 0.2108 | 0.200 |
-| 1.5 | 0.67 | **30%** | 2 | 0.050 | **0.036** | 0.2108 | 0.200 |
-| 1.5 | 0.67 | **50%** | 2 | 0.050 | **0.150** | 0.2108 | 0.200 |
-| 1.5 | 0.67 | **60%** | 2 | 0.050 | **0.250** | 0.2108 | 0.200 |
-| 1.5 | 0.67 | 40% | **1** | 0.050 | 0.083 | 0.2108 | 0.200 |
-| 1.5 | 0.67 | 40% | **3** | 0.050 | 0.083 | 0.2108 | 0.200 |
+| 1.5 | 0.67 | **20%** | 2 | 0.050 | **0.000** | **0.2142** | 0.200 |
+| 1.5 | 0.67 | **30%** | 2 | 0.050 | **0.036** | **0.2122** | 0.200 |
+| 1.5 | 0.67 | **50%** | 2 | 0.050 | **0.150** | **0.2096** | 0.200 |
+| 1.5 | 0.67 | **60%** | 2 | 0.050 | **0.250** | **0.2086** | 0.200 |
+| 1.5 | 0.67 | 40% | **1** | 0.050 | 0.083 | **0.2113** | 0.200 |
+| 1.5 | 0.67 | 40% | **3** | 0.050 | 0.083 | **0.2103** | 0.200 |
 
 <!-- **Table S3.** Mixing matrix elements by region and assortativity parameter ($\eta$). For each region, $w_A$ is the proportion of the population that are agricultural workers (derived from ACS data). The mixing matrix governs between-household contact patterns: $m_{AA}$ is the fraction of agricultural workers' between-household contacts that are with other agricultural workers, $m_{AC}$ is the fraction with the general community, and vice versa for $m_{CC}$ and $m_{CA}$. Because $w_A$ is small (0.7–2.2%), $m_{AA} \approx \eta$ and $m_{CC} \approx 1$ across all values of $\eta$. At $\eta = 0$ (proportional mixing), agricultural workers have only $w_A$ of contacts within their own group; the baseline $\eta = 2/3$ is highlighted in bold.
 
@@ -447,42 +447,42 @@ To assess the impact of epidemic timing on crop production, we shifted the epide
 | | Southwest | 8.1% | 7.2% | 50 | 51 | 66.6% | 60.2% |
 | | Northwest | 8.3% | 6.9% | 51 | 52 | 69.4% | 59.0% |
 | | California | 10.1% | 8.5% | 45 | 47 | 73.4% | 63.6% |
-| Crowded SAR = 20% | East | 7.7% | 6.0% | 51 | 57 | 67.4% | 56.2% |
-| | Southeast | 7.6% | 5.9% | 51 | 58 | 67.2% | 55.6% |
-| | Midwest | 7.0% | 5.9% | 54 | 57 | 63.2% | 55.7% |
-| | Southwest | 7.7% | 6.7% | 51 | 54 | 65.5% | 58.6% |
-| | Northwest | 8.0% | 6.5% | 50 | 55 | 67.4% | 57.7% |
-| | California | 8.9% | 7.3% | 48 | 51 | 69.6% | 60.8% |
-| Crowded SAR = 30% | East | 8.4% | 6.2% | 48 | 56 | 70.2% | 56.7% |
-| | Southeast | 8.3% | 6.0% | 48 | 57 | 70.2% | 56.1% |
-| | Midwest | 7.3% | 6.0% | 52 | 57 | 64.8% | 56.1% |
-| | Southwest | 8.4% | 7.0% | 48 | 53 | 67.8% | 59.5% |
-| | Northwest | 8.9% | 6.7% | 47 | 54 | 71.0% | 58.4% |
-| | California | 10.2% | 7.9% | 43 | 49 | 73.9% | 62.3% |
-| Crowded SAR = 50% | East | 9.4% | 6.5% | 42 | 54 | 73.3% | 57.5% |
-| | Southeast | 9.4% | 6.3% | 41 | 55 | 73.7% | 56.9% |
-| | Midwest | 7.8% | 6.2% | 49 | 55 | 66.8% | 56.6% |
-| | Southwest | 9.3% | 7.5% | 44 | 50 | 70.6% | 60.7% |
-| | Northwest | 10.3% | 7.1% | 40 | 51 | 75.3% | 59.3% |
-| | California | 12.4% | 8.9% | 35 | 44 | 78.6% | 64.3% |
-| Crowded SAR = 60% | East | 9.8% | 6.6% | 39 | 53 | 74.2% | 57.8% |
-| | Southeast | 9.8% | 6.4% | 39 | 54 | 74.6% | 57.1% |
-| | Midwest | 7.9% | 6.3% | 47 | 55 | 67.4% | 56.8% |
-| | Southwest | 9.6% | 7.7% | 42 | 49 | 71.3% | 61.1% |
-| | Northwest | 10.9% | 7.2% | 37 | 50 | 76.4% | 59.5% |
-| | California | 13.3% | 9.3% | 32 | 42 | 79.8% | 65.0% |
-| $d$ = 1 | East | 8.7% | 6.3% | 46 | 55 | 71.5% | 57.0% |
-| | Southeast | 8.7% | 6.1% | 46 | 56 | 71.7% | 56.4% |
-| | Midwest | 7.5% | 6.1% | 51 | 56 | 65.5% | 56.3% |
-| | Southwest | 8.7% | 7.1% | 47 | 52 | 68.9% | 60.0% |
-| | Northwest | 9.4% | 6.8% | 44 | 53 | 73.0% | 58.7% |
-| | California | 11.0% | 8.3% | 40 | 47 | 76.0% | 63.1% |
-| $d$ = 3 | East | 9.1% | 6.4% | 44 | 55 | 72.3% | 57.3% |
-| | Southeast | 9.1% | 6.2% | 44 | 55 | 72.6% | 56.6% |
-| | Midwest | 7.6% | 6.2% | 50 | 56 | 66.2% | 56.5% |
-| | Southwest | 9.0% | 7.3% | 45 | 51 | 69.7% | 60.3% |
-| | Northwest | 9.8% | 7.0% | 43 | 52 | 73.9% | 59.0% |
-| | California | 11.6% | 8.6% | 38 | 46 | 77.1% | 63.7% |
+| Crowded SAR = 20% | East | 8.1% | 6.3% | 50 | 56 | 68.4% | 57.4% |
+| | Southeast | 8.0% | 6.2% | 50 | 56 | 68.2% | 56.8% |
+| | Midwest | 7.3% | 6.2% | 52 | 56 | 64.2% | 56.9% |
+| | Southwest | 8.1% | 7.0% | 50 | 53 | 66.5% | 59.8% |
+| | Northwest | 8.3% | 6.8% | 49 | 53 | 68.4% | 58.9% |
+| | California | 9.2% | 7.7% | 47 | 50 | 70.5% | 61.8% |
+| Crowded SAR = 30% | East | 8.5% | 6.3% | 47 | 55 | 70.5% | 57.2% |
+| | Southeast | 8.5% | 6.2% | 47 | 56 | 70.6% | 56.6% |
+| | Midwest | 7.4% | 6.2% | 52 | 56 | 65.2% | 56.6% |
+| | Southwest | 8.5% | 7.1% | 48 | 52 | 68.2% | 60.0% |
+| | Northwest | 9.0% | 6.8% | 46 | 53 | 71.4% | 58.9% |
+| | California | 10.4% | 8.1% | 43 | 48 | 74.2% | 62.8% |
+| Crowded SAR = 50% | East | 9.3% | 6.3% | 42 | 55 | 73.0% | 57.1% |
+| | Southeast | 9.3% | 6.2% | 42 | 55 | 73.4% | 56.4% |
+| | Midwest | 7.7% | 6.1% | 49 | 56 | 66.4% | 56.2% |
+| | Southwest | 9.1% | 7.3% | 44 | 50 | 70.3% | 60.3% |
+| | Northwest | 10.2% | 7.0% | 40 | 52 | 75.0% | 58.8% |
+| | California | 12.3% | 8.8% | 36 | 45 | 78.4% | 64.0% |
+| Crowded SAR = 60% | East | 9.5% | 6.4% | 40 | 54 | 73.7% | 57.0% |
+| | Southeast | 9.6% | 6.2% | 39 | 55 | 74.1% | 56.3% |
+| | Midwest | 7.7% | 6.1% | 48 | 56 | 66.8% | 56.1% |
+| | Southwest | 9.3% | 7.4% | 42 | 49 | 70.8% | 60.4% |
+| | Northwest | 10.6% | 7.0% | 37 | 51 | 76.0% | 58.8% |
+| | California | 13.0% | 9.0% | 33 | 43 | 79.4% | 64.4% |
+| $d$ = 1 | East | 8.8% | 6.3% | 46 | 55 | 71.6% | 57.2% |
+| | Southeast | 8.8% | 6.2% | 46 | 56 | 71.8% | 56.6% |
+| | Midwest | 7.5% | 6.1% | 51 | 56 | 65.7% | 56.5% |
+| | Southwest | 8.7% | 7.2% | 47 | 52 | 69.1% | 60.1% |
+| | Northwest | 9.5% | 6.9% | 44 | 53 | 73.1% | 58.9% |
+| | California | 11.1% | 8.3% | 40 | 47 | 76.1% | 63.3% |
+| $d$ = 3 | East | 9.0% | 6.3% | 44 | 55 | 72.2% | 57.1% |
+| | Southeast | 9.0% | 6.2% | 44 | 56 | 72.5% | 56.4% |
+| | Midwest | 7.6% | 6.1% | 50 | 56 | 66.0% | 56.3% |
+| | Southwest | 8.9% | 7.3% | 46 | 51 | 69.6% | 60.2% |
+| | Northwest | 9.7% | 6.9% | 43 | 52 | 73.8% | 58.8% |
+| | California | 11.6% | 8.5% | 38 | 46 | 77.0% | 63.6% |
 
 **Table S4. Differential metrics between agricultural workers and the general community across regions and parameter sets.** Peak prevalence ratio, final size ratio, peak timing difference, and maximum infection prevalence ratio between agricultural workers and the general community.
 
@@ -542,40 +542,40 @@ To assess the impact of epidemic timing on crop production, we shifted the epide
 |  | Southwest | 1.12 | 1.11 | −1 | 1.23 |
 |  | Northwest | 1.21 | 1.18 | −1 | 1.39 |
 |  | California | 1.19 | 1.15 | −2 | 1.37 |
-| Crowded SAR = 20% | East | 1.29 | 1.20 | −6 | 1.82 |
-|  | Southeast | 1.30 | 1.21 | −7 | 1.85 |
-|  | Midwest | 1.18 | 1.13 | −3 | 1.45 |
-|  | Southwest | 1.16 | 1.12 | −3 | 1.41 |
-|  | Northwest | 1.23 | 1.17 | −5 | 1.60 |
-|  | California | 1.21 | 1.15 | −3 | 1.55 |
-| Crowded SAR = 30% | East | 1.36 | 1.24 | −8 | 2.19 |
-|  | Southeast | 1.38 | 1.25 | −9 | 2.28 |
-|  | Midwest | 1.21 | 1.15 | −5 | 1.59 |
-|  | Southwest | 1.20 | 1.14 | −5 | 1.58 |
-|  | Northwest | 1.33 | 1.22 | −7 | 2.02 |
-|  | California | 1.29 | 1.19 | −6 | 1.94 |
-| Crowded SAR = 50% | East | 1.45 | 1.27 | −12 | 3.07 |
-|  | Southeast | 1.50 | 1.30 | −14 | 3.32 |
-|  | Midwest | 1.25 | 1.18 | −6 | 1.88 |
+| Crowded SAR = 20% | East | 1.28 | 1.19 | −6 | 1.80 |
+|  | Southeast | 1.29 | 1.20 | −6 | 1.83 |
+|  | Midwest | 1.17 | 1.13 | −4 | 1.44 |
+|  | Southwest | 1.16 | 1.11 | −3 | 1.41 |
+|  | Northwest | 1.23 | 1.16 | −4 | 1.59 |
+|  | California | 1.20 | 1.14 | −3 | 1.54 |
+| Crowded SAR = 30% | East | 1.35 | 1.23 | −8 | 2.18 |
+|  | Southeast | 1.38 | 1.25 | −9 | 2.27 |
+|  | Midwest | 1.21 | 1.15 | −4 | 1.58 |
+|  | Southwest | 1.20 | 1.14 | −4 | 1.57 |
+|  | Northwest | 1.32 | 1.21 | −7 | 2.01 |
+|  | California | 1.29 | 1.18 | −5 | 1.93 |
+| Crowded SAR = 50% | East | 1.46 | 1.28 | −13 | 3.08 |
+|  | Southeast | 1.51 | 1.30 | −13 | 3.33 |
+|  | Midwest | 1.25 | 1.18 | −7 | 1.89 |
 |  | Southwest | 1.24 | 1.16 | −6 | 1.93 |
-|  | Northwest | 1.46 | 1.27 | −11 | 3.08 |
-|  | California | 1.40 | 1.22 | −9 | 2.84 |
-| Crowded SAR = 60% | East | 1.48 | 1.28 | −14 | 3.52 |
-|  | Southeast | 1.54 | 1.31 | −15 | 3.87 |
-|  | Midwest | 1.26 | 1.19 | −8 | 2.02 |
-|  | Southwest | 1.25 | 1.17 | −7 | 2.10 |
-|  | Northwest | 1.51 | 1.28 | −13 | 3.68 |
-|  | California | 1.43 | 1.23 | −10 | 3.31 |
+|  | Northwest | 1.47 | 1.27 | −12 | 3.09 |
+|  | California | 1.40 | 1.22 | −9 | 2.85 |
+| Crowded SAR = 60% | East | 1.49 | 1.29 | −14 | 3.54 |
+|  | Southeast | 1.55 | 1.32 | −16 | 3.90 |
+|  | Midwest | 1.27 | 1.19 | −8 | 2.03 |
+|  | Southwest | 1.26 | 1.17 | −7 | 2.11 |
+|  | Northwest | 1.52 | 1.29 | −14 | 3.69 |
+|  | California | 1.44 | 1.23 | −10 | 3.33 |
 | $d$ = 1 | East | 1.39 | 1.25 | −9 | 2.46 |
-|  | Southeast | 1.43 | 1.27 | −10 | 2.60 |
-|  | Midwest | 1.23 | 1.16 | −5 | 1.68 |
+|  | Southeast | 1.42 | 1.27 | −10 | 2.60 |
+|  | Midwest | 1.23 | 1.16 | −5 | 1.67 |
 |  | Southwest | 1.22 | 1.15 | −5 | 1.69 |
-|  | Northwest | 1.38 | 1.24 | −9 | 2.38 |
-|  | California | 1.34 | 1.21 | −7 | 2.27 |
+|  | Northwest | 1.38 | 1.24 | −9 | 2.37 |
+|  | California | 1.33 | 1.20 | −7 | 2.26 |
 | $d$ = 3 | East | 1.42 | 1.26 | −11 | 2.70 |
-|  | Southeast | 1.46 | 1.28 | −11 | 2.87 |
+|  | Southeast | 1.46 | 1.28 | −12 | 2.88 |
 |  | Midwest | 1.24 | 1.17 | −6 | 1.77 |
-|  | Southwest | 1.23 | 1.16 | −6 | 1.78 |
+|  | Southwest | 1.23 | 1.16 | −5 | 1.79 |
 |  | Northwest | 1.41 | 1.25 | −9 | 2.59 |
 |  | California | 1.36 | 1.21 | −8 | 2.42 |
 
