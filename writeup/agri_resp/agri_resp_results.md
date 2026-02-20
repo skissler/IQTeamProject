@@ -40,8 +40,8 @@ The simulated outbreaks yielded substantial productivity losses for all three cr
 <!---
 
 2024 California head lettuce value: $1,245,105,000 (https://www.nass.usda.gov/Publications/Todays_Reports/reports/vegean25.pdf)
-2024 California orange value: $852,507,000
-2024 California strawberry value: $3,456,522,000
+2024 California orange value: $852,507,000 (https://www.nass.usda.gov/Publications/Todays_Reports/reports/cfrt0825.pdf)
+2024 California strawberry value: $3,456,522,000 (https://www.nass.usda.gov/Publications/Todays_Reports/reports/ncit0525.pdf)
 
 Losses (p_symp = 0.5, using 2018-2024 averaged movements):
 $21,511,907 strawberries (0.62%, peak day 147)
