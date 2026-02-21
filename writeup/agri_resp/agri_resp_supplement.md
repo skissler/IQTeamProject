@@ -189,10 +189,11 @@ To assess the impact of epidemic timing on crop production, we shifted the epide
 
 **Figure S1. Schematic of the disease transmission model for a household of size 3.** An uncrowded agricultural household of size 3 that begins with all members (discs) susceptible (black) is represented as $H_A(3,0,0,0)$ (top-most household). New infections (downward movements; red discs) can occur at rate $\beta I x + \tau x y$; but since $y = 0$, the force of infection is given fully by the between-household force of infection, $\beta I x$. Once an infection occurs within the household, either a new household member can become infected at rate $\beta I x + \tau x y$ (downward movement), or the initially infected individual can recover (left-to-right movement; blue discs) at rate $\gamma y$. 
 
-<div align="center">
+![Model structure](../../figures/modelstructure.png)
+
+<!-- <div align="center">
   <img src="../../figures/modelstructure.png" width="60%">
-</div>
-<!--- ![Model structure](../../figures/modelstructure.png) --->
+</div> -->
 
 **Figure S2. County-level household crowding distributions for agricultural workers and the general community under three imputation methods** Histograms depict the proportion of households crowded in counties within each of the six NAWS regions, for agricultural workers (blue) and the general community (red). County-level crowding rates for the general community are taken from the ACS. County-level crowding rates for agricultural workers are imputed using three different methods: (A) an additive adjustment, where county-level crowding rates for agricultural workers are shifted by the difference between county-level and regional mean ACS values; (B) a multiplicative adjustment, where county-level crowding rates for agricultural workers are shifted by the ratio between county-level and regional mean ACS values; and (C) no adjustment, where crowding rates across counties for agricultural workers are equal to the regional mean. Red dashed vertical lines indicate the regional ACS mean, and blue dashed vertical lines indicate the regional NAWS estimate for agricultural workers.
 

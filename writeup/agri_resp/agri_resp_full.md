@@ -229,10 +229,11 @@ The simulated outbreaks yielded substantial productivity losses for all three cr
 
 **Figure 3. Simulated impact of a respiratory virus outbreak on harvesting of strawberries, iceberg lettuce, and oranges in California.** (A) Illustration of the approach for calculating harvest impact. Here, an epidemic peaks in the general community on June 1st, leading to a peak in symptomatic disease among agricultural workers a few days earlier. The mean daily production of strawberries (magenta), iceberg lettuce (blue), and oranges (orange), averaged across 2018-2024, are depicted as solid lines. Dashed lines with shading depict the simulated production impact caused by the loss of labor due to symptomatic disease. The total impact (i.e., the area of the shaded regions) is summed across the year, yielding a single point in plot (B) representing the overall impact of an epidemic peaking on June 1. (B) Simulated production impact on strawberries (magenta), iceberg lettuce (blue), and oranges (orange) for epidemics peaking in the general community on each day of the year. These impacts assume that 50% of infections cause symptoms severe enough to cause a worker to miss work. 
 
-<!-- ![Crop impact](../../figures/crop_impact.png) --> 
-<div align="center">
+![Crop impact](../../figures/crop_impact.png)
+
+<!-- <div align="center">
   <img src="../../figures/crop_impact.png" width="50%">
-</div>
+</div> -->
 
 
 
@@ -516,10 +517,11 @@ To assess the impact of epidemic timing on crop production, we shifted the epide
 
 **Figure S1. Schematic of the disease transmission model for a household of size 3.** An uncrowded agricultural household of size 3 that begins with all members (discs) susceptible (black) is represented as $H_A(3,0,0,0)$ (top-most household). New infections (downward movements; red discs) can occur at rate $\beta I x + \tau x y$; but since $y = 0$, the force of infection is given fully by the between-household force of infection, $\beta I x$. Once an infection occurs within the household, either a new household member can become infected at rate $\beta I x + \tau x y$ (downward movement), or the initially infected individual can recover (left-to-right movement; blue discs) at rate $\gamma y$. 
 
-<div align="center">
+![Model structure](../../figures/modelstructure.png)
+
+<!-- <div align="center">
   <img src="../../figures/modelstructure.png" width="60%">
-</div>
-<!--- ![Model structure](../../figures/modelstructure.png) --->
+</div> -->
 
 **Figure S2. County-level household crowding distributions for agricultural workers and the general community under three imputation methods** Histograms depict the proportion of households crowded in counties within each of the six NAWS regions, for agricultural workers (blue) and the general community (red). County-level crowding rates for the general community are taken from the ACS. County-level crowding rates for agricultural workers are imputed using three different methods: (A) an additive adjustment, where county-level crowding rates for agricultural workers are shifted by the difference between county-level and regional mean ACS values; (B) a multiplicative adjustment, where county-level crowding rates for agricultural workers are shifted by the ratio between county-level and regional mean ACS values; and (C) no adjustment, where crowding rates across counties for agricultural workers are equal to the regional mean. Red dashed vertical lines indicate the regional ACS mean, and blue dashed vertical lines indicate the regional NAWS estimate for agricultural workers.
 

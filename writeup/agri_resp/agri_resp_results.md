@@ -29,10 +29,11 @@ The simulated outbreaks yielded substantial productivity losses for all three cr
 
 **Figure 3. Simulated impact of a respiratory virus outbreak on harvesting of strawberries, iceberg lettuce, and oranges in California.** (A) Illustration of the approach for calculating harvest impact. Here, an epidemic peaks in the general community on June 1st, leading to a peak in symptomatic disease among agricultural workers a few days earlier. The mean daily production of strawberries (magenta), iceberg lettuce (blue), and oranges (orange), averaged across 2018-2024, are depicted as solid lines. Dashed lines with shading depict the simulated production impact caused by the loss of labor due to symptomatic disease. The total impact (i.e., the area of the shaded regions) is summed across the year, yielding a single point in plot (B) representing the overall impact of an epidemic peaking on June 1. (B) Simulated production impact on strawberries (magenta), iceberg lettuce (blue), and oranges (orange) for epidemics peaking in the general community on each day of the year. These impacts assume that 50% of infections cause symptoms severe enough to cause a worker to miss work. 
 
-<!-- ![Crop impact](../../figures/crop_impact.png) --> 
-<div align="center">
+![Crop impact](../../figures/crop_impact.png)
+
+<!-- <div align="center">
   <img src="../../figures/crop_impact.png" width="50%">
-</div>
+</div> -->
 
 
 
