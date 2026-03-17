@@ -15,7 +15,12 @@
       "Bash(cd:*)",
       "WebSearch",
       "Bash(pandoc:*)",
-      "Bash(pip3 install:*)"
+      "Bash(pip3 install:*)",
+      "WebFetch(domain:www.ncbi.nlm.nih.gov)",
+      "WebFetch(domain:pmc.ncbi.nlm.nih.gov)",
+      "WebFetch(domain:journals.plos.org)",
+      "WebFetch(domain:www.cambridge.org)",
+      "WebFetch(domain:www.nature.com)"
     ]
   }
 }
