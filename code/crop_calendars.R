@@ -26,6 +26,7 @@
 #   - figures/crop_movements_averaged.pdf - Averaged weekly patterns
 #   - figures/crop_impact_by_peakday.pdf  - Production loss by epidemic timing
 #   - output/crop_impact_summary.csv      - Impact summary table
+#   - output/crop_impact_r0_comparison.csv - Worst-case losses across R0 values
 # ==============================================================================
 
 # Load dependencies (skip if already loaded via run_analysis.R)
@@ -850,3 +851,110 @@ ggsave(file.path(paths$figures_dir, "crop_schematic_june1.pdf"),
 ggsave(file.path(paths$figures_dir, "crop_schematic_june1.png"),
        fig_schematic_june, width = 10, height = 6, dpi = 300)
 cat("  Saved: crop_schematic_june1.pdf/.png\n")
+
+# ==============================================================================
+# 11. Crop Production Loss Comparison Across R0 Values
+# ==============================================================================
+# For each R0 value (1.2, 1.5, 2.0, 3.0), compute worst-case production losses
+# per crop at p_symp = 1, with dollar amounts based on USDA NASS 2024 values.
+# This supports discussion of how pathogen severity scales crop impact.
+
+cat("Computing crop production losses across R0 values...\n")
+
+# USDA NASS 2024 annual crop values for California
+crop_values <- tibble(
+  commodity = c("Strawberries", "Lettuce, Iceberg", "Oranges"),
+  annual_value_usd = c(3456522000, 1245105000, 852507000)
+)
+
+r0_values <- c(1.2, 1.5, 2.0, 3.0)
+
+# Helper: day-of-year to month name
+day_to_month <- function(day) {
+  month_ends <- cumsum(c(31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31))
+  month.name[findInterval(day, c(0, month_ends[-12])) + 1]
+}
+
+r0_impact_list <- lapply(r0_values, function(r0_val) {
+  cat("  Processing R0 =", r0_val, "...\n")
+
+  # Load simulation for this R0
+  sim_file <- file.path(paths$output_dir,
+                        paste0("regional_sim_r0_", r0_val, ".csv"))
+  if (!file.exists(sim_file)) {
+    warning("Simulation file not found for R0 = ", r0_val, ": ", sim_file)
+    return(NULL)
+  }
+  sim_df <- read_csv(sim_file, show_col_types = FALSE)
+
+  # Filter to California (Region 6)
+  sim_ca <- sim_df %>% filter(REGION6 == 6)
+
+  # Compute symptomatic infections (same logic as Section 3)
+  symp_tmp <- sim_ca %>%
+    group_by(subpop) %>%
+    arrange(t) %>%
+    mutate(Inew = lag(S_indiv) - S_indiv) %>%
+    replace_na(list(Inew = 0)) %>%
+    mutate(symp_start = t + 1, symp_end = t + 3) %>%
+    select(subpop, REGION6, Inew, symp_start, symp_end)
+
+  epi_symp <- sim_ca %>%
+    full_join(symp_tmp, by = c("subpop", "REGION6"), relationship = "many-to-many") %>%
+    mutate(tosum = case_when(t >= symp_start & t <= symp_end ~ Inew, TRUE ~ 0)) %>%
+    group_by(t, subpop) %>%
+    summarise(
+      S_indiv = first(S_indiv),
+      I_indiv = first(I_indiv),
+      R_indiv = first(R_indiv),
+      REGION6 = first(REGION6),
+      symp = sum(tosum),
+      .groups = "drop"
+    )
+
+  # Calculate impact for each possible peak day
+  impact_all <- bind_rows(lapply(1:CALENDAR_DAYS, function(pd) {
+    out <- get_impact(pd, avg_movements_daily, epi_symp)
+    out$peakday <- pd
+    return(out)
+  }))
+
+  # For each crop, find the worst-case peak day
+  worst_case <- impact_all %>%
+    group_by(commodity) %>%
+    slice_max(pct_loss, n = 1, with_ties = FALSE) %>%
+    ungroup() %>%
+    mutate(r0 = r0_val) %>%
+    select(r0, commodity, worst_peakday = peakday, pct_loss)
+
+  return(worst_case)
+})
+
+# Combine results across R0 values
+r0_impact_df <- bind_rows(r0_impact_list) %>%
+  mutate(worst_peakday_month = sapply(worst_peakday, day_to_month)) %>%
+  left_join(crop_values, by = "commodity") %>%
+  mutate(dollar_loss_usd = annual_value_usd * pct_loss / 100) %>%
+  arrange(r0, commodity)
+
+# Save CSV
+write_csv(r0_impact_df, file.path(paths$output_dir, "crop_impact_r0_comparison.csv"))
+cat("  Saved: crop_impact_r0_comparison.csv\n")
+
+# Print formatted summary
+cat("\n  Worst-case crop production losses by R0 (p_symp = 1):\n")
+cat("  ", strrep("-", 90), "\n")
+cat(sprintf("  %-5s %-20s %-12s %-10s %-18s %s\n",
+            "R0", "Crop", "Peak Month", "Loss (%)", "Annual Value", "Dollar Loss"))
+cat("  ", strrep("-", 90), "\n")
+for (i in seq_len(nrow(r0_impact_df))) {
+  row <- r0_impact_df[i, ]
+  cat(sprintf("  %-5s %-20s %-12s %-10.2f $%s  $%s\n",
+              format(row$r0, nsmall = 1),
+              row$commodity,
+              row$worst_peakday_month,
+              row$pct_loss,
+              format(row$annual_value_usd, big.mark = ","),
+              format(round(row$dollar_loss_usd), big.mark = ",")))
+}
+cat("  ", strrep("-", 90), "\n")
