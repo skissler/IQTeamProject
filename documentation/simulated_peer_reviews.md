@@ -231,3 +231,52 @@ Based on review of config.R, parameters.R, calibrate_model.R, and sensitivity_an
 ### Overall Assessment
 
 The quantitative methods are sound and carefully implemented. The calibration procedure is internally consistent, the sensitivity analysis is comprehensive within the OAT framework, and the numerical outputs are verified. The main quantitative limitations are the lack of interaction effects in the sensitivity design and the deterministic treatment of a small subpopulation where stochastic effects may be non-negligible. Neither of these invalidates the results, but both should be discussed.
+
+---
+
+## Suggested Pre-Submission Response Plan
+
+The following triages every major concern raised above into one of three categories: fix now (before submission), preempt with a sentence or two of revised text, or defer to the response-to-reviewers letter.
+
+### Tier 1: Fix before submission (quick, high-risk if missing)
+
+1. **Add gamma rows to Table S2.** Purely mechanical. The calibration output already contains the values. The gamma sensitivity changes four parameters simultaneously (tau, tau_boost, beta, gamma), and without these rows readers cannot reproduce the analysis. Estimated effort: 5 minutes.
+
+2. **Acknowledge the operational R0 definition.** Add one sentence to the Supplementary Methods calibration section, e.g.: "We note that this calibration defines R0 operationally via the simple-SIR final size relationship, which is an approximation for the household-structured model; the effective reproduction number of the household model is not identical to that of a simple SIR with the same final size." This preempts a technically minded reviewer from flagging it as an oversight.
+
+3. **Note the OAT limitation in the Discussion.** Add one sentence to the existing limitations paragraph, e.g.: "Our one-at-a-time sensitivity design does not capture potential interactions between parameters; for example, the effect of assortativity may differ at low versus high R0." Quick, honest, and prevents a reviewer from writing a full paragraph about it.
+
+4. **Mention both gamma directions in the Results and fix the notation.** The current text only describes the 10-day result. Add the 3-day finding: "Shorter infectious periods (gamma = 1/3, 3 days) compressed timing differences to 3-6 days, while longer infectious periods (gamma = 1/10, 10 days) expanded them to 10-22 days; epidemic sizes were insensitive to the infectious period in both cases." Also fix "gamma = 10 days" to "a 10-day infectious period (gamma = 1/10)."
+
+### Tier 2: Preempt with revised text (a paragraph of Discussion, no new analysis)
+
+5. **Frame the production loss magnitudes more aggressively.** Reviewer 2's point that 0.50-0.62% is within background variability is legitimate. Two additions to the Discussion would defuse this:
+   - Move the farm-level point out of the buried limitations and into the main Discussion: "These state-level averages mask potentially severe farm-level impacts; individual farms harvesting during concentrated windows could experience losses far exceeding the state mean if an epidemic coincides with their peak harvest."
+   - Add a concrete scaling example: "At R0 = 3.0 with a fully symptomatic pathogen (p_symp = 1), production losses would be roughly 3-4 times larger, reaching approximately 2% of annual harvest for strawberries." (This follows from the linear scaling with p_symp and the higher attack rates at R0 = 3.)
+
+6. **Reframe the unconstrained assortativity as a feature of the sensitivity analysis.** Add a sentence in the Discussion noting that the sensitivity analysis effectively brackets this uncertainty: "The full range of eta from 0 to 0.75 produces peak prevalence ratios from 1.12-1.22 (proportional mixing) to 1.27-1.57 (strong assortativity), allowing readers to select the scenario most consistent with their assumptions about agricultural worker contact patterns." This turns a weakness into a transparent presentation of uncertainty.
+
+### Tier 3: Defer to response-to-reviewers (don't delay submission)
+
+7. **Stochastic modeling (Reviewer 2, major concern 2).** A stochastic household-structured two-population model is a substantial new project, not a revision. The deterministic framework is standard for population-level analyses of this kind. In the text, add one sentence to the limitations: "The deterministic model cannot capture stochastic extinction or variability in epidemic establishment, which may be relevant for the agricultural worker subpopulation given its small size (0.7-2.2% of the regional population); stochastic extensions are an important direction for future work." In the cover letter or response to reviewers, note that stochastic household models with two coupled populations at asymmetric sizes are methodologically complex and represent a natural extension rather than a prerequisite for the current contribution.
+
+8. **Nonlinear labor-production relationship (Reviewer 2, major concern 4).** The linear assumption is transparent and defensible as a first approximation. It is already acknowledged in the limitations. If a reviewer insists, a simple sensitivity analysis on the elasticity (e.g., comparing linear, convex, and concave mappings) could be added in revision without difficulty, but it is not necessary for the core contribution. No action needed before submission beyond the existing limitations text.
+
+9. **Validation against COVID-19 data (Reviewer 2, major concern 7).** This sounds reasonable but is very difficult to execute well. COVID-19 outcomes among agricultural workers were shaped by interventions, behavioral changes, vaccination uptake, and reporting biases -- none of which the model captures by design. A naive comparison would invite more criticism than it resolves. The existing Lusk & Chandra comparison is the appropriate level of engagement. Add one sentence: "Formal validation against observed COVID-19 outcomes would require accounting for behavioral responses, vaccination, and reporting biases, which is beyond the scope of this prospective modeling framework." Save the fuller argument for the response letter.
+
+10. **Novelty concerns (Reviewer 2, major concern 1).** This is a framing issue. The Introduction already makes the case, but sharpen the final paragraph to emphasize that no existing framework translates household-level risk factors into prospective, pathogen-agnostic projections of agricultural workforce impact and downstream food production losses. The COVID-19 literature is retrospective and pathogen-specific; this framework is designed for the next pandemic, whatever it is. The quantitative precision (regional variation, sensitivity to key parameters, crop-specific timing) is the contribution, not the qualitative direction of the effect.
+
+### Summary
+
+| Concern | Action | Effort | When |
+|:---|:---|:---|:---|
+| Table S2 gamma rows | Add rows | 5 min | Now |
+| Operational R0 definition | Add 1 sentence to Supp. Methods | 5 min | Now |
+| OAT limitation | Add 1 sentence to Discussion | 5 min | Now |
+| Gamma results incomplete | Add clause + fix notation | 5 min | Now |
+| Production loss framing | Revise 2-3 sentences in Discussion | 15 min | Now |
+| Assortativity framing | Add 1 sentence to Discussion | 5 min | Now |
+| Stochastic modeling | Add 1 sentence to limitations | 5 min | Now; defer details to response letter |
+| Nonlinear labor-production | No change needed | 0 min | Defer to revision if requested |
+| COVID-19 validation | Add 1 sentence to limitations | 5 min | Now; defer details to response letter |
+| Novelty framing | Sharpen Introduction final paragraph | 10 min | Now |
