@@ -28,8 +28,8 @@
 #   beta values are then used in the full two-population model.
 #
 # Outputs:
-#   - calibrated_betas_df: Data frame (r0, sar_crowded, fold_diff, beta) for
-#     all one-at-a-time sensitivity combinations (28 rows). Written to
+#   - calibrated_betas_df: Data frame (r0, sar_crowded, fold_diff, gamma, beta)
+#     for all one-at-a-time sensitivity combinations (36 rows). Written to
 #     output/calibrated_betas.csv.
 #   - calibrated_betas: Named vector (R0 → beta) for backward compatibility
 #     (baseline SAR/fold only)
@@ -272,8 +272,9 @@ base_pars$tau_boost <- calculate_tau_boost(base_pars$sar_crowded, base_pars$gamm
 #' @param fold_diff Crowding fold difference
 #' @return A copy of base_pars with tau, tau_boost, sar_crowded, and
 #'         crowding_fold_diff updated
-make_calibration_pars <- function(sar_crowded, fold_diff) {
+make_calibration_pars <- function(sar_crowded, fold_diff, gamma = base_pars$gamma) {
   pars <- base_pars
+  pars$gamma <- gamma
   pars$sar_crowded <- sar_crowded
   pars$crowding_fold_diff <- fold_diff
   pars$tau <- calculate_tau(pars$sar_uncrowded, pars$gamma)
@@ -394,19 +395,23 @@ run_calibration_sim <- function(pars, nat_data) {
 r0_targets <- c(1.2, 1.5, 2.0, 3.0)
 sar_crowded_values <- c(0.20, 0.30, 0.40, 0.50, 0.60)
 fold_diff_values <- c(1, 2, 3)
+gamma_values <- c(1/3, 1/5, 1/10)
 
 # Build one-at-a-time calibration grid
 calibration_grid <- expand.grid(
   r0 = r0_targets,
   sar_crowded = sar_crowded_values,
   fold_diff = fold_diff_values,
+  gamma = gamma_values,
   stringsAsFactors = FALSE
 ) %>%
-  # Keep rows where at most one of SAR/fold differs from baseline
+  # Keep rows where at most one of SAR/fold/gamma differs from baseline
   filter(
-    (sar_crowded == default_pars$sar_crowded) | (fold_diff == default_pars$crowding_fold_diff)
+    (sar_crowded != default_pars$sar_crowded) +
+    (fold_diff != default_pars$crowding_fold_diff) +
+    (abs(gamma - default_pars$gamma) > 1e-10) <= 1
   ) %>%
-  arrange(sar_crowded, fold_diff, r0)
+  arrange(sar_crowded, fold_diff, gamma, r0)
 
 cat("\n========================================\n")
 cat("Starting Calibration via Bisection Search\n")
@@ -414,6 +419,7 @@ cat("========================================\n")
 cat("R0 targets:", paste(r0_targets, collapse = ", "), "\n")
 cat("SAR crowded values:", paste(sar_crowded_values, collapse = ", "), "\n")
 cat("Fold diff values:", paste(fold_diff_values, collapse = ", "), "\n")
+cat("Gamma values:", paste(round(gamma_values, 4), collapse = ", "), "\n")
 cat("Total calibrations:", nrow(calibration_grid), "\n")
 cat("Convergence tolerance: 0.0005\n")
 cat("========================================\n\n")
@@ -425,15 +431,16 @@ calibration_results <- vector("list", nrow(calibration_grid))
 
 for (i in seq_len(nrow(calibration_grid))) {
   row <- calibration_grid[i, ]
-  cal_pars <- make_calibration_pars(row$sar_crowded, row$fold_diff)
+  cal_pars <- make_calibration_pars(row$sar_crowded, row$fold_diff, row$gamma)
 
-  cat(sprintf("\n--- Grid row %d/%d: R0=%.1f, SAR_crowded=%.2f, fold_diff=%d ---\n",
-              i, nrow(calibration_grid), row$r0, row$sar_crowded, row$fold_diff))
+  cat(sprintf("\n--- Grid row %d/%d: R0=%.1f, SAR_crowded=%.2f, fold_diff=%d, gamma=%.4f ---\n",
+              i, nrow(calibration_grid), row$r0, row$sar_crowded, row$fold_diff, row$gamma))
 
   result <- calibrate_beta(row$r0, cal_pars, nat_data, tol = 0.0005)
 
   result$sar_crowded <- row$sar_crowded
   result$fold_diff <- row$fold_diff
+  result$gamma <- row$gamma
   calibration_results[[i]] <- result
 }
 
@@ -442,6 +449,7 @@ calibrated_betas_df <- tibble(
   r0 = sapply(calibration_results, `[[`, "r0"),
   sar_crowded = sapply(calibration_results, `[[`, "sar_crowded"),
   fold_diff = sapply(calibration_results, `[[`, "fold_diff"),
+  gamma = sapply(calibration_results, `[[`, "gamma"),
   beta = sapply(calibration_results, `[[`, "beta"),
   target_final_size = sapply(calibration_results, `[[`, "target_final_size"),
   simulated_final_size = sapply(calibration_results, `[[`, "simulated_final_size"),
@@ -451,10 +459,11 @@ calibrated_betas_df <- tibble(
 # Write to CSV
 write_csv(calibrated_betas_df, file.path(paths$output_dir, "calibrated_betas.csv"))
 
-# Backward-compatible named vector (baseline SAR + fold only)
+# Backward-compatible named vector (baseline SAR + fold + gamma only)
 baseline_rows <- calibrated_betas_df %>%
   filter(sar_crowded == default_pars$sar_crowded,
-         fold_diff == default_pars$crowding_fold_diff)
+         fold_diff == default_pars$crowding_fold_diff,
+         abs(gamma - default_pars$gamma) < 1e-10)
 calibrated_betas <- setNames(baseline_rows$beta, as.character(baseline_rows$r0))
 
 # ==============================================================================
@@ -464,14 +473,14 @@ calibrated_betas <- setNames(baseline_rows$beta, as.character(baseline_rows$r0))
 cat("\n========================================\n")
 cat("Calibration Results Summary\n")
 cat("========================================\n")
-cat(sprintf("%-6s %-10s %-6s %-12s %-12s %-12s %-12s %-6s\n",
-            "R0", "SAR_crow", "fold", "beta", "beta/gamma", "target", "sim_size", "iters"))
-cat(strrep("-", 80), "\n")
+cat(sprintf("%-6s %-10s %-6s %-8s %-12s %-12s %-12s %-12s %-6s\n",
+            "R0", "SAR_crow", "fold", "gamma", "beta", "beta/gamma", "target", "sim_size", "iters"))
+cat(strrep("-", 90), "\n")
 for (i in seq_len(nrow(calibrated_betas_df))) {
   row <- calibrated_betas_df[i, ]
-  cat(sprintf("%-6.1f %-10.2f %-6d %-12.4f %-12.4f %-12.4f %-12.4f %-6d\n",
-              row$r0, row$sar_crowded, row$fold_diff,
-              row$beta, row$beta / base_pars$gamma,
+  cat(sprintf("%-6.1f %-10.2f %-6d %-8.4f %-12.4f %-12.4f %-12.4f %-12.4f %-6d\n",
+              row$r0, row$sar_crowded, row$fold_diff, row$gamma,
+              row$beta, row$beta / row$gamma,
               row$target_final_size, row$simulated_final_size, row$iterations))
 }
 cat("========================================\n")

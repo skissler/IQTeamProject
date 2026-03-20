@@ -7,6 +7,8 @@
 #   2. Assortativity (eta = 1-eps): 0, 1/4, 1/3, 1/2, 2/3 (baseline), 3/4
 #   3. SAR in crowded households: 30%, 40% (baseline), 50%, 60%
 #   4. Crowding fold difference: 1, 2 (baseline), 3
+#   5. Gamma (recovery rate): 1/3, 1/5 (baseline), 1/10
+#   6. Seed target: C only, both (baseline), A only
 #
 # Baseline values are defined in config.R (default_pars)
 #
@@ -159,7 +161,9 @@ baseline_values <- list(
   r0 = default_pars$r0,
   eps = default_pars$eps,
   sar = default_pars$sar_crowded,
-  fold = default_pars$crowding_fold_diff
+  fold = default_pars$crowding_fold_diff,
+  gamma = default_pars$gamma,
+  seed = 2                        # Numeric code: 1=C only, 2=Both (baseline), 3=A only
 )
 
 #' Prepare data for sensitivity plotting
@@ -169,7 +173,7 @@ baseline_values <- list(
 #' to that dimension's baseline parameter value.
 #'
 #' @param df Data frame with sens_type, sens_value, parset_name columns
-#' @param sens_dimension Which dimension to prepare ("r0", "eps", "sar", "fold")
+#' @param sens_dimension Which dimension to prepare ("r0", "eps", "sar", "fold", "gamma")
 #' @return Data frame ready for plotting with correct sens_value for x-axis
 prepare_sensitivity_data <- function(df, sens_dimension) {
   baseline_parset <- paste0("r0_", default_pars$r0)
@@ -210,6 +214,20 @@ prepare_sensitivity_data <- function(df, sens_dimension) {
       mutate(sens_value = round(1 - sens_value, 2))
   }
 
+  # Transform gamma → infectious period in days (1/gamma) for display
+  if (sens_dimension == "gamma") {
+    result <- result %>%
+      mutate(sens_value = round(1 / sens_value))
+  }
+
+  # Transform seed numeric codes → labels for display
+  if (sens_dimension == "seed") {
+    seed_labels <- c("1" = "C only", "2" = "Both", "3" = "A only")
+    result <- result %>%
+      mutate(sens_value = factor(seed_labels[as.character(sens_value)],
+                                 levels = c("C only", "Both", "A only")))
+  }
+
   return(result)
 }
 
@@ -219,8 +237,9 @@ prepare_sensitivity_data <- function(df, sens_dimension) {
 #' @return ggplot object (faceted)
 plot_sensitivity_overview <- function(diff_df, metric = "attack_rate_diff") {
 
-  # Combine data from all sensitivity dimensions with correct baseline mappings
-  sens_dimensions <- c("r0", "eps", "sar", "fold")
+  # Combine data from all numeric sensitivity dimensions with correct baseline mappings
+  # (seed is excluded: categorical dimension, plotted separately via individual plots)
+  sens_dimensions <- c("r0", "eps", "sar", "fold", "gamma")
   plot_data <- bind_rows(
     lapply(sens_dimensions, function(dim) prepare_sensitivity_data(diff_df, dim))
   ) %>%
@@ -230,11 +249,15 @@ plot_sensitivity_overview <- function(diff_df, metric = "attack_rate_diff") {
         sens_type == "eps" ~ "Assortativity (eta)",
         sens_type == "sar" ~ "SAR (Crowded)",
         sens_type == "fold" ~ "Crowding Fold",
+        sens_type == "gamma" ~ "Infectious Period (days)",
+        sens_type == "seed" ~ "Seed Target",
         TRUE ~ sens_type
       ),
       sens_type_label = factor(sens_type_label,
                                levels = c("R0", "Assortativity (eta)",
-                                          "SAR (Crowded)", "Crowding Fold"))
+                                          "SAR (Crowded)", "Crowding Fold",
+                                          "Infectious Period (days)",
+                                          "Seed Target"))
     ) %>%
     # Create numeric x for proper line connections within each facet
     group_by(sens_type) %>%
@@ -302,7 +325,7 @@ plot_epidemic_curves <- function(all_data, sens_dimension, region = 1) {
     labs(
       x = "Time (days)",
       y = "Proportion Infected",
-      color = paste0(c("r0" = "R0", "eps" = "eta", "sar" = "SAR", "fold" = "FOLD")[sens_dimension], " Value"),
+      color = paste0(c("r0" = "R0", "eps" = "eta", "sar" = "SAR", "fold" = "FOLD", "gamma" = "Infectious Period (days)", "seed" = "Seed Target")[sens_dimension], " Value"),
       linetype = "Population",
       title = paste("Epidemic Curves - Region", region)
     ) +
@@ -327,7 +350,9 @@ plot_epidemic_curves_all_regions <- function(all_data, sens_dimension, metric = 
     "r0" = "R0",
     "eps" = "Assortativity (eta)",
     "sar" = "SAR (Crowded)",
-    "fold" = "Crowding Fold Diff."
+    "fold" = "Crowding Fold Diff.",
+    "gamma" = "Infectious Period (days)",
+    "seed" = "Seed Target"
   )
 
   metric_labels <- c(
@@ -388,7 +413,9 @@ plot_relative_infection_all_regions <- function(all_data, sens_dimension) {
     "r0" = "R0",
     "eps" = "Assortativity (eta)",
     "sar" = "SAR (Crowded)",
-    "fold" = "Crowding Fold Diff."
+    "fold" = "Crowding Fold Diff.",
+    "gamma" = "Infectious Period (days)",
+    "seed" = "Seed Target"
   )
 
   # Use helper to get data with correctly mapped baseline values
@@ -514,7 +541,7 @@ run_sensitivity_analysis <- function() {
   cat("  Saved: sensitivity_overview_attack_rate_ratio.pdf/.png\n")
 
   # Individual sensitivity dimension plots
-  sens_dimensions <- c("r0", "eps", "sar", "fold")
+  sens_dimensions <- c("r0", "eps", "sar", "fold", "gamma", "seed")
 
   for (sens_dim in sens_dimensions) {
     # Check if data exists for this dimension (handle NA values)

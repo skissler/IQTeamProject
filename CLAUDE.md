@@ -73,6 +73,8 @@ Defines 14 parameter configurations for one-at-a-time sensitivity analysis acros
 2. **Assortativity (η):** 0, 1/4, 1/3, 1/2, 2/3 **(baseline)**, 3/4
 3. **SAR in crowded households:** 20%, 30%, 40% **(baseline)**, 50%, 60%
 4. **Crowding fold difference:** 1, 2 **(baseline)**, 3
+5. **Gamma (recovery rate):** 1/3 (~3-day infectious period), 1/5 **(baseline, ~5-day)**, 1/10 (~10-day)
+6. **Seed target:** C only, both **(baseline)**, A only — which subpopulation(s) receive initial infections
 
 **Key Parameters:**
 
@@ -95,6 +97,8 @@ Defines 14 parameter configurations for one-at-a-time sensitivity analysis acros
 - `eps_0`, `eps_0.5`, etc. - Assortativity sensitivity runs
 - `sar_0.3`, `sar_0.5`, etc. - Crowded household SAR sensitivity runs
 - `fold_1`, `fold_3` - Crowding fold difference sensitivity runs
+- `gamma_0.3333`, `gamma_0.1` - Infectious period sensitivity runs
+- `seed_1`, `seed_3` - Seed target sensitivity runs (1=C only, 3=A only; baseline=2=both)
 
 ### Sensitivity Analysis (`code/sensitivity_analysis.R`)
 Loads all regional simulation outputs and generates comparative summaries:

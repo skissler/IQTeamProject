@@ -135,15 +135,19 @@ results_list <- future_lapply(GEOID_vec, function(geoid) {
   ic_joiner_A <- naws_data_processed %>%
     make_ic_joiner(fold_diff = crowding_fold_diff)
 
+  # Backward compatibility: derive per-subpop init_prev if not provided
+  if (!exists("init_prev_C")) init_prev_C <- init_prev
+  if (!exists("init_prev_A")) init_prev_A <- init_prev
+
   # Adjust the ic joiners to reflect initial infected
   ic_joiner_A_inf <- ic_joiner_A %>%
-    mutate(frac = init_prev * frac * hh_size) %>%
+    mutate(frac = init_prev_A * frac * hh_size) %>%
     mutate(y = y + 1, x = x - 1)
   ic_joiner_A$frac <- ic_joiner_A$frac - ic_joiner_A_inf$frac
   ic_joiner_A <- bind_rows(ic_joiner_A, ic_joiner_A_inf)
 
   ic_joiner_C_inf <- ic_joiner_C %>%
-    mutate(frac = init_prev * frac * hh_size) %>%
+    mutate(frac = init_prev_C * frac * hh_size) %>%
     mutate(y = y + 1, x = x - 1)
   ic_joiner_C$frac <- ic_joiner_C$frac - ic_joiner_C_inf$frac
   ic_joiner_C <- bind_rows(ic_joiner_C, ic_joiner_C_inf)

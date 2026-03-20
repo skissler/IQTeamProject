@@ -8,6 +8,8 @@
 #   2. Assortativity (eta = 1-eps): 0, 1/4, 1/3, 1/2, 2/3 (baseline), 3/4
 #   3. SAR in crowded households: 20%, 30%, 40% (baseline), 50%, 60%
 #   4. Crowding fold difference: 1, 2 (baseline), 3
+#   5. Gamma (recovery rate): 1/3, 1/5 (baseline), 1/10
+#   6. Seed target: C only, both (baseline), A only
 #
 # Baseline parameters are defined in config.R (default_pars)
 # ==============================================================================
@@ -32,17 +34,18 @@ if (!exists("calibrated_betas") || !exists("calibrated_betas_df")) {
 #' @param sar_crowded SAR for crowded households
 #' @param fold_diff Crowding fold difference
 #' @return Calibrated beta value
-lookup_beta <- function(df, r0, sar_crowded, fold_diff) {
-  row <- df[df$r0 == r0 & df$sar_crowded == sar_crowded & df$fold_diff == fold_diff, ]
+lookup_beta <- function(df, r0, sar_crowded, fold_diff, gamma = default_pars$gamma) {
+  row <- df[df$r0 == r0 & df$sar_crowded == sar_crowded &
+            df$fold_diff == fold_diff & abs(df$gamma - gamma) < 1e-10, ]
   if (nrow(row) == 0) {
-    stop(sprintf("No calibrated beta found for r0=%.1f, sar_crowded=%.2f, fold_diff=%d",
-                 r0, sar_crowded, fold_diff))
+    stop(sprintf("No calibrated beta found for r0=%.1f, sar_crowded=%.2f, fold_diff=%d, gamma=%.4f",
+                 r0, sar_crowded, fold_diff, gamma))
   }
   row$beta[1]
 }
 
 #' Create a parameter set with descriptive naming
-#' @param sens_type Character. Sensitivity dimension: "r0", "eps", "sar", "fold"
+#' @param sens_type Character. Sensitivity dimension: "r0", "eps", "sar", "fold", "gamma", "seed"
 #' @param sens_value Numeric. The value being varied for this sensitivity
 #' @param parset Numeric. Unique parameter set ID
 #' @param gamma Recovery rate (1/infectious period)
@@ -54,15 +57,21 @@ lookup_beta <- function(df, r0, sar_crowded, fold_diff) {
 #' @param max_hh_size Maximum household size modeled
 #' @param adjust_hhvars How to adjust HH vars: "none", "multiplicative", or "additive"
 #' @param init_prev Initial prevalence
+#' @param seed_target Which subpopulations to seed: "both", "A", or "C"
 #' @return Named list with all parameters and metadata
 create_parset <- function(sens_type, sens_value, parset,
                           gamma, sar_uncrowded, sar_crowded,
                           beta, eps, crowding_fold_diff,
-                          max_hh_size, adjust_hhvars, init_prev) {
+                          max_hh_size, adjust_hhvars, init_prev,
+                          seed_target = "both") {
 
   # Compute tau and tau_boost from SAR values
   tau <- calculate_tau(sar_uncrowded, gamma)
   tau_boost <- calculate_tau_boost(sar_crowded, gamma, tau)
+
+  # Derive per-subpopulation initial prevalence from seed_target
+  init_prev_A <- if (seed_target %in% c("both", "A")) init_prev else 0
+  init_prev_C <- if (seed_target %in% c("both", "C")) init_prev else 0
 
   list(
     # Metadata for tracking
@@ -86,7 +95,10 @@ create_parset <- function(sens_type, sens_value, parset,
 
     # Simulation settings
     adjust_hhvars = adjust_hhvars,
-    init_prev = init_prev
+    init_prev = init_prev,
+    seed_target = seed_target,
+    init_prev_A = init_prev_A,       # Derived from seed_target
+    init_prev_C = init_prev_C        # Derived from seed_target
   )
 }
 
@@ -100,6 +112,7 @@ r0_values <- c(1.2, 1.5, 2.0, 3.0)
 eps_values <- c(1/4, 1/3, 1/2, 2/3, 3/4, 1)
 sar_crowded_values <- c(0.20, 0.30, 0.40, 0.50, 0.60)
 fold_diff_values <- c(1, 2, 3)
+gamma_values <- c(1/3, 1/5, 1/10)
 
 # ==============================================================================
 # Generate Parameter Sets
@@ -189,6 +202,53 @@ for (fold in fold_diff_values[fold_diff_values != default_pars$crowding_fold_dif
   )
 }
 
+# --- Gamma (Recovery Rate / Infectious Period) Sensitivity ---
+# Skip baseline gamma (1/5) since it's already in R0 sensitivity at baseline R0
+# Beta is recalibrated for each gamma value to hold R0 constant
+for (gam in gamma_values[abs(gamma_values - default_pars$gamma) > 1e-10]) {
+  parset_counter <- parset_counter + 1
+  pars_list[[parset_counter]] <- create_parset(
+    sens_type = "gamma",
+    sens_value = gam,
+    parset = parset_counter,
+    gamma = gam,
+    sar_uncrowded = default_pars$sar_uncrowded,
+    sar_crowded = default_pars$sar_crowded,
+    beta = lookup_beta(calibrated_betas_df, default_pars$r0,
+                       default_pars$sar_crowded, default_pars$crowding_fold_diff, gam),
+    eps = default_pars$eps,
+    crowding_fold_diff = default_pars$crowding_fold_diff,
+    max_hh_size = default_pars$max_hh_size,
+    adjust_hhvars = default_pars$adjust_hhvars,
+    init_prev = default_pars$init_prev
+  )
+}
+
+# --- Seed Target (Initial Infection Source) Sensitivity ---
+# Baseline seeds both subpopulations. Compare with seeding only A or only C.
+# Numeric encoding: 1 = C only, 2 = Both (baseline), 3 = A only
+# No recalibration needed — seeding doesn't affect beta calibration.
+seed_targets <- c("C", "A")  # "both" is the baseline, already in R0 sensitivity
+seed_codes <- c("C" = 1, "both" = 2, "A" = 3)
+for (st in seed_targets) {
+  parset_counter <- parset_counter + 1
+  pars_list[[parset_counter]] <- create_parset(
+    sens_type = "seed",
+    sens_value = seed_codes[[st]],
+    parset = parset_counter,
+    gamma = default_pars$gamma,
+    sar_uncrowded = default_pars$sar_uncrowded,
+    sar_crowded = default_pars$sar_crowded,
+    beta = calibrated_betas[as.character(default_pars$r0)],
+    eps = default_pars$eps,
+    crowding_fold_diff = default_pars$crowding_fold_diff,
+    max_hh_size = default_pars$max_hh_size,
+    adjust_hhvars = default_pars$adjust_hhvars,
+    init_prev = default_pars$init_prev,
+    seed_target = st
+  )
+}
+
 # ==============================================================================
 # Parameter Set Metadata Table
 # ==============================================================================
@@ -247,6 +307,8 @@ cat("  - R0 sensitivity:", sum(pars_metadata$sens_type == "r0"), "sets\n")
 cat("  - Assortativity (eps) sensitivity:", sum(pars_metadata$sens_type == "eps"), "sets\n")
 cat("  - SAR (crowded) sensitivity:", sum(pars_metadata$sens_type == "sar"), "sets\n")
 cat("  - Crowding fold difference sensitivity:", sum(pars_metadata$sens_type == "fold"), "sets\n")
+cat("  - Gamma (infectious period) sensitivity:", sum(pars_metadata$sens_type == "gamma"), "sets\n")
+cat("  - Seed target sensitivity:", sum(pars_metadata$sens_type == "seed"), "sets\n")
 cat("\nBaseline parameters (", baseline_pars$parset_name, "):\n", sep = "")
 cat("  R0 = ", default_pars$r0, ", eps = ", default_pars$eps,
     ", SAR_crowded = ", default_pars$sar_crowded * 100, "%",

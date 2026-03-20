@@ -78,7 +78,8 @@ default_pars <- list(
   #   "multiplicative" - Multiply NAWS by (county_ACS / regional_ACS_mean)
   #   "additive"       - Add (county_ACS - regional_ACS_mean) to NAWS
   adjust_hhvars = "additive",
-  init_prev = 0.001             # Initial prevalence (0.1% of population infected)
+  init_prev = 0.001,            # Initial prevalence (0.1% of population infected)
+  seed_target = "both"          # Which subpop to seed: "both", "A", or "C"
 )
 
 # ==============================================================================
