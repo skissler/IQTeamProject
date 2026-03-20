@@ -249,14 +249,14 @@ plot_sensitivity_overview <- function(diff_df, metric = "attack_rate_diff") {
         sens_type == "eps" ~ "Assortativity (eta)",
         sens_type == "sar" ~ "SAR (Crowded)",
         sens_type == "fold" ~ "Crowding Fold",
-        sens_type == "gamma" ~ "Infectious Period (days)",
+        sens_type == "gamma" ~ "Infectious Period",
         sens_type == "seed" ~ "Seed Target",
         TRUE ~ sens_type
       ),
       sens_type_label = factor(sens_type_label,
                                levels = c("R0", "Assortativity (eta)",
                                           "SAR (Crowded)", "Crowding Fold",
-                                          "Infectious Period (days)",
+                                          "Infectious Period",
                                           "Seed Target"))
     ) %>%
     # Create numeric x for proper line connections within each facet
@@ -325,7 +325,7 @@ plot_epidemic_curves <- function(all_data, sens_dimension, region = 1) {
     labs(
       x = "Time (days)",
       y = "Proportion Infected",
-      color = paste0(c("r0" = "R0", "eps" = "eta", "sar" = "SAR", "fold" = "FOLD", "gamma" = "Infectious Period (days)", "seed" = "Seed Target")[sens_dimension], " Value"),
+      color = paste0(c("r0" = "R0", "eps" = "eta", "sar" = "SAR", "fold" = "FOLD", "gamma" = "Infectious Period", "seed" = "Seed Target")[sens_dimension], " Value"),
       linetype = "Population",
       title = paste("Epidemic Curves - Region", region)
     ) +
@@ -351,7 +351,7 @@ plot_epidemic_curves_all_regions <- function(all_data, sens_dimension, metric = 
     "eps" = "Assortativity (eta)",
     "sar" = "SAR (Crowded)",
     "fold" = "Crowding Fold Diff.",
-    "gamma" = "Infectious Period (days)",
+    "gamma" = "Infectious Period",
     "seed" = "Seed Target"
   )
 
@@ -414,7 +414,7 @@ plot_relative_infection_all_regions <- function(all_data, sens_dimension) {
     "eps" = "Assortativity (eta)",
     "sar" = "SAR (Crowded)",
     "fold" = "Crowding Fold Diff.",
-    "gamma" = "Infectious Period (days)",
+    "gamma" = "Infectious Period",
     "seed" = "Seed Target"
   )
 

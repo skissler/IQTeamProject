@@ -484,6 +484,30 @@ To assess the impact of epidemic timing on crop production, we shifted the epide
 | | Southwest | 8.9% | 7.3% | 46 | 51 | 69.6% | 60.2% |
 | | Northwest | 9.7% | 6.9% | 43 | 52 | 73.8% | 58.8% |
 | | California | 11.6% | 8.5% | 38 | 46 | 77.0% | 63.6% |
+| $\gamma$ = 1/3 (3 days) | East | 8.9% | 6.3% | 27 | 33 | 72.1% | 57.2% |
+| | Southeast | 8.9% | 6.2% | 27 | 33 | 72.3% | 56.5% |
+| | Midwest | 7.6% | 6.1% | 30 | 34 | 65.9% | 56.4% |
+| | Southwest | 8.9% | 7.2% | 28 | 31 | 69.4% | 60.2% |
+| | Northwest | 9.7% | 6.9% | 26 | 31 | 73.6% | 58.9% |
+| | California | 11.4% | 8.5% | 23 | 28 | 76.7% | 63.5% |
+| $\gamma$ = 1/10 (10 days) | East | 8.9% | 6.3% | 89 | 110 | 72.1% | 57.2% |
+| | Southeast | 8.9% | 6.2% | 89 | 111 | 72.3% | 56.5% |
+| | Midwest | 7.6% | 6.1% | 101 | 112 | 65.9% | 56.4% |
+| | Southwest | 8.9% | 7.2% | 92 | 102 | 69.4% | 60.2% |
+| | Northwest | 9.7% | 6.9% | 86 | 105 | 73.6% | 58.9% |
+| | California | 11.4% | 8.5% | 78 | 93 | 76.7% | 63.5% |
+| Seed: C only | East | 8.9% | 6.3% | 45 | 55 | 72.1% | 57.2% |
+| | Southeast | 8.9% | 6.2% | 44 | 56 | 72.3% | 56.5% |
+| | Midwest | 7.6% | 6.1% | 50 | 56 | 65.9% | 56.4% |
+| | Southwest | 8.9% | 7.2% | 46 | 51 | 69.4% | 60.2% |
+| | Northwest | 9.7% | 6.9% | 43 | 52 | 73.6% | 58.9% |
+| | California | 11.4% | 8.4% | 39 | 47 | 76.7% | 63.5% |
+| Seed: A only | East | 8.9% | 6.3% | 45 | 55 | 72.1% | 57.2% |
+| | Southeast | 8.9% | 6.2% | 44 | 56 | 72.3% | 56.5% |
+| | Midwest | 7.6% | 6.1% | 50 | 56 | 65.9% | 56.4% |
+| | Southwest | 8.9% | 7.2% | 46 | 51 | 69.4% | 60.2% |
+| | Northwest | 9.7% | 6.9% | 43 | 52 | 73.6% | 58.9% |
+| | California | 11.4% | 8.4% | 39 | 47 | 76.7% | 63.5% |
 
 **Table S4. Differential metrics between agricultural workers and the general community across regions and parameter sets.** Peak prevalence ratio, final size ratio, peak timing difference, and maximum infection prevalence ratio between agricultural workers and the general community.
 
@@ -579,6 +603,30 @@ To assess the impact of epidemic timing on crop production, we shifted the epide
 |  | Southwest | 1.23 | 1.16 | −5 | 1.79 |
 |  | Northwest | 1.41 | 1.25 | −9 | 2.59 |
 |  | California | 1.36 | 1.21 | −8 | 2.42 |
+| $\gamma$ = 1/3 (3 days) | East | 1.41 | 1.26 | −6 | 2.62 |
+|  | Southeast | 1.45 | 1.28 | −6 | 2.78 |
+|  | Midwest | 1.24 | 1.17 | −4 | 1.73 |
+|  | Southwest | 1.22 | 1.15 | −3 | 1.75 |
+|  | Northwest | 1.40 | 1.25 | −5 | 2.52 |
+|  | California | 1.35 | 1.21 | −5 | 2.38 |
+| $\gamma$ = 1/10 (10 days) | East | 1.41 | 1.26 | −21 | 2.62 |
+|  | Southeast | 1.45 | 1.28 | −22 | 2.78 |
+|  | Midwest | 1.24 | 1.17 | −11 | 1.74 |
+|  | Southwest | 1.23 | 1.15 | −10 | 1.75 |
+|  | Northwest | 1.40 | 1.25 | −19 | 2.52 |
+|  | California | 1.35 | 1.21 | −15 | 2.38 |
+| Seed: C only | East | 1.41 | 1.26 | −10 | 2.62 |
+|  | Southeast | 1.45 | 1.28 | −12 | 2.78 |
+|  | Midwest | 1.24 | 1.17 | −6 | 1.74 |
+|  | Southwest | 1.23 | 1.15 | −5 | 1.75 |
+|  | Northwest | 1.40 | 1.25 | −9 | 2.52 |
+|  | California | 1.35 | 1.21 | −8 | 2.38 |
+| Seed: A only | East | 1.41 | 1.26 | −10 | 2.62 |
+|  | Southeast | 1.45 | 1.28 | −12 | 2.78 |
+|  | Midwest | 1.24 | 1.17 | −6 | 1.74 |
+|  | Southwest | 1.23 | 1.15 | −5 | 1.75 |
+|  | Northwest | 1.40 | 1.25 | −9 | 2.52 |
+|  | California | 1.35 | 1.21 | −8 | 2.38 |
 
 **Table S5. Estimated harvest-related crop production losses due to epidemic-induced workforce illness.** For each crop, we report the worst-case epidemic peak timing (the day of the year on which the community symptomatic peak would cause the largest production loss), the corresponding maximum production loss as a percentage of total annual production, and the estimated dollar value of that loss based on 2024 California crop values. Values assume half of all infections are sufficiently symptomatic to cause missed work ($p_\text{symp} = 0.5$). 
 
