@@ -1,0 +1,10 @@
+name: ag-epi-model
+title:
+username: kisslerlab
+account: kisslerlab
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 16955631
+bundleId: 11745011
+url: https://kisslerlab.shinyapps.io/ag-epi-model/
+version: 1

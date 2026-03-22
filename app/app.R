@@ -18,6 +18,10 @@ library(shiny)
 library(tidyverse)
 library(odin)
 library(plotly)
+library(markdown)
+library(patchwork)
+library(pkgbuild)
+library(pkgload)
 
 # ==============================================================================
 # Load Bundled Data
@@ -38,18 +42,26 @@ region_order <- c("East", "Southeast", "Midwest", "Southwest", "Northwest", "Cal
 # Full grid of (R0, SAR, fold_diff) -> beta for recalibrated sensitivity runs
 calibrated_betas_df <- read_csv("data/calibrated_betas.csv", show_col_types = FALSE)
 
-#' Look up calibrated beta using nearest match on SAR and fold_diff
+#' Look up calibrated beta using exact match on all dimensions
 #'
-#' @param df Data frame with columns r0, sar_crowded, fold_diff, beta
-#' @param r0 Target R0 (exact match on discrete values)
+#' @param df Data frame with columns r0, sar_crowded, fold_diff, gamma, beta
+#' @param r0 Target R0
 #' @param sar_crowded SAR for crowded households
 #' @param fold_diff Crowding fold difference
-#' @return Calibrated beta value (nearest match)
-lookup_beta_app <- function(df, r0, sar_crowded, fold_diff) {
-  df_r0 <- df[df$r0 == as.numeric(r0), ]
-  if (nrow(df_r0) == 0) stop("No calibrated beta found for R0 = ", r0)
-  df_r0$dist <- abs(df_r0$sar_crowded - sar_crowded) + abs(df_r0$fold_diff - fold_diff)
-  df_r0$beta[which.min(df_r0$dist)]
+#' @param gamma Recovery rate (default 1/5)
+#' @return Calibrated beta value (exact match)
+lookup_beta_app <- function(df, r0, sar_crowded, fold_diff, gamma = 1/5) {
+  row <- df[df$r0 == as.numeric(r0) &
+            abs(df$sar_crowded - sar_crowded) < 1e-10 &
+            df$fold_diff == fold_diff &
+            abs(df$gamma - gamma) < 1e-10, ]
+  if (nrow(row) == 0) {
+    stop("No calibrated beta found for R0=", r0,
+         ", SAR_crowded=", sar_crowded,
+         ", fold_diff=", fold_diff,
+         ", gamma=", gamma)
+  }
+  row$beta[1]
 }
 
 # ==============================================================================
@@ -250,12 +262,12 @@ household_model_twopop_crowding <- odin::odin({
 # Simulation Function
 # ==============================================================================
 
-run_simulation <- function(region, r0, eta, sar_uncrowded, sar_crowded,
-                           crowding_fold_diff, sim_days = 365) {
+run_simulation <- function(region, r0, eta, sar_crowded,
+                           crowding_fold_diff, gamma = 1/5, sim_days = 365) {
 
-  gamma <- 1 / 5
+  sar_uncrowded <- 0.20  # Fixed: changing without recalibration is invalid
   eps <- 1 - eta  # Convert eta (assortativity) to eps (mixing parameter)
-  beta <- lookup_beta_app(calibrated_betas_df, r0, sar_crowded, crowding_fold_diff)
+  beta <- lookup_beta_app(calibrated_betas_df, r0, sar_crowded, crowding_fold_diff, gamma)
   tau <- calculate_tau(sar_uncrowded, gamma)
   tau_boost <- calculate_tau_boost(sar_crowded, gamma, tau)
   init_prev <- 0.001
@@ -356,6 +368,7 @@ compute_symptomatic <- function(epidf) {
 
 get_impact_for_app <- function(peakday, p_symp, movements_daily, epidf_with_symp) {
 
+  # Align to peak symptomatic infections in C (matches code/crop_calendars.R)
   peaktime_sim <- epidf_with_symp %>%
     dplyr::ungroup() %>%
     dplyr::filter(subpop == "C") %>%
@@ -395,6 +408,7 @@ get_impact_for_app <- function(peakday, p_symp, movements_daily, epidf_with_symp
 
 get_schematic_data <- function(peakday, p_symp, movements_daily, epidf_with_symp) {
 
+  # Align to peak symptomatic infections in C (matches code/crop_calendars.R)
   peaktime_sim <- epidf_with_symp %>%
     dplyr::ungroup() %>%
     dplyr::filter(subpop == "C") %>%
@@ -422,9 +436,16 @@ get_schematic_data <- function(peakday, p_symp, movements_daily, epidf_with_symp
 
   epi_mapped_C <- epidf_with_symp %>%
     dplyr::filter(subpop == "C") %>%
-    dplyr::mutate(calendar_day = ((t + offset - 1) %% CALENDAR_DAYS) + 1) %>%
+    dplyr::mutate(
+      calendar_day = ((t + offset - 1) %% CALENDAR_DAYS) + 1,
+      symp_adj = symp * p_symp
+    ) %>%
     dplyr::group_by(calendar_day) %>%
-    dplyr::summarise(I_indiv = dplyr::first(I_indiv), .groups = "drop") %>%
+    dplyr::summarise(
+      I_indiv = dplyr::first(I_indiv),
+      symp_adj = dplyr::first(symp_adj),
+      .groups = "drop"
+    ) %>%
     dplyr::arrange(calendar_day)
 
   crop_adjusted <- movements_daily %>%
@@ -445,8 +466,8 @@ get_schematic_data <- function(peakday, p_symp, movements_daily, epidf_with_symp
 # ==============================================================================
 
 ui <- fluidPage(
-  titlePanel("Household-Structured Epidemic Model Explorer"),
-  tags$p("Comparing disease dynamics between agricultural workers and the general population"),
+  titlePanel("Modeling the impact of respiratory disease outbreaks on the United States agricultural workforce"),
+  # tags$p("See the accompanying paper by Bardsley, de Pablo, Canada et al."),
   tags$hr(),
 
   sidebarLayout(
@@ -455,34 +476,31 @@ ui <- fluidPage(
 
       h4("Transmission Parameters"),
 
-      selectInput("r0", "Basic Reproduction Number (R0)",
+      selectInput("r0", HTML("Basic Reproduction Number (R<sub>0</sub>)"),
                   choices = c("1.2", "1.5", "2", "3"), selected = "1.5"),
 
-      sliderInput("eta", "Assortativity (eta)",
+      selectInput("infectious_period", "Infectious Period (1/γ, days)",
+                  choices = c("3" = 1/3, "5" = 1/5, "10" = 1/10),
+                  selected = 1/5),
+
+      sliderInput("eta", "Assortativity (η)",
                   min = 0, max = 1, value = 0.67, step = 0.01),
       helpText("1 = assortative (groups don't mix), 0 = proportional mixing"),
 
-      tags$hr(),
-      h4("Household Transmission (SAR)"),
+      selectInput("sar_crowded", "SAR in Crowded Households",
+                  choices = c("20%" = 0.2, "30%" = 0.3, "40%" = 0.4, "50%" = 0.5, "60%" = 0.6),
+                  selected = 0.4),
 
-      sliderInput("sar_uncrowded", "SAR in Uncrowded Households",
-                  min = 0.10, max = 0.40, value = 0.20, step = 0.02),
-
-      sliderInput("sar_crowded", "SAR in Crowded Households",
-                  min = 0.20, max = 0.70, value = 0.40, step = 0.02),
-
-      tags$hr(),
-      h4("Crowding Structure"),
-
-      sliderInput("crowding_fold", "Crowding Fold Difference",
-                  min = 1, max = 4, value = 2, step = 0.5),
-      helpText("How much more likely large households are to be crowded vs small"),
+      selectInput("crowding_fold", "Crowding Fold Difference",
+                  choices = c("1" = 1, "2" = 2, "3" = 3),
+                  selected = 2),
+      helpText("How much more likely large (size 7+) households are to be crowded vs. small (size 2)"),
 
       tags$hr(),
       h4("Simulation Settings"),
 
       sliderInput("sim_days", "Simulation Duration (days)",
-                  min = 100, max = 500, value = 365, step = 50),
+                  min = 100, max = 500, value = 365, step = 5),
 
       actionButton("run_sim", "Run Simulation", class = "btn-primary btn-block")
     ),
@@ -513,7 +531,7 @@ ui <- fluidPage(
                  tags$br(),
                  fluidRow(
                    column(4,
-                     sliderInput("peakday", "Epidemic Peak Day (day of year)",
+                     sliderInput("peakday", "Epidemic peak day (symptomatic infections in the community, day of year)",
                                  min = 1, max = 364, value = 152, step = 1),
                      sliderInput("p_symp", "Proportion Symptomatic",
                                  min = 0.1, max = 1.0, value = 0.5, step = 0.05),
@@ -527,9 +545,7 @@ ui <- fluidPage(
                      helpText("Select one or more California commodities to include in the impact analysis.")
                    ),
                    column(8,
-                     plotOutput("impact_by_peakday_plot", height = "350px"),
-                     tags$br(),
-                     plotOutput("schematic_plot", height = "350px"),
+                     plotOutput("crop_impact_plot", height = "900px"),
                      tags$br(),
                      h4("Impact Summary"),
                      tableOutput("impact_table")
@@ -568,6 +584,7 @@ server <- function(input, output, session) {
   # ---- Run simulation on button click ----
   observeEvent(input$run_sim, {
     withProgress(message = "Running simulation...", value = 0, {
+      gamma <- as.numeric(input$infectious_period)
       regions <- region_map$REGION6
       results_list <- lapply(seq_along(regions), function(i) {
         reg <- regions[i]
@@ -577,9 +594,9 @@ server <- function(input, output, session) {
           region = reg,
           r0 = input$r0,
           eta = input$eta,
-          sar_uncrowded = input$sar_uncrowded,
-          sar_crowded = input$sar_crowded,
-          crowding_fold_diff = input$crowding_fold,
+          sar_crowded = as.numeric(input$sar_crowded),
+          crowding_fold_diff = as.numeric(input$crowding_fold),
+          gamma = gamma,
           sim_days = input$sim_days
         )
         res$REGION6 <- reg
@@ -603,8 +620,8 @@ server <- function(input, output, session) {
       results_list <- lapply(region_map$REGION6, function(reg) {
         res <- run_simulation(
           region = reg, r0 = "1.5", eta = 0.67,
-          sar_uncrowded = 0.20, sar_crowded = 0.40,
-          crowding_fold_diff = 2, sim_days = 365
+          sar_crowded = 0.40,
+          crowding_fold_diff = 2, gamma = 1/5, sim_days = 365
         )
         res$REGION6 <- reg
         res
@@ -632,17 +649,26 @@ server <- function(input, output, session) {
           axis.title = element_text(size = 13),
           plot.title = element_text(size = 15))
 
+  # Compute nice x-axis breaks based on simulation duration
+  sim_x_scale <- reactive({
+    days <- input$sim_days
+    step <- if (days > 120) 30 else if (days >= 28) 7 else 1
+    scale_x_continuous(breaks = seq(0, days, by = step), minor_breaks = NULL)
+  })
+
   output$infection_plot <- renderPlot({
     req(sim_results())
     df <- sim_results()
 
     df %>%
       ggplot(aes(x = t, y = I_indiv * 100, color = subpop)) +
-      geom_line(linewidth = 0.8) +
+      geom_line(linewidth = 1.2, alpha = 0.7) +
       facet_wrap(~REGION_NAME, nrow = 2) +
       scale_color_manual(values = pop_colors, labels = pop_labels) +
-      labs(title = "Disease Prevalence Over Time",
-           x = "Days", y = "Infected (%)", color = "Population") +
+      sim_x_scale() +
+      coord_cartesian(xlim = c(0, input$sim_days)) +
+      labs(title = "Infections Over Time",
+           x = "Days since epidemic onset", y = "Infected (%)", color = "Population") +
       facet_theme
   })
 
@@ -652,11 +678,13 @@ server <- function(input, output, session) {
 
     df %>%
       ggplot(aes(x = t, y = R_indiv * 100, color = subpop)) +
-      geom_line(linewidth = 0.8) +
+      geom_line(linewidth = 1.2, alpha = 0.7) +
       facet_wrap(~REGION_NAME, nrow = 2) +
       scale_color_manual(values = pop_colors, labels = pop_labels) +
-      labs(title = "Cumulative Final Size",
-           x = "Days", y = "Cumulative Infected (%)", color = "Population") +
+      sim_x_scale() +
+      coord_cartesian(xlim = c(0, input$sim_days)) +
+      labs(title = "Cumulative Infections Over Time",
+           x = "Days since epidemic onset", y = "Cumulative Infected (%)", color = "Population") +
       facet_theme
   })
 
@@ -679,22 +707,22 @@ server <- function(input, output, session) {
 
     ag <- long %>% dplyr::filter(subpop == "A") %>%
       dplyr::select(REGION_NAME,
-                    `Peak Prevalence, A (%)` = peak,
-                    `Time to Peak, A (days)` = time_peak,
-                    `Final Size, A (%)` = final_size)
+                    `Peak Prevalence,\nAgricultural Workers (%)` = peak,
+                    `Time to Peak,\nAgricultural Workers (days)` = time_peak,
+                    `Final Size,\nAgricultural Workers (%)` = final_size)
 
     gen <- long %>% dplyr::filter(subpop == "C") %>%
       dplyr::select(REGION_NAME,
-                    `Peak Prevalence, C (%)` = peak,
-                    `Time to Peak, C (days)` = time_peak,
-                    `Final Size, C (%)` = final_size)
+                    `Peak Prevalence,\nCommunity (%)` = peak,
+                    `Time to Peak,\nCommunity (days)` = time_peak,
+                    `Final Size,\nCommunity (%)` = final_size)
 
     dplyr::left_join(ag, gen, by = "REGION_NAME") %>%
       dplyr::select(Region = REGION_NAME,
-                    `Peak Prevalence, A (%)`, `Peak Prevalence, C (%)`,
-                    `Time to Peak, A (days)`, `Time to Peak, C (days)`,
-                    `Final Size, A (%)`, `Final Size, C (%)`)
-  }, striped = TRUE, hover = TRUE, bordered = TRUE)
+                    `Peak Prevalence,\nAgricultural Workers (%)`, `Peak Prevalence,\nCommunity (%)`,
+                    `Time to Peak,\nAgricultural Workers (days)`, `Time to Peak,\nCommunity (days)`,
+                    `Final Size,\nAgricultural Workers (%)`, `Final Size,\nCommunity (%)`)
+  }, striped = TRUE, hover = TRUE, bordered = TRUE, sanitize.colnames.function = function(x) gsub("\n", "<br/>", x))
 
 
   output$prevalence_ratio_plot <- renderPlot({
@@ -705,15 +733,17 @@ server <- function(input, output, session) {
       dplyr::select(t, subpop, I_indiv, REGION_NAME) %>%
       tidyr::pivot_wider(id_cols = c(t, REGION_NAME), names_from = subpop, values_from = I_indiv) %>%
       dplyr::mutate(prevalence_ratio = A / C) %>%
-      dplyr::filter(is.finite(prevalence_ratio), C > 0.001)
+      dplyr::filter(is.finite(prevalence_ratio), C > 0.0001)
 
     rel_df %>%
       ggplot(aes(x = t, y = prevalence_ratio)) +
-      geom_line(linewidth = 0.8, color = "#984ea3") +
+      geom_line(linewidth = 1.2, alpha = 0.7, color = "#984ea3") +
       geom_hline(yintercept = 1, linetype = "dashed", color = "gray50") +
       facet_wrap(~REGION_NAME, nrow = 2) +
+      sim_x_scale() +
+      coord_cartesian(xlim = c(0, input$sim_days)) +
       labs(title = "Prevalence Ratio (Agricultural Workers / General Population)",
-           x = "Days", y = "Prevalence Ratio") +
+           x = "Days since epidemic onset", y = "Prevalence Ratio") +
       facet_theme +
       theme(legend.position = "none")
   })
@@ -735,90 +765,93 @@ server <- function(input, output, session) {
     }))
   })
 
-  output$impact_by_peakday_plot <- renderPlot({
-    req(impact_all_peakdays())
+  output$crop_impact_plot <- renderPlot({
+    req(impact_all_peakdays(), symp_data(), movements_data())
     idf <- impact_all_peakdays()
-
-    month_breaks <- cumsum(c(1, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30))
-    month_labels <- c("Jan", "", "", "Apr", "", "", "Jul", "", "", "Oct", "", "")
-
-    # Determine colors: use crop_colors for known, generate for new
-    all_commodities <- unique(idf$commodity)
-    known <- intersect(all_commodities, names(crop_colors))
-    unknown <- setdiff(all_commodities, names(crop_colors))
-    extra_colors <- if (length(unknown) > 0) setNames(scales::hue_pal()(length(unknown)), unknown) else character(0)
-    all_colors <- c(crop_colors[known], extra_colors)
-
-    idf %>%
-      ggplot(aes(x = peakday, y = pct_loss, color = commodity)) +
-      geom_line(linewidth = 0.8, alpha = 0.8) +
-      scale_color_manual(values = all_colors) +
-      scale_x_continuous(breaks = month_breaks, labels = month_labels, minor_breaks = NULL) +
-      expand_limits(y = 0) +
-      labs(x = "Epidemic Peak Timing", y = "Production Loss (%)",
-           color = "Commodity",
-           title = paste0("Production Loss by Peak Day (p_symp = ", input$p_symp, ")")) +
-      theme_minimal(base_size = 13) +
-      theme(legend.position = "bottom")
-  })
-
-  output$schematic_plot <- renderPlot({
-    req(symp_data(), movements_data())
-
     sch <- get_schematic_data(input$peakday, input$p_symp, movements_data(), symp_data())
 
-    # Determine colors
-    all_commodities <- unique(sch$crop_original$commodity)
-    known <- intersect(all_commodities, names(crop_colors))
-    unknown <- setdiff(all_commodities, names(crop_colors))
-    extra_colors <- if (length(unknown) > 0) setNames(scales::hue_pal()(length(unknown)), unknown) else character(0)
-    all_colors <- c(crop_colors[known], extra_colors)
-
-    ribbon_data <- sch$crop_adjusted %>%
-      dplyr::mutate(lbs_orig = lbs / 1e6, lbs_adj_m = lbs_adj / 1e6)
-
+    # Shared x-axis config
     month_breaks <- cumsum(c(1, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30))
     month_labels <- c("Jan", "Feb", "Mar", "Apr", "May", "Jun",
                       "Jul", "Aug", "Sep", "Oct", "Nov", "Dec")
 
-    # Panel (a): Epidemic curve with symptomatic overlay
-    panel_a <- ggplot() +
-      geom_line(data = sch$epi_A, aes(x = calendar_day, y = I_indiv),
-                color = "#377EB8", linewidth = 0.8) +
-      geom_line(data = sch$epi_C, aes(x = calendar_day, y = I_indiv),
-                color = "#E41A1C", linewidth = 0.8) +
-      geom_area(data = sch$epi_A, aes(x = calendar_day, y = symp_adj),
-                fill = "#377EB8", alpha = 0.15) +
-      geom_line(data = sch$epi_A, aes(x = calendar_day, y = symp_adj),
-                color = "#377EB8", linewidth = 0.6, linetype = "dashed") +
-      expand_limits(y = 0) +
-      labs(x = NULL, y = "Proportion",
-           title = paste0("(a) Epidemic curve & symptomatic ag workers",
-                          " (blue=A, red=C, dashed=symptomatic, p_symp=", input$p_symp, ")")) +
-      theme_classic(base_size = 12) +
-      theme(axis.text.x = element_blank(), plot.title = element_text(face = "bold"))
+    # Determine commodity colors (shared by top plot and panel b)
+    all_commodities_idf <- unique(idf$commodity)
+    all_commodities_sch <- unique(sch$crop_original$commodity)
+    all_commodities_union <- union(all_commodities_idf, all_commodities_sch)
+    known <- intersect(all_commodities_union, names(crop_colors))
+    unknown <- setdiff(all_commodities_union, names(crop_colors))
+    extra_colors <- if (length(unknown) > 0) setNames(scales::hue_pal()(length(unknown)), unknown) else character(0)
+    all_colors <- c(crop_colors[known], extra_colors)
 
-    # Panel (b): Adjusted movements
+    # --- Top plot: Production loss by peak day ---
+    idf_at_peak <- idf %>% dplyr::filter(peakday == input$peakday)
+
+    plot_top <- idf %>%
+      ggplot(aes(x = peakday, y = pct_loss, color = commodity)) +
+      geom_line(linewidth = 0.8, alpha = 0.8) +
+      geom_vline(xintercept = input$peakday, linetype = "dotted", color = "gray40", linewidth = 0.5) +
+      geom_point(data = idf_at_peak, aes(x = peakday, y = pct_loss, color = commodity),
+                 size = 3) +
+      scale_color_manual(values = all_colors) +
+      scale_x_continuous(breaks = month_breaks, labels = month_labels, minor_breaks = NULL) +
+      expand_limits(y = 0) +
+      labs(x = NULL, y = "Production Loss (%)",
+           color = "Commodity",
+           title = paste0("Production Loss by Peak Day (Proportion symptomatic = ", input$p_symp, ")")) +
+      theme_classic(base_size = 12) +
+      theme(legend.position = "bottom", plot.title = element_text(face = "bold"))
+
+    # --- Panel (a): Symptomatic disease curves ---
+    symp_lines <- dplyr::bind_rows(
+      sch$epi_A %>% dplyr::mutate(group = "Agricultural Workers (A)"),
+      sch$epi_C %>% dplyr::mutate(group = "General Population (C)")
+    )
+    symp_colors <- c("Agricultural Workers (A)" = "#377EB8",
+                     "General Population (C)" = "#E41A1C")
+
+    panel_a <- ggplot() +
+      geom_area(data = sch$epi_A, aes(x = calendar_day, y = 100*symp_adj),
+                fill = "#377EB8", alpha = 0.1) +
+      geom_area(data = sch$epi_C, aes(x = calendar_day, y = 100*symp_adj),
+                fill = "#E41A1C", alpha = 0.1) +
+      geom_line(data = symp_lines,
+                aes(x = calendar_day, y = 100*symp_adj, color = group),
+                linewidth = 0.8) +
+      scale_color_manual(values = symp_colors) +
+      expand_limits(y = 0) +
+      scale_x_continuous(breaks = month_breaks, labels = month_labels, minor_breaks = NULL) +
+      labs(x = NULL, y = "Percent of population", color = NULL,
+           title = paste0("Symptomatic infections")) +
+      theme_classic(base_size = 12) +
+      theme(plot.title = element_text(face = "bold"),
+            legend.position = "bottom")
+
+    # --- Panel (b): Adjusted movements ---
+    ribbon_data <- sch$crop_adjusted %>%
+      dplyr::mutate(lbs_orig = lbs / 1e6, lbs_adj_m = lbs_adj / 1e6)
+
     panel_b <- ggplot() +
       geom_ribbon(data = ribbon_data,
                   aes(x = day, ymin = lbs_adj_m, ymax = lbs_orig, fill = commodity),
                   alpha = 0.15) +
       geom_line(data = sch$crop_original,
-                aes(x = day, y = lbs / 1e6, color = commodity),
+                aes(x = day, y = lbs / 1e6, color = commodity, linetype = "Actual"),
                 linewidth = 0.6, alpha = 0.8) +
       geom_line(data = sch$crop_adjusted,
-                aes(x = day, y = lbs_adj / 1e6, color = commodity),
-                linewidth = 0.4, alpha = 0.3, linetype = "dashed") +
+                aes(x = day, y = lbs_adj / 1e6, color = commodity, linetype = "Adjusted"),
+                linewidth = 0.6, alpha = 0.4) +
       scale_color_manual(values = all_colors) +
       scale_fill_manual(values = all_colors, guide = "none") +
+      scale_linetype_manual(values = c("Actual" = "solid", "Adjusted" = "dashed")) +
       scale_x_continuous(breaks = month_breaks, labels = month_labels, minor_breaks = NULL) +
       expand_limits(y = 0) +
-      labs(x = NULL, y = "Daily Shipments\n(Million lbs)", color = "Commodity",
-           title = "(b) Adjusted harvest volume (accounting for workforce loss)") +
+      labs(x = NULL, y = "Daily Shipments\n(Million lbs)", color = "Commodity", linetype = NULL,
+           title = "Adjusted harvest volume (accounting for workforce loss)") +
       theme_classic(base_size = 12) +
       theme(legend.position = "bottom", plot.title = element_text(face = "bold"))
 
-    patchwork::wrap_plots(panel_a, panel_b, ncol = 1)
+    patchwork::wrap_plots(plot_top, panel_a, panel_b, ncol = 1, axes = "collect_x")
   })
 
   output$impact_table <- renderTable({
@@ -826,13 +859,13 @@ server <- function(input, output, session) {
     impact <- get_impact_for_app(input$peakday, input$p_symp, movements_data(), symp_data())
     impact %>%
       dplyr::mutate(
-        `Total Production (M lbs)` = round(lbs_total / 1e6, 1),
-        `Adjusted Production (M lbs)` = round(lbs_adjusted / 1e6, 1),
+        `Total Production (Million lbs)` = round(lbs_total / 1e6, 1),
+        `Adjusted Production (Million lbs)` = round(lbs_adjusted / 1e6, 1),
         `Production Loss (%)` = round(pct_loss, 2)
       ) %>%
       dplyr::select(Commodity = commodity,
-                    `Total Production (M lbs)`,
-                    `Adjusted Production (M lbs)`,
+                    `Total Production (Million lbs)`,
+                    `Adjusted Production (Million lbs)`,
                     `Production Loss (%)`)
   }, striped = TRUE, hover = TRUE, bordered = TRUE)
 }
