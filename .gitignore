@@ -2,3 +2,4 @@
 *epidf*
 output/county_sim_*.csv
 private*
+.DS_Store

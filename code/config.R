@@ -14,7 +14,6 @@ paths <- list(
   movements_lettuce = "data/movements_lettuce.csv",
   movements_strawberries = "data/movements_strawberries.csv",
   movements_oranges = "data/movements_oranges.csv",
-  movements_all = "data/movements_all.csv",
 
   # Output directories
   output_dir = "output",
