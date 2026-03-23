@@ -11,7 +11,7 @@ Key findings:
 - At the point of maximum divergence, prevalence among agricultural workers is 74-178% higher than in the general community.
 - For three labor-intensive California crops (strawberries, iceberg lettuce, oranges), worst-case productivity losses range from 0.50-0.62%, translating to $4-22 million in lost revenue per crop under baseline assumptions.
 
-An interactive scenario modeling tool is available at: [ag-epi-model](https://kisslerlab.shinyapps.io/ag-epi-model/)
+An interactive scenario modeling tool is available at: [https://kisslerlab.shinyapps.io/ag-epi-model/](https://kisslerlab.shinyapps.io/ag-epi-model/)
 
 ## Prerequisites
 
@@ -86,7 +86,7 @@ All scripts assume the working directory is the project root. Source `code/setup
 └── renv/                        # R dependency management
 ```
 
-Note: `data/naws_all.sas7bdat` (National Agricultural Workers Survey microdata) is required but excluded from the repository due to data use restrictions. See the [NAWS Public Access Data](https://www.dol.gov/agencies/eta/national-agricultural-workers-survey/data) for access information.
+Note: `data/naws_all.sas7bdat` (National Agricultural Workers Survey microdata) is required but excluded from the repository due to the file size. They can be obtained from https://www.dol.gov/agencies/eta/national-agricultural-workers-survey/data/files-sas.
 
 ## Data sources
 
