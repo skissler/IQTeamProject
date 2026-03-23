@@ -11,7 +11,7 @@ Key findings:
 - At the point of maximum divergence, prevalence among agricultural workers is 74-178% higher than in the general community.
 - For three labor-intensive California crops (strawberries, iceberg lettuce, oranges), worst-case productivity losses range from 0.50-0.62%, translating to $4-22 million in lost revenue per crop under baseline assumptions.
 
-An interactive scenario modeling tool is available at: [https://kisslerlab.shinyapps.io/ag-epi-model/](https://kisslerlab.shinyapps.io/ag-epi-model/)
+An interactive scenario modeling tool is available at: https://kisslerlab.shinyapps.io/ag-epi-model/
 
 ## Prerequisites
 
