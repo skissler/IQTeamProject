@@ -1,17 +1,105 @@
-# Assessing the impact of an influenza pandemic on agricultural workers and food production in the United States
+# Modeling the impact of respiratory disease outbreaks on the United States agricultural workforce
 
-*Katie Bardsley, Luis X. de Pablo, Emma Keppler, Naia Ormaza Zulueta, Zia Mehrabi, Stephen Kissler*
+Katherine Bardsley, Luis X. de Pablo, Emma Keppler Canada, Naia Ormaza Zulueta, Zia Mehrabi, Stephen M. Kissler
 
+## Overview
 
-## Files
+Agricultural workers live in larger, more crowded households than the general U.S. population, amplifying their potential exposure to respiratory pathogens. This repository contains code and data for a household-structured susceptible-infectious-recovered (SIR) transmission model that compares disease dynamics between agricultural workers and the general population across six U.S. regions, and assesses downstream productivity losses for labor-intensive crops.
 
-- `run_analysis.R`: This is the main entry point for the analysis. It sources the other key scripts in a specific order to execute the full workflow: first `calibrate_model.R`, then `simulate.R`, and finally `plot_model_output.R`.
-- `epimodels.R`: This script defines the mathematical framework for the epidemiological models. It uses the odin package to create four models: a `basic_model` (a simple SIR model), a `household_model`, and more complex versions, `household_model_twopop` and `household_model_twopop_crowding`, which account for different populations and household crowding.
-- `import_acs.R`: This script connects to the U.S. Census Bureau's American Community Survey (ACS) API to download and process county-level data, including household size and crowding information. It requires a Census API key to run.
-- `import_naws.R`: This script reads data from a SAS file (`naws_all.sas7bdat`), which contains information from the National Agricultural Workers Survey (NAWS). It processes this data to derive regional-level summaries on household sizes and crowding for agricultural workers.
-- `calibrate_model.R`: This script uses the data from `import_acs.R` and `import_naws.R` to calibrate the `household_model_twopop_crowding` model at a national level before running the county-level simulations.
-- `simulate.R`: This is the primary simulation script. It iterates through each county in the U.S., fetches county-specific data, and runs the `household_model_twopop_crowding` model to simulate disease spread for two distinct populations (community/non-agricultural workers and agricultural workers). The results are saved to a CSV file named `county_sim.csv`.
-- `simulate_regional.R`: This script serves as an alternative to `simulate.R`, running the simulation at a regional level instead of the county level.
-- `plot_model_output.R`: This script reads the simulation output from the `county_sim.csv` file. It then generates various plots and maps to visualize the simulation results, such as infection curves over time and geographic maps of infection differences.
-- `utils.R`: This file contains a collection of helper functions used by the other scripts, including functions for processing spatial data and formatting model output.
-- `household_model.R`: This is a separate test or example script for the models defined in `epimodels.R` and is not part of the main run_analysis.R workflow.
+Key findings:
+- Peak disease prevalence among agricultural workers is 23-45% higher than in the general population, with outbreaks peaking 5-12 days earlier.
+- At the point of maximum divergence, prevalence among agricultural workers is 74-178% higher than in the general community.
+- For three labor-intensive California crops (strawberries, iceberg lettuce, oranges), worst-case productivity losses range from 0.50-0.62%, translating to $4-22 million in lost revenue per crop under baseline assumptions.
+
+An interactive scenario modeling tool is available at: [ag-epi-model](https://kisslerlab.shinyapps.io/ag-epi-model/)
+
+## Prerequisites
+
+- **R 4.5.0** with [renv](https://rstudio.github.io/renv/) for dependency management
+- **Census API key** set in `~/.Renviron` as `CENSUS_API_KEY` (obtain one at https://api.census.gov/data/key_signup.html)
+
+## Setup
+
+```r
+# Install dependencies
+renv::restore()
+
+# Validate environment
+source('code/setup_check.R')
+check_setup()
+```
+
+## Running the analysis
+
+The full analysis pipeline is orchestrated by `code/run_analysis.R`:
+
+```r
+source('code/run_analysis.R')
+```
+
+This runs the following steps in order:
+
+| Step | Script | Description |
+|------|--------|-------------|
+| 1 | `setup.R` | Load packages, configuration, helper functions, and model definitions |
+| 2 | `summarystats.R` | Generate descriptive statistics and household characteristic figures |
+| 3 | `calibrate_model.R` | Calibrate between-household transmission rate (beta) for target R0 values |
+| 4 | `parameters.R` | Define parameter sets for one-at-a-time sensitivity analysis |
+| 5 | `run_regional_batch.R` | Run regional simulations for all parameter sets |
+| 6 | `sensitivity_analysis.R` | Compute summary statistics and generate comparison figures |
+| 7 | `simulate.R` | Run county-level simulations under three imputation methods |
+| 8 | `crop_calendars.R` | Assess crop-specific productivity losses in California |
+| 9 | `plot_main_figures.R` | Generate main publication figures |
+
+All scripts assume the working directory is the project root. Source `code/setup.R` first if running individual scripts interactively.
+
+## Repository structure
+
+```
+.
+├── code/
+│   ├── run_analysis.R           # Main entry point
+│   ├── config.R                 # Central configuration (paths, parameters, settings)
+│   ├── setup.R                  # Dependency loader (source this first)
+│   ├── setup_check.R            # Environment validation
+│   ├── utils.R                  # Helper functions
+│   ├── epimodels.R              # Household-structured SIR model (odin)
+│   ├── import_acs.R             # Download/process ACS county-level data
+│   ├── import_naws.R            # Process NAWS agricultural worker data
+│   ├── summarystats.R           # Descriptive statistics and figures
+│   ├── calibrate_model.R        # Beta calibration via bisection search
+│   ├── parameters.R             # Sensitivity analysis parameter sets
+│   ├── run_regional_batch.R     # Regional simulations (all parameter sets)
+│   ├── simulate.R               # County-level simulations
+│   ├── sensitivity_analysis.R   # Sensitivity analysis and comparison figures
+│   ├── crop_calendars.R         # Crop productivity impact analysis
+│   └── plot_main_figures.R      # Publication figures
+├── data/
+│   ├── stateregion.csv          # State-to-NAWS-region mapping
+│   ├── stateabbrev.csv          # State abbreviations
+│   ├── movements_lettuce.csv    # USDA crop shipment data (iceberg lettuce)
+│   ├── movements_strawberries.csv
+│   └── movements_oranges.csv
+├── app/                         # Interactive Shiny scenario modeling tool
+├── output/                      # Generated simulation results and summary tables
+├── figures/                     # Generated figures
+└── renv/                        # R dependency management
+```
+
+Note: `data/naws_all.sas7bdat` (National Agricultural Workers Survey microdata) is required but excluded from the repository due to data use restrictions. See the [NAWS Public Access Data](https://www.dol.gov/agencies/eta/national-agricultural-workers-survey/data) for access information.
+
+## Data sources
+
+- **American Community Survey (ACS)**: County-level household size, crowding, and agricultural employment data (2018-2022 5-year estimates). Downloaded via the Census API by `import_acs.R`.
+- **National Agricultural Workers Survey (NAWS)**: Regional household size and crowding distributions for agricultural workers (2018-2022). Processed by `import_naws.R`.
+- **USDA Agricultural Marketing Service**: Weekly point-to-point crop shipment volumes for California (2018-2024). Used to approximate seasonal harvest patterns.
+
+## Model
+
+The analysis uses a deterministic household-structured SIR model ([House & Keeling, 2009](https://doi.org/10.1017/S0950268808001416)) extended to two populations (agricultural workers and general community) with assortative mixing and household crowding effects. The model tracks within- and between-household transmission, where within-household transmission rates are elevated in crowded households. Transmission parameters are calibrated so that the simulated final epidemic size matches theoretical predictions for a given basic reproduction number (R0).
+
+Sensitivity analyses vary five epidemiological parameters one at a time: R0 (1.2-3.0), assortativity (0-0.75), secondary attack rate in crowded households (20-60%), crowding fold difference (1-3), and infectious period (3-10 days).
+
+## Citation
+
+Bardsley K, de Pablo LX, Keppler Canada E, Ormaza Zulueta N, Mehrabi Z, Kissler SM. Modeling the impact of respiratory disease outbreaks on the United States agricultural workforce. *Submitted*.
