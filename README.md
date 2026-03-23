@@ -86,7 +86,7 @@ All scripts assume the working directory is the project root. Source `code/setup
 └── renv/                        # R dependency management
 ```
 
-Note: `data/naws_all.sas7bdat` (National Agricultural Workers Survey microdata) is required but excluded from the repository due to the file size. They can be obtained from https://www.dol.gov/agencies/eta/national-agricultural-workers-survey/data/files-sas.
+Note: `data/naws_all.sas7bdat` (National Agricultural Workers Survey microdata) is required but excluded from the repository due to the file size. The data can be obtained from https://www.dol.gov/agencies/eta/national-agricultural-workers-survey/data/files-sas.
 
 ## Data sources
 
