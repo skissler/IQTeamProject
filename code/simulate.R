@@ -186,7 +186,9 @@ results_list <- future_lapply(GEOID_vec, function(geoid) {
     beta = beta,
     eps = eps,
     pop_C = pop_C,
-    pop_A = pop_A
+    pop_A = pop_A,
+    vax_mult_C = vax_mult_C,
+    vax_mult_A = vax_mult_A
   )
 
   # Simulate

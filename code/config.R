@@ -78,7 +78,27 @@ default_pars <- list(
   #   "additive"       - Add (county_ACS - regional_ACS_mean) to NAWS
   adjust_hhvars = "additive",
   init_prev = 0.001,            # Initial prevalence (0.1% of population infected)
-  seed_target = "both"          # Which subpop to seed: "both", "A", or "C"
+  seed_target = "both",         # Which subpop to seed: "both", "A", or "C"
+
+  # Vaccination parameters
+  # vax_mult = 1 - vax_eff * vax_cov is passed to the odin model.
+  # Baseline values reflect observed influenza vaccination rates and typical effectiveness.
+  vax_eff   = 0.60,             # Vaccine efficacy against infection (~60% in a good flu year)
+  vax_cov_C = 0.50,             # Community vaccination coverage (~50% US influenza uptake)
+  vax_cov_A = 0.40              # Agricultural worker vaccination coverage (~40% observed)
+)
+
+# ==============================================================================
+# Comorbidity Parameters
+# ==============================================================================
+# Parameterise the effect of obesity on the symptomatic fraction for each
+# subpopulation. p_symp is derived separately for C and A by back-solving for
+# the non-obese baseline probability p0 that anchors the community at p_symp = 0.5.
+
+comorbidity_pars <- list(
+  or_symp_obesity = 1.5,  # OR of obesity -> symptomatic disease (conditional on infection)
+  obs_C = 0.40,           # Community obesity prevalence (fixed; no sensitivity on this)
+  obs_A = 0.55            # Agricultural worker obesity prevalence (baseline)
 )
 
 # ==============================================================================
@@ -93,7 +113,27 @@ sim_settings <- list(
 
   # Parallelization
   use_parallel = TRUE,          # Use parallel processing for county simulations
-  progress_interval = 20        # Print progress every N counties
+  progress_interval = 20,       # Print progress every N counties
+
+  # Epidemic establishment threshold (prevalence fraction)
+  establishment_threshold = 0.001  # 0.1% = 1 per 1,000; used for time_to_1pct and epidemic_duration
+)
+
+# ==============================================================================
+# Sensitivity Analysis Values
+# ==============================================================================
+# One-at-a-time sensitivity ranges for each parameter dimension.
+# This is the single source of truth — parameters.R reads from here.
+
+sensitivity_values <- list(
+  r0      = c(1.2, 1.5, 2.0, 3.0),
+  eps     = c(1/4, 1/3, 1/2, 2/3, 3/4, 1),
+  sar     = c(0.20, 0.30, 0.40, 0.50, 0.60),
+  fold    = c(1, 2, 3),
+  gamma   = c(1/3, 1/5, 1/10),
+  vax_A   = c(0.2, 0.4, 0.6, 0.8),   # Ag worker coverage;  baseline = 0.4
+  vax_C   = c(0.3, 0.4, 0.5, 0.6),   # Community coverage;  baseline = 0.5
+  vax_eff = c(0.2, 0.4, 0.6, 0.8)    # Vaccine efficacy;    baseline = 0.6
 )
 
 # ==============================================================================

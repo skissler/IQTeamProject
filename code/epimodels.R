@@ -91,6 +91,8 @@ source('code/utils.R')
 #'   \item{beta}{Between-household transmission rate}
 #'   \item{eps}{Assortativity parameter (0 = assortative, 1 = proportional)}
 #'   \item{pop_C, pop_A}{Population sizes (for mixing matrix weights)}
+#'   \item{vax_mult_C}{Vaccination susceptibility multiplier for community: 1 - vax_eff * vax_cov_C (1 = no vaccination)}
+#'   \item{vax_mult_A}{Vaccination susceptibility multiplier for agricultural workers: 1 - vax_eff * vax_cov_A (1 = no vaccination)}
 #' }
 #'
 #' @section Typical Parameter Values:
@@ -124,7 +126,8 @@ source('code/utils.R')
 #'   tau = 0.05, tau_boost = 0.083,
 #'   beta = 0.153,
 #'   eps = 0.33,
-#'   pop_C = 1000000, pop_A = 50000
+#'   pop_C = 1000000, pop_A = 50000,
+#'   vax_mult_C = 1, vax_mult_A = 1  # no vaccination
 #' )
 #'
 #' # Run simulation
@@ -166,6 +169,10 @@ household_model_twopop_crowding <- odin::odin({
   eps <- user()         # Assortativity (0=assortative, 1=proportional)
   pop_C <- user()       # Community population size
   pop_A <- user()       # Agricultural population size
+
+  # Vaccination multipliers: 1 - vax_eff * vax_cov (1 = no vaccination)
+  vax_mult_C <- user()  # Susceptibility reduction for community
+  vax_mult_A <- user()  # Susceptibility reduction for agricultural workers
 
   # ============================================================================
   # Dimension declarations
@@ -227,8 +234,8 @@ household_model_twopop_crowding <- odin::odin({
   # Force of infection
   # ============================================================================
 
-  lambda_C <- beta * (m_CC * I_C + m_CA * I_A)
-  lambda_A <- beta * (m_AC * I_C + m_AA * I_A)
+  lambda_C <- beta * vax_mult_C * (m_CC * I_C + m_CA * I_A)
+  lambda_A <- beta * vax_mult_A * (m_AC * I_C + m_AA * I_A)
 
   # ============================================================================
   # Differential equations: Community population

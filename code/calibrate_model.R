@@ -367,7 +367,9 @@ run_calibration_sim <- function(pars, nat_data) {
       beta = beta,
       eps = eps,
       pop_C = 10000,   # Arbitrary (model is normalized)
-      pop_A = 0        # Disabled for single-population calibration
+      pop_A = 0,       # Disabled for single-population calibration
+      vax_mult_C = 1,  # No vaccination during calibration
+      vax_mult_A = 1
     )
 
     # Run simulation for 1000 days (ensure epidemic completes)

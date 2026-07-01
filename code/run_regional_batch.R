@@ -134,7 +134,9 @@ run_single_parset <- function(pars, household_states, acs_data_regional, naws_da
       beta = pars$beta,
       eps = pars$eps,
       pop_C = pop_C,
-      pop_A = pop_A
+      pop_A = pop_A,
+      vax_mult_C = pars$vax_mult_C,
+      vax_mult_A = pars$vax_mult_A
     )
 
     # Simulate

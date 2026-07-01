@@ -64,7 +64,14 @@ cat("\nStep 6: Running sensitivity analysis...\n")
 source('code/sensitivity_analysis.R')
 
 # ==============================================================================
-# 7. County-Level Simulations
+# 7. Decomposition Analysis
+# ==============================================================================
+
+cat("\nStep 7: Running decomposition analysis...\n")
+source('code/decomposition_analysis.R')
+
+# ==============================================================================
+# 8. County-Level Simulations
 # ==============================================================================
 # Runs county-level simulations with baseline parameters, using three different
 # approaches to derive county-level agricultural worker household distributions:
@@ -73,7 +80,7 @@ source('code/sensitivity_analysis.R')
 # - "multiplicative": Multiply NAWS by (county_ACS / regional_ACS_mean)
 # - "additive":       Add (county_ACS - regional_ACS_mean) to NAWS
 
-cat("\nStep 7: Running county-level simulations...\n")
+cat("\nStep 8: Running county-level simulations...\n")
 
 # Use baseline parameters (from get_baseline_pars() in parameters.R)
 pars <- baseline_pars
@@ -99,17 +106,17 @@ source('code/simulate.R')
 cat("  County-level simulations complete.\n")
 
 # ==============================================================================
-# 8. Crop Calendar Analysis
+# 9. Crop Calendar Analysis
 # ==============================================================================
 
-cat("\nStep 8: Running crop calendar productivity analysis...\n")
+cat("\nStep 9: Running crop calendar productivity analysis...\n")
 source('code/crop_calendars.R')
 
 # ==============================================================================
-# 9. Main Publication Figures
+# 10. Main Publication Figures
 # ==============================================================================
 
-cat("\nStep 9: Generating main publication figures...\n")
+cat("\nStep 10: Generating main publication figures...\n")
 source('code/plot_main_figures.R')
 
 # ==============================================================================

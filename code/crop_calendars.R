@@ -35,6 +35,39 @@ if (!exists("paths")) {
 }
 
 # ==============================================================================
+# Comorbidity Helper
+# ==============================================================================
+
+#' Compute population-specific symptomatic fraction from obesity prevalence
+#'
+#' Back-solves for the non-obese baseline symptomatic probability p0 using the
+#' community population as an anchor (obs_C_anchor, p_symp_C_anchor = 0.5), then
+#' derives p_symp for a target population with obesity prevalence `obs`.
+#'
+#' Model: p_symp = obs * p1 + (1-obs) * p0
+#'   where p1 = or_obesity * p0 / (1 + (or_obesity - 1) * p0)
+#'
+#' @param obs Obesity prevalence in the target population
+#' @param or_obesity OR of obesity -> symptomatic disease (conditional on infection)
+#' @param obs_C_anchor Community obesity prevalence (anchor; default from comorbidity_pars)
+#' @param p_symp_C_anchor Overall community symptomatic fraction (anchor; default 0.5)
+#' @return Symptomatic fraction for the target population
+compute_p_symp <- function(obs, or_obesity,
+                           obs_C_anchor    = comorbidity_pars$obs_C,
+                           p_symp_C_anchor = 0.50) {
+  if (abs(or_obesity - 1) < 1e-10) return(p_symp_C_anchor)
+
+  # Quadratic: (1-obs_C)*(OR-1)*p0^2 + [(obs_C-p)*(OR-1)+1]*p0 - p = 0
+  a <- (1 - obs_C_anchor) * (or_obesity - 1)
+  b <- (obs_C_anchor - p_symp_C_anchor) * (or_obesity - 1) + 1
+  cc <- -p_symp_C_anchor
+  p0 <- (-b + sqrt(b^2 - 4 * a * cc)) / (2 * a)
+
+  p1 <- or_obesity * p0 / (1 + (or_obesity - 1) * p0)   # obese symptomatic prob
+  obs * p1 + (1 - obs) * p0
+}
+
+# ==============================================================================
 # 1. Load and Process Crop Movement Data
 # ==============================================================================
 
@@ -100,6 +133,14 @@ epidf_california <- epidf_indiv_full %>%
 
 cat("  Loaded simulation for Region 6 (California)\n")
 
+# Compute population-specific symptomatic fractions from comorbidity parameters.
+# p_symp_C is fixed by the anchor (= 0.5); p_symp_A is elevated by higher
+# obesity prevalence among agricultural workers.
+p_symp_C <- compute_p_symp(comorbidity_pars$obs_C, comorbidity_pars$or_symp_obesity)
+p_symp_A <- compute_p_symp(comorbidity_pars$obs_A, comorbidity_pars$or_symp_obesity)
+cat("  Baseline symptomatic fractions: p_symp_C =", round(p_symp_C, 3),
+    ", p_symp_A =", round(p_symp_A, 3), "\n")
+
 # ==============================================================================
 # 3. Compute Symptomatic Infections
 # ==============================================================================
@@ -155,8 +196,9 @@ CALENDAR_DAYS <- 364
 #' @param peakday Day of year when community symptomatic infections peak (1-364)
 #' @param avg_movements_daily Daily crop movement data (days 1-364)
 #' @param epidf_with_symp Epidemic data with symptomatic proportions
+#' @param p_symp_A Fraction of infected agricultural workers who are symptomatic (default 1)
 #' @return Tibble with production loss percentages by commodity
-get_impact <- function(peakday, avg_movements_daily, epidf_with_symp) {
+get_impact <- function(peakday, avg_movements_daily, epidf_with_symp, p_symp_A = 1) {
 
   # Get peak time from simulation (in simulation days)
   peaktime_sim <- epidf_with_symp %>%
@@ -166,11 +208,11 @@ get_impact <- function(peakday, avg_movements_daily, epidf_with_symp) {
     pull(t) %>%
     first()
 
-  # Get workforce availability from agricultural workers
-  # wf = 1 - symptomatic proportion (proportion available to work)
+  # Get workforce availability from agricultural workers.
+  # wf = 1 - (symptomatic proportion × p_symp_A): fraction available to work.
   wf_epidemic <- epidf_with_symp %>%
     filter(subpop == "A") %>%
-    mutate(wf = 1 - symp) %>%
+    mutate(wf = 1 - symp * p_symp_A) %>%
     select(t_sim = t, wf) %>%
     ungroup()
 
@@ -253,7 +295,7 @@ cat("Calculating production impact for all epidemic peak days...\n")
 
 # Calculate impact for each possible peak day (1-364)
 impact_df_combined <- bind_rows(lapply(1:CALENDAR_DAYS, function(peakday) {
-  out <- get_impact(peakday, avg_movements_daily, epidf_with_symp)
+  out <- get_impact(peakday, avg_movements_daily, epidf_with_symp, p_symp_A = p_symp_A)
   out$peakday <- peakday
   return(out)
 }))
@@ -534,7 +576,7 @@ cat("  Saved: crop_impact_summary.csv\n")
 
 cat("Generating schematic figure...\n")
 
-p_symp <- 0.5
+p_symp <- p_symp_A   # use baseline comorbidity-adjusted value for agricultural workers
 
 # Choose a representative epidemic timing: worst-case for strawberries
 worst_peakday_straw <- impact_summary %>%
@@ -912,9 +954,9 @@ r0_impact_list <- lapply(r0_values, function(r0_val) {
       .groups = "drop"
     )
 
-  # Calculate impact for each possible peak day
+  # Calculate impact for each possible peak day (using baseline p_symp_A)
   impact_all <- bind_rows(lapply(1:CALENDAR_DAYS, function(pd) {
-    out <- get_impact(pd, avg_movements_daily, epi_symp)
+    out <- get_impact(pd, avg_movements_daily, epi_symp, p_symp_A = p_symp_A)
     out$peakday <- pd
     return(out)
   }))
@@ -958,3 +1000,114 @@ for (i in seq_len(nrow(r0_impact_df))) {
               format(round(row$dollar_loss_usd), big.mark = ",")))
 }
 cat("  ", strrep("-", 90), "\n")
+
+# ==============================================================================
+# 12. Comorbidity Sensitivity: p_symp_A by (or_symp_obesity, obs_A)
+# ==============================================================================
+# One-at-a-time sensitivity over the two comorbidity parameters while holding
+# the epidemic dynamics fixed (same simulation output, different p_symp_A).
+# All other parameters (obs_C, epidemic model) are held at baseline values.
+
+cat("\nComputing comorbidity sensitivity...\n")
+
+or_symp_obesity_values <- c(1, 1.5, 3)
+obs_A_sens_values      <- c(0.40, 0.50, 0.55, 0.60, 0.70)
+
+# Build one-at-a-time grid: vary one parameter at a time
+comorbidity_grid <- bind_rows(
+  # Vary or_symp_obesity (hold obs_A at baseline)
+  tibble(
+    or_symp_obesity = or_symp_obesity_values,
+    obs_A           = comorbidity_pars$obs_A,
+    sens_type       = "or_symp_obesity",
+    sens_value      = or_symp_obesity_values
+  ),
+  # Vary obs_A (hold or_symp_obesity at baseline); skip duplicate baseline row
+  tibble(
+    or_symp_obesity = comorbidity_pars$or_symp_obesity,
+    obs_A           = obs_A_sens_values,
+    sens_type       = "obs_A",
+    sens_value      = obs_A_sens_values
+  )
+) %>%
+  distinct(or_symp_obesity, obs_A, .keep_all = TRUE) %>%
+  mutate(p_symp_A_val = mapply(compute_p_symp, obs_A, or_symp_obesity))
+
+cat("  Comorbidity grid (", nrow(comorbidity_grid), " combinations):\n", sep = "")
+cat(sprintf("  %-16s %-8s %-12s\n", "sens_type", "sens_val", "p_symp_A"))
+for (i in seq_len(nrow(comorbidity_grid))) {
+  r <- comorbidity_grid[i, ]
+  cat(sprintf("  %-16s %-8.2f %-12.3f\n", r$sens_type, r$sens_value, r$p_symp_A_val))
+}
+
+comorbidity_impact_list <- vector("list", nrow(comorbidity_grid))
+
+for (i in seq_len(nrow(comorbidity_grid))) {
+  row_i <- comorbidity_grid[i, ]
+  cat("  Row", i, "/", nrow(comorbidity_grid),
+      "| or =", row_i$or_symp_obesity, ", obs_A =", row_i$obs_A,
+      "-> p_symp_A =", round(row_i$p_symp_A_val, 3), "\n")
+
+  impact_all <- bind_rows(lapply(1:CALENDAR_DAYS, function(pd) {
+    out <- get_impact(pd, avg_movements_daily, epidf_with_symp,
+                      p_symp_A = row_i$p_symp_A_val)
+    out$peakday <- pd
+    return(out)
+  }))
+
+  worst_case <- impact_all %>%
+    group_by(commodity) %>%
+    slice_max(pct_loss, n = 1, with_ties = FALSE) %>%
+    ungroup() %>%
+    mutate(
+      or_symp_obesity = row_i$or_symp_obesity,
+      obs_A           = row_i$obs_A,
+      p_symp_A        = row_i$p_symp_A_val,
+      sens_type       = row_i$sens_type,
+      sens_value      = row_i$sens_value
+    )
+
+  comorbidity_impact_list[[i]] <- worst_case
+}
+
+comorbidity_impact_df <- bind_rows(comorbidity_impact_list) %>%
+  left_join(crop_values, by = "commodity") %>%
+  mutate(dollar_loss_usd = annual_value_usd * pct_loss / 100) %>%
+  arrange(sens_type, sens_value, commodity)
+
+write_csv(comorbidity_impact_df,
+          file.path(paths$output_dir, "crop_impact_comorbidity_sensitivity.csv"))
+cat("  Saved: crop_impact_comorbidity_sensitivity.csv\n")
+
+# Figure: worst-case crop loss across comorbidity sensitivity dimensions
+fig_comorbidity <- comorbidity_impact_df %>%
+  mutate(
+    sens_type_label = case_when(
+      sens_type == "or_symp_obesity" ~ "Obesity → Symptomatic OR",
+      sens_type == "obs_A"           ~ "Ag Worker Obesity Prevalence"
+    ),
+    sens_type_label = factor(sens_type_label,
+                             levels = c("Obesity → Symptomatic OR",
+                                        "Ag Worker Obesity Prevalence")),
+    x_label = case_when(
+      sens_type == "or_symp_obesity" ~ as.character(sens_value),
+      sens_type == "obs_A"           ~ paste0(sens_value * 100, "%")
+    )
+  ) %>%
+  ggplot(aes(x = factor(x_label, levels = unique(x_label)), y = pct_loss,
+             fill = commodity)) +
+  geom_col(position = "dodge") +
+  facet_wrap(~sens_type_label, scales = "free_x") +
+  labs(
+    x = "Parameter Value",
+    y = "Worst-case Production Loss (%)",
+    fill = "Commodity"
+  ) +
+  theme_classic(base_size = 14) +
+  theme(legend.position = "bottom", strip.text = element_text(face = "bold"))
+
+ggsave(file.path(paths$figures_dir, "crop_impact_comorbidity_sensitivity.pdf"),
+       fig_comorbidity, width = 10, height = 5)
+ggsave(file.path(paths$figures_dir, "crop_impact_comorbidity_sensitivity.png"),
+       fig_comorbidity, width = 10, height = 5, dpi = 300)
+cat("  Saved: crop_impact_comorbidity_sensitivity.pdf/.png\n")

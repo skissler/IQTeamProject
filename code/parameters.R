@@ -63,7 +63,10 @@ create_parset <- function(sens_type, sens_value, parset,
                           gamma, sar_uncrowded, sar_crowded,
                           beta, eps, crowding_fold_diff,
                           max_hh_size, adjust_hhvars, init_prev,
-                          seed_target = "both") {
+                          seed_target = "both",
+                          vax_eff    = default_pars$vax_eff,
+                          vax_cov_C  = default_pars$vax_cov_C,
+                          vax_cov_A  = default_pars$vax_cov_A) {
 
   # Compute tau and tau_boost from SAR values
   tau <- calculate_tau(sar_uncrowded, gamma)
@@ -98,7 +101,14 @@ create_parset <- function(sens_type, sens_value, parset,
     init_prev = init_prev,
     seed_target = seed_target,
     init_prev_A = init_prev_A,       # Derived from seed_target
-    init_prev_C = init_prev_C        # Derived from seed_target
+    init_prev_C = init_prev_C,       # Derived from seed_target
+
+    # Vaccination parameters
+    vax_eff   = vax_eff,
+    vax_cov_C = vax_cov_C,
+    vax_cov_A = vax_cov_A,
+    vax_mult_C = 1 - vax_eff * vax_cov_C,   # Passed to odin model
+    vax_mult_A = 1 - vax_eff * vax_cov_A    # Passed to odin model
   )
 }
 
@@ -108,11 +118,15 @@ create_parset <- function(sens_type, sens_value, parset,
 # Note: calibrated_betas is produced by calibrate_model.R
 # Baseline values are defined in config.R (default_pars)
 
-r0_values <- c(1.2, 1.5, 2.0, 3.0)
-eps_values <- c(1/4, 1/3, 1/2, 2/3, 3/4, 1)
-sar_crowded_values <- c(0.20, 0.30, 0.40, 0.50, 0.60)
-fold_diff_values <- c(1, 2, 3)
-gamma_values <- c(1/3, 1/5, 1/10)
+# Sensitivity values are defined in config.R (sensitivity_values list).
+r0_values          <- sensitivity_values$r0
+eps_values         <- sensitivity_values$eps
+sar_crowded_values <- sensitivity_values$sar
+fold_diff_values   <- sensitivity_values$fold
+gamma_values       <- sensitivity_values$gamma
+vax_cov_A_values   <- sensitivity_values$vax_A
+vax_cov_C_values   <- sensitivity_values$vax_C
+vax_eff_values     <- sensitivity_values$vax_eff
 
 # ==============================================================================
 # Generate Parameter Sets
@@ -249,6 +263,73 @@ for (st in seed_targets) {
   )
 }
 
+# --- Vaccination: Agricultural Worker Coverage Sensitivity ---
+# Skip baseline value (already covered by the r0 baseline parameter set).
+for (cov_A in vax_cov_A_values[vax_cov_A_values != default_pars$vax_cov_A]) {
+  parset_counter <- parset_counter + 1
+  pars_list[[parset_counter]] <- create_parset(
+    sens_type  = "vax_A",
+    sens_value = cov_A,
+    parset     = parset_counter,
+    gamma = default_pars$gamma,
+    sar_uncrowded = default_pars$sar_uncrowded,
+    sar_crowded   = default_pars$sar_crowded,
+    beta = calibrated_betas[as.character(default_pars$r0)],
+    eps  = default_pars$eps,
+    crowding_fold_diff = default_pars$crowding_fold_diff,
+    max_hh_size   = default_pars$max_hh_size,
+    adjust_hhvars = default_pars$adjust_hhvars,
+    init_prev     = default_pars$init_prev,
+    vax_eff   = default_pars$vax_eff,
+    vax_cov_C = default_pars$vax_cov_C,
+    vax_cov_A = cov_A
+  )
+}
+
+# --- Vaccination: Community Coverage Sensitivity ---
+for (cov_C in vax_cov_C_values[vax_cov_C_values != default_pars$vax_cov_C]) {
+  parset_counter <- parset_counter + 1
+  pars_list[[parset_counter]] <- create_parset(
+    sens_type  = "vax_C",
+    sens_value = cov_C,
+    parset     = parset_counter,
+    gamma = default_pars$gamma,
+    sar_uncrowded = default_pars$sar_uncrowded,
+    sar_crowded   = default_pars$sar_crowded,
+    beta = calibrated_betas[as.character(default_pars$r0)],
+    eps  = default_pars$eps,
+    crowding_fold_diff = default_pars$crowding_fold_diff,
+    max_hh_size   = default_pars$max_hh_size,
+    adjust_hhvars = default_pars$adjust_hhvars,
+    init_prev     = default_pars$init_prev,
+    vax_eff   = default_pars$vax_eff,
+    vax_cov_C = cov_C,
+    vax_cov_A = default_pars$vax_cov_A
+  )
+}
+
+# --- Vaccination: Vaccine Effectiveness Sensitivity ---
+for (eff in vax_eff_values[vax_eff_values != default_pars$vax_eff]) {
+  parset_counter <- parset_counter + 1
+  pars_list[[parset_counter]] <- create_parset(
+    sens_type  = "vax_eff",
+    sens_value = eff,
+    parset     = parset_counter,
+    gamma = default_pars$gamma,
+    sar_uncrowded = default_pars$sar_uncrowded,
+    sar_crowded   = default_pars$sar_crowded,
+    beta = calibrated_betas[as.character(default_pars$r0)],
+    eps  = default_pars$eps,
+    crowding_fold_diff = default_pars$crowding_fold_diff,
+    max_hh_size   = default_pars$max_hh_size,
+    adjust_hhvars = default_pars$adjust_hhvars,
+    init_prev     = default_pars$init_prev,
+    vax_eff   = eff,
+    vax_cov_C = default_pars$vax_cov_C,
+    vax_cov_A = default_pars$vax_cov_A
+  )
+}
+
 # ==============================================================================
 # Parameter Set Metadata Table
 # ==============================================================================
@@ -266,7 +347,12 @@ pars_metadata <- tibble::tibble(
   tau_boost = sapply(pars_list, `[[`, "tau_boost"),
   beta = sapply(pars_list, `[[`, "beta"),
   eps = sapply(pars_list, `[[`, "eps"),
-  crowding_fold_diff = sapply(pars_list, `[[`, "crowding_fold_diff")
+  crowding_fold_diff = sapply(pars_list, `[[`, "crowding_fold_diff"),
+  vax_eff = sapply(pars_list, `[[`, "vax_eff"),
+  vax_cov_C = sapply(pars_list, `[[`, "vax_cov_C"),
+  vax_cov_A = sapply(pars_list, `[[`, "vax_cov_A"),
+  vax_mult_C = sapply(pars_list, `[[`, "vax_mult_C"),
+  vax_mult_A = sapply(pars_list, `[[`, "vax_mult_A")
 )
 
 # ==============================================================================
@@ -309,6 +395,9 @@ cat("  - SAR (crowded) sensitivity:", sum(pars_metadata$sens_type == "sar"), "se
 cat("  - Crowding fold difference sensitivity:", sum(pars_metadata$sens_type == "fold"), "sets\n")
 cat("  - Gamma (infectious period) sensitivity:", sum(pars_metadata$sens_type == "gamma"), "sets\n")
 cat("  - Seed target sensitivity:", sum(pars_metadata$sens_type == "seed"), "sets\n")
+cat("  - Vaccination coverage (ag workers) sensitivity:", sum(pars_metadata$sens_type == "vax_A"), "sets\n")
+cat("  - Vaccination coverage (community) sensitivity:", sum(pars_metadata$sens_type == "vax_C"), "sets\n")
+cat("  - Vaccine effectiveness sensitivity:", sum(pars_metadata$sens_type == "vax_eff"), "sets\n")
 cat("\nBaseline parameters (", baseline_pars$parset_name, "):\n", sep = "")
 cat("  R0 = ", default_pars$r0, ", eps = ", default_pars$eps,
     ", SAR_crowded = ", default_pars$sar_crowded * 100, "%",

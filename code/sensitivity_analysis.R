@@ -83,18 +83,18 @@ calculate_summary_stats <- function(df) {
       # Final attack rate (proportion ever infected = final R)
       final_attack_rate = last(R_indiv),
 
-      # Time to 1% prevalence (early detection threshold)
-      time_to_1pct = {
-        idx <- which(I_indiv >= 0.01)[1]
+      # Time to establishment threshold prevalence
+      time_to_est = {
+        idx <- which(I_indiv >= sim_settings$establishment_threshold)[1]
         if (is.na(idx)) NA_real_ else t[idx]
       },
 
-      # Epidemic duration (time from 1% to below 1% prevalence)
+      # Epidemic duration (time from establishment threshold to below it)
       epidemic_duration = {
-        above_1pct <- I_indiv >= 0.01
-        if (sum(above_1pct) == 0) NA_real_ else {
-          first_above <- which(above_1pct)[1]
-          last_above <- tail(which(above_1pct), 1)
+        above_threshold <- I_indiv >= sim_settings$establishment_threshold
+        if (sum(above_threshold) == 0) NA_real_ else {
+          first_above <- which(above_threshold)[1]
+          last_above <- tail(which(above_threshold), 1)
           t[last_above] - t[first_above]
         }
       },
@@ -163,7 +163,10 @@ baseline_values <- list(
   sar = default_pars$sar_crowded,
   fold = default_pars$crowding_fold_diff,
   gamma = default_pars$gamma,
-  seed = 2                        # Numeric code: 1=C only, 2=Both (baseline), 3=A only
+  seed = 2,                        # Numeric code: 1=C only, 2=Both (baseline), 3=A only
+  vax_A   = default_pars$vax_cov_A,
+  vax_C   = default_pars$vax_cov_C,
+  vax_eff = default_pars$vax_eff
 )
 
 #' Prepare data for sensitivity plotting
@@ -239,25 +242,29 @@ plot_sensitivity_overview <- function(diff_df, metric = "attack_rate_diff") {
 
   # Combine data from all numeric sensitivity dimensions with correct baseline mappings
   # (seed is excluded: categorical dimension, plotted separately via individual plots)
-  sens_dimensions <- c("r0", "eps", "sar", "fold", "gamma")
+  sens_dimensions <- c("r0", "eps", "sar", "fold", "gamma", "vax_A", "vax_C", "vax_eff")
   plot_data <- bind_rows(
     lapply(sens_dimensions, function(dim) prepare_sensitivity_data(diff_df, dim))
   ) %>%
     mutate(
       sens_type_label = case_when(
-        sens_type == "r0" ~ "R0",
-        sens_type == "eps" ~ "Assortativity (eta)",
-        sens_type == "sar" ~ "SAR (Crowded)",
-        sens_type == "fold" ~ "Crowding Fold",
-        sens_type == "gamma" ~ "Infectious Period",
-        sens_type == "seed" ~ "Seed Target",
+        sens_type == "r0"      ~ "R0",
+        sens_type == "eps"     ~ "Assortativity (eta)",
+        sens_type == "sar"     ~ "SAR (Crowded)",
+        sens_type == "fold"    ~ "Crowding Fold",
+        sens_type == "gamma"   ~ "Infectious Period",
+        sens_type == "vax_A"   ~ "Vax Coverage (Ag)",
+        sens_type == "vax_C"   ~ "Vax Coverage (Comm.)",
+        sens_type == "vax_eff" ~ "Vaccine Effectiveness",
         TRUE ~ sens_type
       ),
       sens_type_label = factor(sens_type_label,
                                levels = c("R0", "Assortativity (eta)",
                                           "SAR (Crowded)", "Crowding Fold",
                                           "Infectious Period",
-                                          "Seed Target"))
+                                          "Vax Coverage (Ag)",
+                                          "Vax Coverage (Comm.)",
+                                          "Vaccine Effectiveness"))
     ) %>%
     # Create numeric x for proper line connections within each facet
     group_by(sens_type) %>%
@@ -282,7 +289,7 @@ plot_sensitivity_overview <- function(diff_df, metric = "attack_rate_diff") {
     ggplot(aes(x = factor(sens_value), y = .data[[metric]], color = factor(REGION6))) +
     geom_line(aes(group = REGION6), alpha = 0.4, linewidth = 1) +
     geom_point(size = 1.5, alpha = 0.8) +
-    facet_wrap(~sens_type_label, scales = "free_x", nrow = 1) +
+    facet_wrap(~sens_type_label, scales = "free_x", nrow = 2, ncol = 4) +
     scale_color_manual(values = cb_palette, labels = region_labels) +
     labs(
       x = "Parameter Value",
@@ -325,7 +332,10 @@ plot_epidemic_curves <- function(all_data, sens_dimension, region = 1) {
     labs(
       x = "Time (days)",
       y = "Proportion Infected",
-      color = paste0(c("r0" = "R0", "eps" = "eta", "sar" = "SAR", "fold" = "FOLD", "gamma" = "Infectious Period", "seed" = "Seed Target")[sens_dimension], " Value"),
+      color = paste0(c("r0" = "R0", "eps" = "eta", "sar" = "SAR", "fold" = "FOLD",
+                       "gamma" = "Infectious Period", "seed" = "Seed Target",
+                       "vax_A" = "Ag Vax Coverage", "vax_C" = "Comm Vax Coverage",
+                       "vax_eff" = "Vaccine Effectiveness")[sens_dimension], " Value"),
       linetype = "Population",
       title = paste("Epidemic Curves - Region", region)
     ) +
@@ -347,12 +357,15 @@ plot_epidemic_curves <- function(all_data, sens_dimension, region = 1) {
 plot_epidemic_curves_all_regions <- function(all_data, sens_dimension, metric = "I_indiv") {
 
   sens_labels <- c(
-    "r0" = "R0",
-    "eps" = "Assortativity (eta)",
-    "sar" = "SAR (Crowded)",
-    "fold" = "Crowding Fold Diff.",
-    "gamma" = "Infectious Period",
-    "seed" = "Seed Target"
+    "r0"      = "R0",
+    "eps"     = "Assortativity (eta)",
+    "sar"     = "SAR (Crowded)",
+    "fold"    = "Crowding Fold Diff.",
+    "gamma"   = "Infectious Period",
+    "seed"    = "Seed Target",
+    "vax_A"   = "Vax Coverage (Ag)",
+    "vax_C"   = "Vax Coverage (Comm.)",
+    "vax_eff" = "Vaccine Effectiveness"
   )
 
   metric_labels <- c(
@@ -410,12 +423,15 @@ plot_epidemic_curves_all_regions <- function(all_data, sens_dimension, metric = 
 plot_relative_infection_all_regions <- function(all_data, sens_dimension) {
 
   sens_labels <- c(
-    "r0" = "R0",
-    "eps" = "Assortativity (eta)",
-    "sar" = "SAR (Crowded)",
-    "fold" = "Crowding Fold Diff.",
-    "gamma" = "Infectious Period",
-    "seed" = "Seed Target"
+    "r0"      = "R0",
+    "eps"     = "Assortativity (eta)",
+    "sar"     = "SAR (Crowded)",
+    "fold"    = "Crowding Fold Diff.",
+    "gamma"   = "Infectious Period",
+    "seed"    = "Seed Target",
+    "vax_A"   = "Vax Coverage (Ag)",
+    "vax_C"   = "Vax Coverage (Comm.)",
+    "vax_eff" = "Vaccine Effectiveness"
   )
 
   # Use helper to get data with correctly mapped baseline values
@@ -495,53 +511,95 @@ run_sensitivity_analysis <- function() {
   # Overview figure - attack rate differential across all dimensions
   fig_overview <- plot_sensitivity_overview(diff_stats, "attack_rate_diff")
   ggsave(file.path(paths$figures_dir, "sensitivity_overview_attackrate.pdf"),
-         fig_overview, width = 12, height = 5)
+         fig_overview, width = 16, height = 9)
   ggsave(file.path(paths$figures_dir, "sensitivity_overview_attackrate.png"),
-         fig_overview, width = 12, height = 5, dpi = 300)
+         fig_overview, width = 16, height = 9, dpi = 300)
   cat("  Saved: sensitivity_overview_attackrate.pdf/.png\n")
 
   # Overview figure - peak prevalence differential across all dimensions
   fig_overview_peak <- plot_sensitivity_overview(diff_stats, "peak_prevalence_diff")
   ggsave(file.path(paths$figures_dir, "sensitivity_overview_peaksize.pdf"),
-         fig_overview_peak, width = 12, height = 5)
+         fig_overview_peak, width = 16, height = 9)
   ggsave(file.path(paths$figures_dir, "sensitivity_overview_peaksize.png"),
-         fig_overview_peak, width = 12, height = 5, dpi = 300)
+         fig_overview_peak, width = 16, height = 9, dpi = 300)
   cat("  Saved: sensitivity_overview_peaksize.pdf/.png\n")
 
   # Overview figure - peak timing differential across all dimensions
   fig_overview_timing <- plot_sensitivity_overview(diff_stats, "time_to_peak_diff")
   ggsave(file.path(paths$figures_dir, "sensitivity_overview_peaktiming.pdf"),
-         fig_overview_timing, width = 12, height = 5)
+         fig_overview_timing, width = 16, height = 9)
   ggsave(file.path(paths$figures_dir, "sensitivity_overview_peaktiming.png"),
-         fig_overview_timing, width = 12, height = 5, dpi = 300)
+         fig_overview_timing, width = 16, height = 9, dpi = 300)
   cat("  Saved: sensitivity_overview_peaktiming.pdf/.png\n")
 
   # Overview figure - max relative infection rate across all dimensions
   fig_overview_relinf <- plot_sensitivity_overview(diff_stats, "max_relative_infection")
   ggsave(file.path(paths$figures_dir, "sensitivity_overview_max_relative_infection.pdf"),
-         fig_overview_relinf, width = 12, height = 5)
+         fig_overview_relinf, width = 16, height = 9)
   ggsave(file.path(paths$figures_dir, "sensitivity_overview_max_relative_infection.png"),
-         fig_overview_relinf, width = 12, height = 5, dpi = 300)
+         fig_overview_relinf, width = 16, height = 9, dpi = 300)
   cat("  Saved: sensitivity_overview_max_relative_infection.pdf/.png\n")
 
   # Overview figure - peak prevalence ratio across all dimensions
   fig_overview_peakratio <- plot_sensitivity_overview(diff_stats, "peak_prevalence_ratio")
   ggsave(file.path(paths$figures_dir, "sensitivity_overview_peak_prevalence_ratio.pdf"),
-         fig_overview_peakratio, width = 12, height = 5)
+         fig_overview_peakratio, width = 16, height = 9)
   ggsave(file.path(paths$figures_dir, "sensitivity_overview_peak_prevalence_ratio.png"),
-         fig_overview_peakratio, width = 12, height = 5, dpi = 300)
+         fig_overview_peakratio, width = 16, height = 9, dpi = 300)
   cat("  Saved: sensitivity_overview_peak_prevalence_ratio.pdf/.png\n")
 
   # Overview figure - attack rate ratio across all dimensions
   fig_overview_arratio <- plot_sensitivity_overview(diff_stats, "attack_rate_ratio")
   ggsave(file.path(paths$figures_dir, "sensitivity_overview_attack_rate_ratio.pdf"),
-         fig_overview_arratio, width = 12, height = 5)
+         fig_overview_arratio, width = 16, height = 9)
   ggsave(file.path(paths$figures_dir, "sensitivity_overview_attack_rate_ratio.png"),
-         fig_overview_arratio, width = 12, height = 5, dpi = 300)
+         fig_overview_arratio, width = 16, height = 9, dpi = 300)
   cat("  Saved: sensitivity_overview_attack_rate_ratio.pdf/.png\n")
 
+  # Vaccination overview figure (separate from epidemic-model overview)
+  vax_dimensions <- c("vax_A", "vax_C", "vax_eff")
+  vax_plot_data <- bind_rows(
+    lapply(vax_dimensions, function(dim) prepare_sensitivity_data(diff_stats, dim))
+  ) %>%
+    mutate(
+      sens_type_label = case_when(
+        sens_type == "vax_A"   ~ "Vax Coverage (Ag)",
+        sens_type == "vax_C"   ~ "Vax Coverage (Comm.)",
+        sens_type == "vax_eff" ~ "Vaccine Effectiveness",
+        TRUE ~ sens_type
+      ),
+      sens_type_label = factor(sens_type_label,
+                               levels = c("Vax Coverage (Ag)", "Vax Coverage (Comm.)",
+                                          "Vaccine Effectiveness"))
+    )
+
+  cb_palette <- c("#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#D55E00")
+  region_labels <- setNames(region_map$REGION_NAME, region_map$REGION6)
+
+  fig_vax_overview <- vax_plot_data %>%
+    ggplot(aes(x = factor(sens_value), y = attack_rate_diff, color = factor(REGION6))) +
+    geom_line(aes(group = REGION6), alpha = 0.4, linewidth = 1) +
+    geom_point(size = 1.5, alpha = 0.8) +
+    geom_hline(yintercept = 0, linetype = "dashed", color = "gray50", alpha = 0.5) +
+    facet_wrap(~sens_type_label, scales = "free_x", nrow = 1) +
+    scale_color_manual(values = cb_palette, labels = region_labels) +
+    labs(
+      x = "Parameter Value",
+      y = "Difference in Final Size\n(Agricultural - Community)",
+      color = "Region"
+    ) +
+    theme_classic(base_size = 17) +
+    theme(legend.position = "bottom", strip.text = element_text(face = "bold"),
+          panel.grid.minor = element_blank())
+
+  ggsave(file.path(paths$figures_dir, "sensitivity_vax_overview_attackrate.pdf"),
+         fig_vax_overview, width = 10, height = 5)
+  ggsave(file.path(paths$figures_dir, "sensitivity_vax_overview_attackrate.png"),
+         fig_vax_overview, width = 10, height = 5, dpi = 300)
+  cat("  Saved: sensitivity_vax_overview_attackrate.pdf/.png\n")
+
   # Individual sensitivity dimension plots
-  sens_dimensions <- c("r0", "eps", "sar", "fold", "gamma", "seed")
+  sens_dimensions <- c("r0", "eps", "sar", "fold", "gamma", "seed", "vax_A", "vax_C", "vax_eff")
 
   for (sens_dim in sens_dimensions) {
     # Check if data exists for this dimension (handle NA values)
