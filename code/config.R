@@ -131,9 +131,11 @@ sensitivity_values <- list(
   sar     = c(0.20, 0.30, 0.40, 0.50, 0.60),
   fold    = c(1, 2, 3),
   gamma   = c(1/3, 1/5, 1/10),
-  vax_A   = c(0.2, 0.4, 0.6, 0.8),   # Ag worker coverage;  baseline = 0.4
-  vax_C   = c(0.3, 0.4, 0.5, 0.6),   # Community coverage;  baseline = 0.5
-  vax_eff = c(0.2, 0.4, 0.6, 0.8)    # Vaccine efficacy;    baseline = 0.6
+  vax_A         = c(0.2, 0.4, 0.6, 0.8),   # Ag worker coverage;  baseline = 0.4
+  vax_C         = c(0.3, 0.4, 0.5, 0.6),   # Community coverage;  baseline = 0.5
+  vax_eff       = c(0.2, 0.4, 0.6, 0.8),   # Vaccine efficacy;    baseline = 0.6
+  obesity_or    = c(1, 1.5, 3),             # Obesity → symptomatic OR; baseline = 1.5
+  obesity_obs_A = c(0.40, 0.50, 0.55, 0.60, 0.70)  # Ag worker obesity prev; baseline = 0.55
 )
 
 # ==============================================================================

@@ -155,7 +155,7 @@ for (r0 in r0_values) {
 }
 
 # --- Assortativity (eps) Sensitivity ---
-# Skip eps=0.33 since it's already in R0 sensitivity at baseline R0
+# Skip eps=1/3 since it's already in R0 sensitivity at baseline R0
 for (eps in eps_values[eps_values != default_pars$eps]) {
   parset_counter <- parset_counter + 1
   pars_list[[parset_counter]] <- create_parset(
@@ -340,6 +340,9 @@ pars_metadata <- tibble::tibble(
   sens_type = sapply(pars_list, `[[`, "sens_type"),
   sens_value = sapply(pars_list, `[[`, "sens_value"),
   parset_name = sapply(pars_list, `[[`, "parset_name"),
+  r0 = ifelse(sapply(pars_list, `[[`, "sens_type") == "r0",
+              sapply(pars_list, `[[`, "sens_value"),
+              default_pars$r0),
   gamma = sapply(pars_list, `[[`, "gamma"),
   sar_uncrowded = sapply(pars_list, `[[`, "sar_uncrowded"),
   sar_crowded = sapply(pars_list, `[[`, "sar_crowded"),

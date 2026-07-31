@@ -5,10 +5,15 @@
 # summaries and visualizations across the sensitivity dimensions:
 #   1. R0 values: 1.2, 1.5 (baseline), 2.0, 3.0
 #   2. Assortativity (eta = 1-eps): 0, 1/4, 1/3, 1/2, 2/3 (baseline), 3/4
-#   3. SAR in crowded households: 30%, 40% (baseline), 50%, 60%
+#   3. SAR in crowded households: 20%, 30%, 40% (baseline), 50%, 60%
 #   4. Crowding fold difference: 1, 2 (baseline), 3
 #   5. Gamma (recovery rate): 1/3, 1/5 (baseline), 1/10
 #   6. Seed target: C only, both (baseline), A only
+#   7. Ag worker vaccination coverage: 0.2, 0.4 (baseline), 0.6, 0.8
+#   8. Community vaccination coverage: 0.3, 0.4, 0.5 (baseline), 0.6
+#   9. Vaccine effectiveness: 0.2, 0.4, 0.6 (baseline), 0.8
+#  10. Obesity OR (symptom risk): 1, 1.5 (baseline), 3
+#  11. Ag worker obesity prevalence: 0.40, 0.50, 0.55 (baseline), 0.60, 0.70
 #
 # Baseline values are defined in config.R (default_pars)
 #
@@ -158,15 +163,17 @@ calculate_max_relative_infection <- function(all_data) {
 # Baseline parameter values from config.R
 # Used to map the baseline parset to correct values for each dimension
 baseline_values <- list(
-  r0 = default_pars$r0,
-  eps = default_pars$eps,
-  sar = default_pars$sar_crowded,
-  fold = default_pars$crowding_fold_diff,
-  gamma = default_pars$gamma,
-  seed = 2,                        # Numeric code: 1=C only, 2=Both (baseline), 3=A only
-  vax_A   = default_pars$vax_cov_A,
-  vax_C   = default_pars$vax_cov_C,
-  vax_eff = default_pars$vax_eff
+  r0            = default_pars$r0,
+  eps           = default_pars$eps,
+  sar           = default_pars$sar_crowded,
+  fold          = default_pars$crowding_fold_diff,
+  gamma         = default_pars$gamma,
+  seed          = 2,                        # Numeric code: 1=C only, 2=Both (baseline), 3=A only
+  vax_A         = default_pars$vax_cov_A,
+  vax_C         = default_pars$vax_cov_C,
+  vax_eff       = default_pars$vax_eff,
+  obesity_or    = comorbidity_pars$or_symp_obesity,
+  obesity_obs_A = comorbidity_pars$obs_A
 )
 
 #' Prepare data for sensitivity plotting
@@ -185,9 +192,11 @@ prepare_sensitivity_data <- function(df, sens_dimension) {
   sens_rows <- df %>%
     filter(!is.na(sens_type) & sens_type == sens_dimension)
 
-  # Get baseline row and update sens_value to the correct baseline for this dimension
+  # Get baseline row and update sens_value to the correct baseline for this dimension.
+  # Filter to sens_type == "r0" to exclude obesity sensitivity rows, which also carry
+  # parset_name == baseline_parset but should not be used as the epidemic baseline.
   baseline_rows <- df %>%
-    filter(parset_name == baseline_parset) %>%
+    filter(parset_name == baseline_parset, sens_type == "r0") %>%
     mutate(
       sens_type = sens_dimension,
       sens_value = baseline_values[[sens_dimension]]
@@ -202,11 +211,9 @@ prepare_sensitivity_data <- function(df, sens_dimension) {
     baseline_val <- baseline_values[[sens_dimension]]
     existing_vals <- unique(sens_rows$sens_value)
 
-    if (baseline_val %in% existing_vals) {
-      # Baseline already represented (shouldn't happen with current parameters.R logic)
+    if (any(abs(existing_vals - baseline_val) < 1e-8)) {
       result <- sens_rows
     } else {
-      # Add the remapped baseline
       result <- bind_rows(sens_rows, baseline_rows)
     }
   }
@@ -242,20 +249,24 @@ plot_sensitivity_overview <- function(diff_df, metric = "attack_rate_diff") {
 
   # Combine data from all numeric sensitivity dimensions with correct baseline mappings
   # (seed is excluded: categorical dimension, plotted separately via individual plots)
-  sens_dimensions <- c("r0", "eps", "sar", "fold", "gamma", "vax_A", "vax_C", "vax_eff")
+  sens_dimensions <- c("r0", "eps", "sar", "fold", "gamma",
+                       "vax_A", "vax_C", "vax_eff",
+                       "obesity_or", "obesity_obs_A")
   plot_data <- bind_rows(
     lapply(sens_dimensions, function(dim) prepare_sensitivity_data(diff_df, dim))
   ) %>%
     mutate(
       sens_type_label = case_when(
-        sens_type == "r0"      ~ "R0",
-        sens_type == "eps"     ~ "Assortativity (eta)",
-        sens_type == "sar"     ~ "SAR (Crowded)",
-        sens_type == "fold"    ~ "Crowding Fold",
-        sens_type == "gamma"   ~ "Infectious Period",
-        sens_type == "vax_A"   ~ "Vax Coverage (Ag)",
-        sens_type == "vax_C"   ~ "Vax Coverage (Comm.)",
-        sens_type == "vax_eff" ~ "Vaccine Effectiveness",
+        sens_type == "r0"           ~ "R0",
+        sens_type == "eps"          ~ "Assortativity (eta)",
+        sens_type == "sar"          ~ "SAR (Crowded)",
+        sens_type == "fold"         ~ "Crowding Fold",
+        sens_type == "gamma"        ~ "Infectious Period",
+        sens_type == "vax_A"        ~ "Vax Coverage (Ag)",
+        sens_type == "vax_C"        ~ "Vax Coverage (Comm.)",
+        sens_type == "vax_eff"      ~ "Vaccine Effectiveness",
+        sens_type == "obesity_or"    ~ "Obesity OR\n(Symptom Risk)",
+        sens_type == "obesity_obs_A" ~ "Obesity Prevalence\n(Ag Workers)",
         TRUE ~ sens_type
       ),
       sens_type_label = factor(sens_type_label,
@@ -264,7 +275,9 @@ plot_sensitivity_overview <- function(diff_df, metric = "attack_rate_diff") {
                                           "Infectious Period",
                                           "Vax Coverage (Ag)",
                                           "Vax Coverage (Comm.)",
-                                          "Vaccine Effectiveness"))
+                                          "Vaccine Effectiveness",
+                                          "Obesity OR\n(Symptom Risk)",
+                                          "Obesity Prevalence\n(Ag Workers)"))
     ) %>%
     # Create numeric x for proper line connections within each facet
     group_by(sens_type) %>%
@@ -272,24 +285,54 @@ plot_sensitivity_overview <- function(diff_df, metric = "attack_rate_diff") {
     ungroup()
 
   metric_labels <- c(
-    "attack_rate_diff" = "Difference in Final Size\n(Agricultural - Community)",
-    "peak_prevalence_diff" = "Peak Prevalence Difference\n(Agricultural - Community)",
+    "attack_rate_diff" = "Difference in Symptomatic Case Fraction\n(Agricultural - Community)",
+    "peak_prevalence_diff" = "Peak Symptomatic Prevalence Difference\n(Agricultural - Community)",
     "time_to_peak_diff" = "Peak Timing Difference in Days\n(Agricultural - Community)",
-    "max_relative_infection" = "Max Relative Prevalence\n(Agricultural / Community)",
-    "peak_prevalence_ratio" = "Peak Prevalence Ratio\n(Agricultural / Community)",
-    "attack_rate_ratio" = "Final Size Ratio\n(Agricultural / Community)",
-    "final_attack_rate_A" = "Final Size\n(Agricultural Workers)"
+    "max_relative_infection" = "Max Relative Symptomatic Prevalence\n(Agricultural / Community)",
+    "peak_prevalence_ratio" = "Peak Symptomatic Prevalence Ratio\n(Agricultural / Community)",
+    "attack_rate_ratio" = "Symptomatic Case Fraction Ratio\n(Agricultural / Community)",
+    "final_attack_rate_A" = "Symptomatic Case Fraction\n(Agricultural Workers)"
   )
 
   # Colorblind-friendly palette (Okabe-Ito) and region labels
   cb_palette <- c("#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#D55E00")
   region_labels <- setNames(region_map$REGION_NAME, region_map$REGION6)
 
+  # Baseline values after the same transforms applied in prepare_sensitivity_data()
+  baseline_transformed <- list(
+    r0            = baseline_values$r0,
+    eps           = round(1 - baseline_values$eps, 2),
+    sar           = baseline_values$sar,
+    fold          = baseline_values$fold,
+    gamma         = round(1 / baseline_values$gamma),
+    vax_A         = baseline_values$vax_A,
+    vax_C         = baseline_values$vax_C,
+    vax_eff       = baseline_values$vax_eff,
+    obesity_or    = baseline_values$obesity_or,
+    obesity_obs_A = baseline_values$obesity_obs_A
+  )
+
+  # x_numeric position of the baseline in each facet (1 = leftmost factor level)
+  vline_data <- plot_data %>%
+    distinct(sens_type, sens_type_label, sens_value, x_numeric) %>%
+    group_by(sens_type, sens_type_label) %>%
+    summarise(
+      baseline_x = {
+        bval <- baseline_transformed[[unique(sens_type)]]
+        idx  <- which(abs(sens_value - bval) < 1e-8)
+        if (length(idx) > 0) x_numeric[idx[1]] else NA_real_
+      },
+      .groups = "drop"
+    ) %>%
+    filter(!is.na(baseline_x))
+
   p <- plot_data %>%
     ggplot(aes(x = factor(sens_value), y = .data[[metric]], color = factor(REGION6))) +
+    geom_vline(data = vline_data, aes(xintercept = baseline_x),
+               linetype = "dashed", color = "gray50", alpha = 0.5) +
     geom_line(aes(group = REGION6), alpha = 0.4, linewidth = 1) +
     geom_point(size = 1.5, alpha = 0.8) +
-    facet_wrap(~sens_type_label, scales = "free_x", nrow = 2, ncol = 4) +
+    facet_wrap(~sens_type_label, scales = "free_x", nrow = 2, ncol = 5) +
     scale_color_manual(values = cb_palette, labels = region_labels) +
     labs(
       x = "Parameter Value",
@@ -331,11 +374,12 @@ plot_epidemic_curves <- function(all_data, sens_dimension, region = 1) {
     geom_line(linewidth = 0.8, alpha = 0.8) +
     labs(
       x = "Time (days)",
-      y = "Proportion Infected",
+      y = "Symptomatic Fraction",
       color = paste0(c("r0" = "R0", "eps" = "eta", "sar" = "SAR", "fold" = "FOLD",
                        "gamma" = "Infectious Period", "seed" = "Seed Target",
                        "vax_A" = "Ag Vax Coverage", "vax_C" = "Comm Vax Coverage",
-                       "vax_eff" = "Vaccine Effectiveness")[sens_dimension], " Value"),
+                       "vax_eff" = "Vaccine Effectiveness",
+                       "obesity_or" = "Obesity OR", "obesity_obs_A" = "Ag Obesity Prev.")[sens_dimension], " Value"),
       linetype = "Population",
       title = paste("Epidemic Curves - Region", region)
     ) +
@@ -363,19 +407,21 @@ plot_epidemic_curves_all_regions <- function(all_data, sens_dimension, metric = 
     "fold"    = "Crowding Fold Diff.",
     "gamma"   = "Infectious Period",
     "seed"    = "Seed Target",
-    "vax_A"   = "Vax Coverage (Ag)",
-    "vax_C"   = "Vax Coverage (Comm.)",
-    "vax_eff" = "Vaccine Effectiveness"
+    "vax_A"        = "Vax Coverage (Ag)",
+    "vax_C"        = "Vax Coverage (Comm.)",
+    "vax_eff"      = "Vaccine Effectiveness",
+    "obesity_or"   = "Obesity OR (Symptom Risk)",
+    "obesity_obs_A" = "Ag Worker Obesity Prevalence"
   )
 
   metric_labels <- c(
-    "I_indiv" = "Proportion Currently Infected",
-    "R_indiv" = "Cumulative Proportion Infected"
+    "I_indiv" = "Proportion Currently Symptomatic",
+    "R_indiv" = "Cumulative Symptomatic Fraction"
   )
 
   title_type <- c(
-    "I_indiv" = "Epidemic Curves",
-    "R_indiv" = "Cumulative Infections"
+    "I_indiv" = "Symptomatic Cases",
+    "R_indiv" = "Cumulative Symptomatic Cases"
   )
 
   # Use helper to get data with correctly mapped baseline values
@@ -392,7 +438,7 @@ plot_epidemic_curves_all_regions <- function(all_data, sens_dimension, metric = 
     ggplot(aes(x = t, y = .data[[metric]], color = factor(sens_value), linetype = subpop)) +
     geom_line(linewidth = 0.9, alpha = 0.8) +
     facet_wrap(~region_label, ncol = 3) +
-    {if (metric == "R_indiv") scale_y_continuous(limits = c(0, 1))} +
+    {if (metric == "R_indiv") scale_y_continuous(limits = c(0, NA))} +
     scale_color_manual(values = cb_palette[1:n_levels]) +
     labs(
       x = "Time (days)",
@@ -429,9 +475,11 @@ plot_relative_infection_all_regions <- function(all_data, sens_dimension) {
     "fold"    = "Crowding Fold Diff.",
     "gamma"   = "Infectious Period",
     "seed"    = "Seed Target",
-    "vax_A"   = "Vax Coverage (Ag)",
-    "vax_C"   = "Vax Coverage (Comm.)",
-    "vax_eff" = "Vaccine Effectiveness"
+    "vax_A"        = "Vax Coverage (Ag)",
+    "vax_C"        = "Vax Coverage (Comm.)",
+    "vax_eff"      = "Vaccine Effectiveness",
+    "obesity_or"   = "Obesity OR (Symptom Risk)",
+    "obesity_obs_A" = "Ag Worker Obesity Prevalence"
   )
 
   # Use helper to get data with correctly mapped baseline values
@@ -483,7 +531,49 @@ run_sensitivity_analysis <- function() {
 
   # Load all results
   cat("Loading simulation results...\n")
-  all_data <- load_all_regional_outputs()
+  all_data_raw <- load_all_regional_outputs()
+
+  # Create obesity sensitivity rows before applying baseline p_symp.
+  # Obesity is post-hoc (no new epidemic runs needed): we take the baseline
+  # parset and apply a different p_symp_A for each obesity parameter value.
+  baseline_pn  <- paste0("r0_", default_pars$r0)
+  baseline_raw <- all_data_raw %>% filter(parset_name == baseline_pn)
+
+  make_obesity_rows <- function(data_raw, or_val, obs_A_val, stype, sval) {
+    p_A <- compute_p_symp(obs_A_val, or_val)
+    pm  <- setNames(c(p_A, p_symp_C), c("A", "C"))   # p_symp_C = 0.50 always
+    data_raw %>%
+      mutate(
+        I_indiv   = I_indiv   * pm[subpop],
+        R_indiv   = R_indiv   * pm[subpop],
+        sens_type  = stype,
+        sens_value = sval
+      )
+  }
+
+  obesity_rows <- bind_rows(
+    # Vary or_symp_obesity (hold obs_A at baseline)
+    bind_rows(lapply(sensitivity_values$obesity_or, function(or_val) {
+      make_obesity_rows(baseline_raw, or_val, comorbidity_pars$obs_A,
+                        "obesity_or", or_val)
+    })),
+    # Vary obs_A (hold or_symp_obesity at baseline)
+    bind_rows(lapply(sensitivity_values$obesity_obs_A, function(obs_val) {
+      make_obesity_rows(baseline_raw, comorbidity_pars$or_symp_obesity, obs_val,
+                        "obesity_obs_A", obs_val)
+    }))
+  )
+
+  # Apply baseline p_symp to all epidemic model data, then append obesity rows
+  p_symp_map <- setNames(c(p_symp_A, p_symp_C), c("A", "C"))
+  all_data <- all_data_raw %>%
+    mutate(
+      I_indiv = I_indiv * p_symp_map[subpop],
+      R_indiv = R_indiv * p_symp_map[subpop]
+    ) %>%
+    bind_rows(obesity_rows)
+  cat("  Applied p_symp: A =", round(p_symp_A, 4), ", C =", round(p_symp_C, 4),
+      "(results in symptomatic cases; obesity sensitivity appended)\n")
 
   cat("\nData summary:\n")
   cat("  Total rows:", nrow(all_data), "\n")
@@ -511,49 +601,49 @@ run_sensitivity_analysis <- function() {
   # Overview figure - attack rate differential across all dimensions
   fig_overview <- plot_sensitivity_overview(diff_stats, "attack_rate_diff")
   ggsave(file.path(paths$figures_dir, "sensitivity_overview_attackrate.pdf"),
-         fig_overview, width = 16, height = 9)
+         fig_overview, width = 20, height = 9)
   ggsave(file.path(paths$figures_dir, "sensitivity_overview_attackrate.png"),
-         fig_overview, width = 16, height = 9, dpi = 300)
+         fig_overview, width = 20, height = 9, dpi = 300)
   cat("  Saved: sensitivity_overview_attackrate.pdf/.png\n")
 
   # Overview figure - peak prevalence differential across all dimensions
   fig_overview_peak <- plot_sensitivity_overview(diff_stats, "peak_prevalence_diff")
   ggsave(file.path(paths$figures_dir, "sensitivity_overview_peaksize.pdf"),
-         fig_overview_peak, width = 16, height = 9)
+         fig_overview_peak, width = 20, height = 9)
   ggsave(file.path(paths$figures_dir, "sensitivity_overview_peaksize.png"),
-         fig_overview_peak, width = 16, height = 9, dpi = 300)
+         fig_overview_peak, width = 20, height = 9, dpi = 300)
   cat("  Saved: sensitivity_overview_peaksize.pdf/.png\n")
 
   # Overview figure - peak timing differential across all dimensions
   fig_overview_timing <- plot_sensitivity_overview(diff_stats, "time_to_peak_diff")
   ggsave(file.path(paths$figures_dir, "sensitivity_overview_peaktiming.pdf"),
-         fig_overview_timing, width = 16, height = 9)
+         fig_overview_timing, width = 20, height = 9)
   ggsave(file.path(paths$figures_dir, "sensitivity_overview_peaktiming.png"),
-         fig_overview_timing, width = 16, height = 9, dpi = 300)
+         fig_overview_timing, width = 20, height = 9, dpi = 300)
   cat("  Saved: sensitivity_overview_peaktiming.pdf/.png\n")
 
   # Overview figure - max relative infection rate across all dimensions
   fig_overview_relinf <- plot_sensitivity_overview(diff_stats, "max_relative_infection")
   ggsave(file.path(paths$figures_dir, "sensitivity_overview_max_relative_infection.pdf"),
-         fig_overview_relinf, width = 16, height = 9)
+         fig_overview_relinf, width = 20, height = 9)
   ggsave(file.path(paths$figures_dir, "sensitivity_overview_max_relative_infection.png"),
-         fig_overview_relinf, width = 16, height = 9, dpi = 300)
+         fig_overview_relinf, width = 20, height = 9, dpi = 300)
   cat("  Saved: sensitivity_overview_max_relative_infection.pdf/.png\n")
 
   # Overview figure - peak prevalence ratio across all dimensions
   fig_overview_peakratio <- plot_sensitivity_overview(diff_stats, "peak_prevalence_ratio")
   ggsave(file.path(paths$figures_dir, "sensitivity_overview_peak_prevalence_ratio.pdf"),
-         fig_overview_peakratio, width = 16, height = 9)
+         fig_overview_peakratio, width = 20, height = 9)
   ggsave(file.path(paths$figures_dir, "sensitivity_overview_peak_prevalence_ratio.png"),
-         fig_overview_peakratio, width = 16, height = 9, dpi = 300)
+         fig_overview_peakratio, width = 20, height = 9, dpi = 300)
   cat("  Saved: sensitivity_overview_peak_prevalence_ratio.pdf/.png\n")
 
   # Overview figure - attack rate ratio across all dimensions
   fig_overview_arratio <- plot_sensitivity_overview(diff_stats, "attack_rate_ratio")
   ggsave(file.path(paths$figures_dir, "sensitivity_overview_attack_rate_ratio.pdf"),
-         fig_overview_arratio, width = 16, height = 9)
+         fig_overview_arratio, width = 20, height = 9)
   ggsave(file.path(paths$figures_dir, "sensitivity_overview_attack_rate_ratio.png"),
-         fig_overview_arratio, width = 16, height = 9, dpi = 300)
+         fig_overview_arratio, width = 20, height = 9, dpi = 300)
   cat("  Saved: sensitivity_overview_attack_rate_ratio.pdf/.png\n")
 
   # Vaccination overview figure (separate from epidemic-model overview)
@@ -585,7 +675,7 @@ run_sensitivity_analysis <- function() {
     scale_color_manual(values = cb_palette, labels = region_labels) +
     labs(
       x = "Parameter Value",
-      y = "Difference in Final Size\n(Agricultural - Community)",
+      y = "Difference in Symptomatic Case Fraction\n(Agricultural - Community)",
       color = "Region"
     ) +
     theme_classic(base_size = 17) +
@@ -599,7 +689,9 @@ run_sensitivity_analysis <- function() {
   cat("  Saved: sensitivity_vax_overview_attackrate.pdf/.png\n")
 
   # Individual sensitivity dimension plots
-  sens_dimensions <- c("r0", "eps", "sar", "fold", "gamma", "seed", "vax_A", "vax_C", "vax_eff")
+  sens_dimensions <- c("r0", "eps", "sar", "fold", "gamma", "seed",
+                       "vax_A", "vax_C", "vax_eff",
+                       "obesity_or", "obesity_obs_A")
 
   for (sens_dim in sens_dimensions) {
     # Check if data exists for this dimension (handle NA values)
@@ -688,6 +780,14 @@ calculate_county_summary <- function(county_file = file.path(paths$output_dir, "
   cat("Loading county simulation data...\n")
   county_data <- read_csv(county_file, show_col_types = FALSE)
 
+  # Convert infections to symptomatic cases
+  p_symp_map <- setNames(c(p_symp_A, p_symp_C), c("A", "C"))
+  county_data <- county_data %>%
+    mutate(
+      I_indiv = I_indiv * p_symp_map[subpop],
+      R_indiv = R_indiv * p_symp_map[subpop]
+    )
+
   # Per-county summary stats (same metrics as regional)
   county_stats <- county_data %>%
     group_by(GEOID, REGION6, subpop) %>%
@@ -741,3 +841,81 @@ results <- run_sensitivity_analysis()
 
 # Run county-level summary if county data exists
 county_results <- calculate_county_summary()
+
+# ==============================================================================
+# Parameter Table CSV (for Supplementary Table S2)
+# ==============================================================================
+# Builds one row per sensitivity scenario with all primary, derived, and
+# post-hoc parameters. Obesity rows are appended separately because they are
+# post-hoc (p_symp only) and do not appear in pars_list.
+
+cat("\nBuilding parameter table...\n")
+
+# Baseline parset used as the template for obesity-sensitivity rows
+baseline_pn <- paste0("r0_", default_pars$r0)
+baseline_meta <- pars_metadata[pars_metadata$parset_name == baseline_pn, ]
+
+# Epidemic + vaccination parameter sets from pars_list
+param_table_epidemic <- pars_metadata %>%
+  mutate(
+    eta           = round(1 - eps, 6),
+    obesity_obs_A = comorbidity_pars$obs_A,
+    obesity_or    = comorbidity_pars$or_symp_obesity,
+    p_symp_A      = p_symp_A,
+    p_symp_C      = p_symp_C
+  )
+
+# Obesity sensitivity rows (baseline epidemic params, varying p_symp only)
+obesity_or_rows <- lapply(sensitivity_values$obesity_or, function(or_val) {
+  baseline_meta %>%
+    mutate(
+      sens_type     = "obesity_or",
+      sens_value    = or_val,
+      parset_name   = paste0("obesity_or_", or_val),
+      eta           = round(1 - eps, 6),
+      obesity_obs_A = comorbidity_pars$obs_A,
+      obesity_or    = or_val,
+      p_symp_A      = compute_p_symp(comorbidity_pars$obs_A, or_val),
+      p_symp_C      = compute_p_symp(comorbidity_pars$obs_C, or_val)
+    )
+})
+
+obesity_obs_rows <- lapply(sensitivity_values$obesity_obs_A, function(obs_val) {
+  baseline_meta %>%
+    mutate(
+      sens_type     = "obesity_obs_A",
+      sens_value    = obs_val,
+      parset_name   = paste0("obesity_obs_A_", obs_val),
+      eta           = round(1 - eps, 6),
+      obesity_obs_A = obs_val,
+      obesity_or    = comorbidity_pars$or_symp_obesity,
+      p_symp_A      = compute_p_symp(obs_val, comorbidity_pars$or_symp_obesity),
+      p_symp_C      = p_symp_C
+    )
+})
+
+param_table <- bind_rows(
+  param_table_epidemic,
+  bind_rows(obesity_or_rows),
+  bind_rows(obesity_obs_rows)
+) %>%
+  select(
+    parset_name, sens_type, sens_value,
+    r0, eta, sar_crowded, crowding_fold_diff,
+    tau, tau_boost, beta, gamma,
+    vax_eff, vax_cov_A, vax_cov_C,
+    obesity_obs_A, obesity_or,
+    p_symp_A, p_symp_C
+  ) %>%
+  rename(
+    scenario        = parset_name,
+    sensitivity_dim = sens_type,
+    assortativity   = eta,
+    fold_diff       = crowding_fold_diff,
+    vax_coverage_ag = vax_cov_A,
+    vax_coverage_comm = vax_cov_C,
+    obesity_prev_ag = obesity_obs_A
+  )
+
+write_csv(param_table, file.path(paths$output_dir, "parameter_table.csv"))
+cat("Saved: output/parameter_table.csv (", nrow(param_table), "rows)\n")

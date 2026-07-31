@@ -91,7 +91,7 @@ pars$adjust_hhvars <- "none"
 paths$county_output <- "output/county_sim_none.csv"
 source('code/simulate.R')
 
-# Run with multiplicative adjustment (baseline behavior)
+# Run with multiplicative adjustment
 cat("  [2/3] Running with adjust_hhvars = 'multiplicative'...\n")
 pars$adjust_hhvars <- "multiplicative"
 paths$county_output <- "output/county_sim_multiplicative.csv"

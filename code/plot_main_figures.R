@@ -40,6 +40,15 @@ if (!file.exists(regional_file)) {
 regional_data <- read_csv(regional_file, show_col_types = FALSE)
 cat("  Regional data:", nrow(regional_data), "rows\n")
 
+# Convert infections to symptomatic cases
+p_symp_map <- setNames(c(p_symp_A, p_symp_C), c("A", "C"))
+regional_data <- regional_data %>%
+  mutate(
+    I_indiv = I_indiv * p_symp_map[subpop],
+    R_indiv = R_indiv * p_symp_map[subpop]
+  )
+cat("  Applied p_symp: A =", round(p_symp_A, 4), ", C =", round(p_symp_C, 4), "\n")
+
 # ==============================================================================
 # 2. Prepare Regional Data for Plotting
 # ==============================================================================
@@ -107,7 +116,7 @@ create_overlay_plot <- function(county_plot, regional_plot, adjust_method) {
     ) +
     labs(
       x = "Time (days)",
-      y = "Proportion Infected",
+      y = "Cases (Proportion of population)",
       title = paste0("Epidemic Dynamics: ", adjust_labels[adjust_method]),
       subtitle = paste0("Thick lines: regional average. Thin lines: individual counties. ",
                         "R0 = ", default_pars$r0)
@@ -154,7 +163,7 @@ create_cumulative_plot <- function(county_plot, regional_plot, adjust_method) {
     ) +
     facet_wrap(~region_label, ncol = 3) +
     scale_x_continuous(limits = c(0, 360), breaks = seq(0, 360, 60)) +
-    scale_y_continuous(limits = c(0, 1)) +
+    scale_y_continuous(limits = c(0, NA)) +
     scale_color_manual(
       values = pop_colors,
       labels = pop_labels,
@@ -162,8 +171,8 @@ create_cumulative_plot <- function(county_plot, regional_plot, adjust_method) {
     ) +
     labs(
       x = "Time (days)",
-      y = "Cumulative Proportion Infected",
-      title = paste0("Cumulative Infections: ", adjust_labels[adjust_method]),
+      y = "Cumulative Cases (Proportion of population)",
+      title = paste0("Cumulative Cases: ", adjust_labels[adjust_method]),
       subtitle = paste0("Thick lines: regional average. Thin lines: individual counties. ",
                         "R0 = ", default_pars$r0)
     ) +
@@ -263,6 +272,13 @@ for (method in adjust_methods) {
   }
   county_data <- read_csv(county_file, show_col_types = FALSE)
   cat("  Loaded county data:", nrow(county_data), "rows\n")
+
+  # Convert infections to symptomatic cases
+  county_data <- county_data %>%
+    mutate(
+      I_indiv = I_indiv * p_symp_map[subpop],
+      R_indiv = R_indiv * p_symp_map[subpop]
+    )
 
   # Prepare county data for plotting
   county_plot <- county_data %>%

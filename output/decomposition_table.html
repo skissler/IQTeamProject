@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<style>
+  body  { font-family: Calibri, Arial, sans-serif; font-size: 11pt; margin: 30px; }
+  table { border-collapse: collapse; width: 760px; }
+  caption { font-weight: bold; font-size: 12pt; text-align: left; margin-bottom: 8px; }
+  p.footnote { font-size: 9pt; color: #555; margin-top: 8px; width: 760px; }
+</style>
+</head>
+<body>
+<table>
+<caption>Symptomatic case rates by decomposition scenario and NAWS region</caption>
+<thead>
+<tr>
+  <th style="background-color:#2C4770;color:white;font-weight:bold;padding:6px 10px;text-align:center;border:1px solid #888;width:185px;">Scenario</th>
+  <th style="background-color:#2C4770;color:white;font-weight:bold;padding:6px 10px;text-align:center;border:1px solid #888;width:110px;">Region</th>
+  <th style="background-color:#2C4770;color:white;font-weight:bold;padding:6px 10px;text-align:center;border:1px solid #888;width:105px;">Symptomatic<br>Case Rate,<br>Ag Workers</th>
+  <th style="background-color:#2C4770;color:white;font-weight:bold;padding:6px 10px;text-align:center;border:1px solid #888;width:105px;">Symptomatic<br>Case Rate,<br>Community</th>
+  <th style="background-color:#2C4770;color:white;font-weight:bold;padding:6px 10px;text-align:center;border:1px solid #888;width:90px;">Difference</th>
+  <th style="background-color:#2C4770;color:white;font-weight:bold;padding:6px 10px;text-align:center;border:1px solid #888;width:115px;">% of Full-Model<br>Disparity</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td rowspan="6" style="padding:6px 10px;border:1px solid #ccc;text-align:left;vertical-align:middle;font-weight:bold;background-color:#FFFFFF;width:185px;">Null (all equal)</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:left;background-color:#FFFFFF;">East</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#FFFFFF;">12.1%</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#FFFFFF;">12.1%</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#FFFFFF;">0.0%</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#FFFFFF;">0%</td>
+</tr>
+<tr>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:left;background-color:#FFFFFF;">Southeast</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#FFFFFF;">11.5%</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#FFFFFF;">11.5%</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#FFFFFF;">0.0%</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#FFFFFF;">0%</td>
+</tr>
+<tr>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:left;background-color:#FFFFFF;">Midwest</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#FFFFFF;">11.4%</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#FFFFFF;">11.4%</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#FFFFFF;">0.0%</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#FFFFFF;">0%</td>
+</tr>
+<tr>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:left;background-color:#FFFFFF;">Southwest</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#FFFFFF;">14.9%</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#FFFFFF;">14.9%</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#FFFFFF;">0.0%</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#FFFFFF;">0%</td>
+</tr>
+<tr>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:left;background-color:#FFFFFF;">Northwest</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#FFFFFF;">13.7%</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#FFFFFF;">13.7%</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#FFFFFF;">0.0%</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#FFFFFF;">0%</td>
+</tr>
+<tr>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:left;background-color:#FFFFFF;">California</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#FFFFFF;">17.9%</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#FFFFFF;">17.9%</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#FFFFFF;">0.0%</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#FFFFFF;">0%</td>
+</tr>
+<tr>
+  <td rowspan="6" style="padding:6px 10px;border:1px solid #ccc;text-align:left;vertical-align:middle;font-weight:bold;background-color:#EFF2F9;width:185px;">Household structure only</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:left;background-color:#EFF2F9;">East</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#EFF2F9;">22.5%</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#EFF2F9;">12.2%</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#EFF2F9;">10.2%</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#EFF2F9;">77%</td>
+</tr>
+<tr>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:left;background-color:#EFF2F9;">Southeast</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#EFF2F9;">22.4%</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#EFF2F9;">11.7%</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#EFF2F9;">10.8%</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#EFF2F9;">78%</td>
+</tr>
+<tr>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:left;background-color:#EFF2F9;">Midwest</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#EFF2F9;">17.4%</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#EFF2F9;">11.6%</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#EFF2F9;">5.8%</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#EFF2F9;">67%</td>
+</tr>
+<tr>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:left;background-color:#EFF2F9;">Southwest</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#EFF2F9;">21.3%</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#EFF2F9;">15.0%</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#EFF2F9;">6.3%</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#EFF2F9;">68%</td>
+</tr>
+<tr>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:left;background-color:#EFF2F9;">Northwest</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#EFF2F9;">24.1%</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#EFF2F9;">14.0%</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#EFF2F9;">10.1%</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#EFF2F9;">77%</td>
+</tr>
+<tr>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:left;background-color:#EFF2F9;">California</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#EFF2F9;">27.8%</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#EFF2F9;">18.1%</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#EFF2F9;">9.7%</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#EFF2F9;">77%</td>
+</tr>
+<tr>
+  <td rowspan="6" style="padding:6px 10px;border:1px solid #ccc;text-align:left;vertical-align:middle;font-weight:bold;background-color:#FFFFFF;width:185px;">Vaccination disparity only</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:left;background-color:#FFFFFF;">East</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#FFFFFF;">14.1%</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#FFFFFF;">12.1%</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#FFFFFF;">1.9%</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#FFFFFF;">14%</td>
+</tr>
+<tr>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:left;background-color:#FFFFFF;">Southeast</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#FFFFFF;">13.4%</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#FFFFFF;">11.5%</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#FFFFFF;">1.9%</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#FFFFFF;">14%</td>
+</tr>
+<tr>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:left;background-color:#FFFFFF;">Midwest</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#FFFFFF;">13.4%</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#FFFFFF;">11.5%</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#FFFFFF;">1.9%</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#FFFFFF;">21%</td>
+</tr>
+<tr>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:left;background-color:#FFFFFF;">Southwest</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#FFFFFF;">17.0%</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#FFFFFF;">15.0%</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#FFFFFF;">2.1%</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#FFFFFF;">22%</td>
+</tr>
+<tr>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:left;background-color:#FFFFFF;">Northwest</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#FFFFFF;">15.8%</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#FFFFFF;">13.8%</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#FFFFFF;">2.0%</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#FFFFFF;">15%</td>
+</tr>
+<tr>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:left;background-color:#FFFFFF;">California</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#FFFFFF;">20.1%</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#FFFFFF;">18.0%</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#FFFFFF;">2.1%</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#FFFFFF;">17%</td>
+</tr>
+<tr>
+  <td rowspan="6" style="padding:6px 10px;border:1px solid #ccc;text-align:left;vertical-align:middle;font-weight:bold;background-color:#EFF2F9;width:185px;">Obesity disparity only</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:left;background-color:#EFF2F9;">East</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#EFF2F9;">12.5%</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#EFF2F9;">12.1%</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#EFF2F9;">0.4%</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#EFF2F9;">3%</td>
+</tr>
+<tr>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:left;background-color:#EFF2F9;">Southeast</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#EFF2F9;">11.8%</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#EFF2F9;">11.5%</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#EFF2F9;">0.3%</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#EFF2F9;">3%</td>
+</tr>
+<tr>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:left;background-color:#EFF2F9;">Midwest</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#EFF2F9;">11.8%</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#EFF2F9;">11.4%</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#EFF2F9;">0.3%</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#EFF2F9;">4%</td>
+</tr>
+<tr>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:left;background-color:#EFF2F9;">Southwest</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#EFF2F9;">15.4%</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#EFF2F9;">14.9%</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#EFF2F9;">0.5%</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#EFF2F9;">5%</td>
+</tr>
+<tr>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:left;background-color:#EFF2F9;">Northwest</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#EFF2F9;">14.1%</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#EFF2F9;">13.7%</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#EFF2F9;">0.4%</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#EFF2F9;">3%</td>
+</tr>
+<tr>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:left;background-color:#EFF2F9;">California</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#EFF2F9;">18.5%</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#EFF2F9;">17.9%</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#EFF2F9;">0.5%</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#EFF2F9;">4%</td>
+</tr>
+<tr>
+  <td rowspan="6" style="padding:6px 10px;border:1px solid #ccc;text-align:left;vertical-align:middle;font-weight:bold;background-color:#FFFFFF;width:185px;">HH structure + Obesity</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:left;background-color:#FFFFFF;">East</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#FFFFFF;">23.1%</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#FFFFFF;">12.2%</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#FFFFFF;">10.9%</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#FFFFFF;">82%</td>
+</tr>
+<tr>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:left;background-color:#FFFFFF;">Southeast</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#FFFFFF;">23.1%</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#FFFFFF;">11.7%</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#FFFFFF;">11.4%</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#FFFFFF;">83%</td>
+</tr>
+<tr>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:left;background-color:#FFFFFF;">Midwest</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#FFFFFF;">18.0%</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#FFFFFF;">11.6%</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#FFFFFF;">6.4%</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#FFFFFF;">73%</td>
+</tr>
+<tr>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:left;background-color:#FFFFFF;">Southwest</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#FFFFFF;">21.9%</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#FFFFFF;">15.0%</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#FFFFFF;">6.9%</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#FFFFFF;">75%</td>
+</tr>
+<tr>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:left;background-color:#FFFFFF;">Northwest</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#FFFFFF;">24.8%</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#FFFFFF;">14.0%</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#FFFFFF;">10.8%</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#FFFFFF;">82%</td>
+</tr>
+<tr>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:left;background-color:#FFFFFF;">California</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#FFFFFF;">28.6%</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#FFFFFF;">18.1%</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#FFFFFF;">10.5%</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#FFFFFF;">83%</td>
+</tr>
+<tr>
+  <td rowspan="6" style="padding:6px 10px;border:1px solid #ccc;text-align:left;vertical-align:middle;font-weight:bold;background-color:#EFF2F9;width:185px;">HH + Vaccination (no obesity)</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:left;background-color:#EFF2F9;">East</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#EFF2F9;">24.8%</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#EFF2F9;">12.2%</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#EFF2F9;">12.6%</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#EFF2F9;">94%</td>
+</tr>
+<tr>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:left;background-color:#EFF2F9;">Southeast</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#EFF2F9;">24.8%</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#EFF2F9;">11.7%</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#EFF2F9;">13.1%</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#EFF2F9;">95%</td>
+</tr>
+<tr>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:left;background-color:#EFF2F9;">Midwest</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#EFF2F9;">19.8%</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#EFF2F9;">11.7%</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#EFF2F9;">8.2%</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#EFF2F9;">93%</td>
+</tr>
+<tr>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:left;background-color:#EFF2F9;">Southwest</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#EFF2F9;">23.6%</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#EFF2F9;">15.0%</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#EFF2F9;">8.5%</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#EFF2F9;">92%</td>
+</tr>
+<tr>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:left;background-color:#EFF2F9;">Northwest</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#EFF2F9;">26.4%</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#EFF2F9;">14.0%</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#EFF2F9;">12.4%</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#EFF2F9;">94%</td>
+</tr>
+<tr>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:left;background-color:#EFF2F9;">California</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#EFF2F9;">29.8%</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#EFF2F9;">18.1%</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#EFF2F9;">11.7%</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#EFF2F9;">93%</td>
+</tr>
+<tr>
+  <td rowspan="6" style="padding:6px 10px;border:1px solid #ccc;text-align:left;vertical-align:middle;font-weight:bold;background-color:#FFFFFF;width:185px;">Vaccination + Obesity</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:left;background-color:#FFFFFF;">East</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#FFFFFF;">14.5%</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#FFFFFF;">12.1%</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#FFFFFF;">2.4%</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#FFFFFF;">18%</td>
+</tr>
+<tr>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:left;background-color:#FFFFFF;">Southeast</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#FFFFFF;">13.8%</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#FFFFFF;">11.5%</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#FFFFFF;">2.3%</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#FFFFFF;">17%</td>
+</tr>
+<tr>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:left;background-color:#FFFFFF;">Midwest</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#FFFFFF;">13.8%</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#FFFFFF;">11.5%</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#FFFFFF;">2.3%</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#FFFFFF;">26%</td>
+</tr>
+<tr>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:left;background-color:#FFFFFF;">Southwest</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#FFFFFF;">17.5%</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#FFFFFF;">15.0%</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#FFFFFF;">2.6%</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#FFFFFF;">28%</td>
+</tr>
+<tr>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:left;background-color:#FFFFFF;">Northwest</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#FFFFFF;">16.2%</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#FFFFFF;">13.8%</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#FFFFFF;">2.5%</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#FFFFFF;">19%</td>
+</tr>
+<tr>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:left;background-color:#FFFFFF;">California</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#FFFFFF;">20.7%</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#FFFFFF;">18.0%</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#FFFFFF;">2.7%</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#FFFFFF;">22%</td>
+</tr>
+<tr>
+  <td rowspan="6" style="padding:6px 10px;border:1px solid #ccc;text-align:left;vertical-align:middle;font-weight:bold;background-color:#EFF2F9;width:185px;">Full model (all factors)</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:left;background-color:#EFF2F9;">East</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#EFF2F9;">25.6%</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#EFF2F9;">12.2%</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#EFF2F9;">13.3%</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#EFF2F9;">100%</td>
+</tr>
+<tr>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:left;background-color:#EFF2F9;">Southeast</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#EFF2F9;">25.6%</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#EFF2F9;">11.7%</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#EFF2F9;">13.9%</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#EFF2F9;">100%</td>
+</tr>
+<tr>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:left;background-color:#EFF2F9;">Midwest</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#EFF2F9;">20.4%</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#EFF2F9;">11.7%</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#EFF2F9;">8.8%</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#EFF2F9;">100%</td>
+</tr>
+<tr>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:left;background-color:#EFF2F9;">Southwest</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#EFF2F9;">24.3%</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#EFF2F9;">15.0%</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#EFF2F9;">9.2%</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#EFF2F9;">100%</td>
+</tr>
+<tr>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:left;background-color:#EFF2F9;">Northwest</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#EFF2F9;">27.2%</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#EFF2F9;">14.0%</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#EFF2F9;">13.2%</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#EFF2F9;">100%</td>
+</tr>
+<tr>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:left;background-color:#EFF2F9;">California</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#EFF2F9;">30.7%</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#EFF2F9;">18.1%</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#EFF2F9;">12.6%</td>
+  <td style="padding:5px 10px;border:1px solid #ccc;text-align:center;background-color:#EFF2F9;">100%</td>
+</tr>
+
+</tbody>
+</table>
+<p class="footnote">
+Case rates are symptomatic fractions (infections &times; p<sub>symp</sub>) of the regional population.
+&ldquo;% of Full-Model Disparity&rdquo; is the ag worker &minus; community difference
+as a percentage of the Full Model (all factors) difference within each region.
+Scenarios with &ldquo;no obesity&rdquo; apply a common p<sub>symp</sub> to both subpopulations;
+all others apply subpopulation-specific p<sub>symp</sub>.
+</p>
+</body>
+</html>

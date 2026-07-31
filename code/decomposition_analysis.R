@@ -42,13 +42,14 @@ cat(rep("=", 60), "\n\n", sep = "")
 # ==============================================================================
 # Pull the r0_1.5 parset from pars_list to guarantee consistency with main runs
 
-baseline_pars <- pars_list[[which(sapply(pars_list, function(p) p$parset_name) == "r0_1.5")]]
-if (is.null(baseline_pars)) stop("r0_1.5 parset not found in pars_list. Run parameters.R first.")
+baseline_parset_name <- paste0("r0_", default_pars$r0)
+baseline_pars <- pars_list[[which(sapply(pars_list, function(p) p$parset_name) == baseline_parset_name)]]
+if (is.null(baseline_pars)) stop(baseline_parset_name, " parset not found in pars_list. Run parameters.R first.")
 
 # Derived vaccination multipliers
 vax_mult_C   <- baseline_pars$vax_mult_C    # community: 1 - vax_eff * vax_cov_C
 vax_mult_A   <- baseline_pars$vax_mult_A    # ag workers: 1 - vax_eff * vax_cov_A
-vax_mult_equal <- vax_mult_C                # use community rate when equalizing
+
 
 cat("Baseline parameters:\n")
 cat("  R0 =", default_pars$r0, "| gamma =", baseline_pars$gamma,
@@ -222,32 +223,88 @@ decomp_diff <- decomp_summary %>%
     scenario = factor(scenario, levels = scenario_levels, labels = scenario_labels)
   )
 
-# Obesity contribution (post-hoc, crop losses only):
-# The difference in p_symp_A between "full" (0.515) and "null" (0.500) represents
-# the obesity factor's contribution; since crop losses scale linearly with p_symp_A,
-# the obesity contribution scales crop losses by p_symp_A_full / p_symp_A_equal.
-p_symp_A_full  <- compute_p_symp(comorbidity_pars$obs_A, comorbidity_pars$or_symp_obesity)
-p_symp_C_equal <- 0.50
-obesity_crop_multiplier <- p_symp_A_full / p_symp_C_equal
-cat("\nObesity contribution to crop losses (p_symp_A multiplier):\n")
-cat("  p_symp_A (full)  =", round(p_symp_A_full, 4), "\n")
-cat("  p_symp_A (equal) =", round(p_symp_C_equal, 4), "\n")
-cat("  Crop loss ratio (full vs. equal) =", round(obesity_crop_multiplier, 4), "\n\n")
-
-# Save results
-write_csv(decomp_diff, file.path(paths$output_dir, "decomposition_results.csv"))
-cat("Saved: output/decomposition_results.csv\n")
+# Save infection-based results (ground truth from epidemic model)
+write_csv(decomp_diff, file.path(paths$output_dir, "decomposition_results_infections.csv"))
+cat("Saved: output/decomposition_results_infections.csv\n")
 
 # ==============================================================================
-# Print summary table
+# 8-Scenario Decomposition: Add Obesity as Third Factor
+# ==============================================================================
+# Obesity (p_symp) is post-hoc: it shifts symptomatic case fractions without
+# affecting transmission. To add it as a decomposition element, we cross the
+# 4 epidemic scenarios with 2 p_symp conditions:
+#
+#   equalize_symp = TRUE:  both populations use p_symp_C (no obesity disparity)
+#   equalize_symp = FALSE: A uses p_symp_A, C uses p_symp_C (observed disparity)
+#
+# This yields 8 "cases" scenarios from 4 epidemic runs (no new simulations needed).
+
+cat("\nObesity (p_symp) contribution:\n")
+cat("  p_symp_A =", round(p_symp_A, 4), "\n")
+cat("  p_symp_C =", round(p_symp_C, 4), "\n")
+cat("  Ratio p_symp_A / p_symp_C =", round(p_symp_A / p_symp_C, 4), "\n\n")
+
+# 8-scenario ordering: null first, then single-factor, then two-factor, then full
+scenario_8_levels <- c(
+  "Null\n(all equal)",
+  "Obesity\ndisparity only",
+  "Vaccination\ndisparity only",
+  "Household\nstructure only",
+  "Vaccination\n+ Obesity",
+  "HH structure\n+ Obesity",
+  "HH + Vaccination\n(no obesity)",
+  "Full model\n(all factors)"
+)
+
+decomp_cases <- bind_rows(
+  mutate(decomp_diff, equalize_symp = TRUE),
+  mutate(decomp_diff, equalize_symp = FALSE)
+) %>%
+  mutate(
+    case_rate_A = case_when(
+      equalize_symp ~ final_attack_rate_A * p_symp_C,
+      TRUE          ~ final_attack_rate_A * p_symp_A
+    ),
+    case_rate_C    = final_attack_rate_C * p_symp_C,
+    case_rate_diff  = case_rate_A - case_rate_C,
+    case_rate_ratio = case_rate_A / case_rate_C,
+    epidemic_scen   = as.character(scenario),
+    scenario_8 = case_when(
+      epidemic_scen == scenario_labels["null"]     & equalize_symp  ~ "Null\n(all equal)",
+      epidemic_scen == scenario_labels["null"]     & !equalize_symp ~ "Obesity\ndisparity only",
+      epidemic_scen == scenario_labels["hh_only"]  & equalize_symp  ~ "Household\nstructure only",
+      epidemic_scen == scenario_labels["hh_only"]  & !equalize_symp ~ "HH structure\n+ Obesity",
+      epidemic_scen == scenario_labels["vax_only"] & equalize_symp  ~ "Vaccination\ndisparity only",
+      epidemic_scen == scenario_labels["vax_only"] & !equalize_symp ~ "Vaccination\n+ Obesity",
+      epidemic_scen == scenario_labels["full"]     & equalize_symp  ~ "HH + Vaccination\n(no obesity)",
+      epidemic_scen == scenario_labels["full"]     & !equalize_symp ~ "Full model\n(all factors)"
+    ),
+    scenario_8 = factor(scenario_8, levels = scenario_8_levels)
+  )
+
+write_csv(decomp_cases, file.path(paths$output_dir, "decomposition_results_cases.csv"))
+cat("Saved: output/decomposition_results_cases.csv\n")
+
+# ==============================================================================
+# Print summary tables
 # ==============================================================================
 
-cat("\nMean A/C attack rate ratio by scenario (across regions):\n")
+cat("\nMean A/C infection attack rate ratio by epidemic scenario (across regions):\n")
 decomp_diff %>%
   group_by(scenario) %>%
   summarise(
-    mean_ar_ratio  = mean(attack_rate_ratio, na.rm = TRUE),
-    mean_ar_diff   = mean(attack_rate_diff,  na.rm = TRUE),
+    mean_ar_ratio = mean(attack_rate_ratio, na.rm = TRUE),
+    mean_ar_diff  = mean(attack_rate_diff,  na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
+  print()
+
+cat("\nMean A/C symptomatic case rate ratio by 8-factor scenario (across regions):\n")
+decomp_cases %>%
+  group_by(scenario_8) %>%
+  summarise(
+    mean_case_ratio = mean(case_rate_ratio, na.rm = TRUE),
+    mean_case_diff  = mean(case_rate_diff,  na.rm = TRUE),
     .groups = "drop"
   ) %>%
   print()
@@ -259,7 +316,8 @@ decomp_diff %>%
 cb_palette    <- c("#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#D55E00")
 region_labels <- setNames(region_map$REGION_NAME, region_map$REGION6)
 
-# Attack rate difference (A - C)
+# --- 4-scenario infection figures (epidemic model output) ---
+
 fig_diff <- decomp_diff %>%
   ggplot(aes(x = scenario, y = attack_rate_diff,
              color = factor(REGION6), group = REGION6)) +
@@ -269,13 +327,12 @@ fig_diff <- decomp_diff %>%
   scale_color_manual(values = cb_palette, labels = region_labels) +
   labs(
     x     = NULL,
-    y     = "Difference in Final Attack Rate\n(Agricultural − Community)",
+    y     = "Difference in Infection Attack Rate\n(Agricultural − Community)",
     color = "Region"
   ) +
   theme_classic(base_size = 14) +
   theme(legend.position = "right", axis.text.x = element_text(size = 11))
 
-# Attack rate ratio (A / C)
 fig_ratio <- decomp_diff %>%
   ggplot(aes(x = scenario, y = attack_rate_ratio,
              color = factor(REGION6), group = REGION6)) +
@@ -285,7 +342,7 @@ fig_ratio <- decomp_diff %>%
   scale_color_manual(values = cb_palette, labels = region_labels) +
   labs(
     x     = NULL,
-    y     = "Final Attack Rate Ratio\n(Agricultural / Community)",
+    y     = "Infection Attack Rate Ratio\n(Agricultural / Community)",
     color = "Region"
   ) +
   theme_classic(base_size = 14) +
@@ -299,4 +356,162 @@ ggsave(file.path(paths$figures_dir, "decomposition_attack_rate_ratio.pdf"),
        fig_ratio, width = 8, height = 5)
 ggsave(file.path(paths$figures_dir, "decomposition_attack_rate_ratio.png"),
        fig_ratio, width = 8, height = 5, dpi = 300)
-cat("Saved: figures/decomposition_*.pdf/.png\n")
+cat("Saved: figures/decomposition_attack_rate_*.pdf/.png\n")
+
+# --- 8-scenario symptomatic case figures ---
+
+fig_cases_diff <- decomp_cases %>%
+  ggplot(aes(x = scenario_8, y = case_rate_diff,
+             color = factor(REGION6), group = REGION6)) +
+  geom_line(alpha = 0.5, linewidth = 1) +
+  geom_point(size = 2.5) +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "gray50", alpha = 0.6) +
+  scale_color_manual(values = cb_palette, labels = region_labels) +
+  labs(
+    x     = NULL,
+    y     = "Difference in Symptomatic Case Fraction\n(Agricultural − Community)",
+    color = "Region"
+  ) +
+  theme_classic(base_size = 13) +
+  theme(legend.position = "right",
+        axis.text.x = element_text(size = 9, angle = 15, hjust = 1))
+
+fig_cases_ratio <- decomp_cases %>%
+  ggplot(aes(x = scenario_8, y = case_rate_ratio,
+             color = factor(REGION6), group = REGION6)) +
+  geom_line(alpha = 0.5, linewidth = 1) +
+  geom_point(size = 2.5) +
+  geom_hline(yintercept = 1, linetype = "dashed", color = "gray50", alpha = 0.6) +
+  scale_color_manual(values = cb_palette, labels = region_labels) +
+  labs(
+    x     = NULL,
+    y     = "Symptomatic Case Fraction Ratio\n(Agricultural / Community)",
+    color = "Region"
+  ) +
+  theme_classic(base_size = 13) +
+  theme(legend.position = "right",
+        axis.text.x = element_text(size = 9, angle = 15, hjust = 1))
+
+ggsave(file.path(paths$figures_dir, "decomposition_cases_diff.pdf"),
+       fig_cases_diff,  width = 10, height = 5)
+ggsave(file.path(paths$figures_dir, "decomposition_cases_diff.png"),
+       fig_cases_diff,  width = 10, height = 5, dpi = 300)
+ggsave(file.path(paths$figures_dir, "decomposition_cases_ratio.pdf"),
+       fig_cases_ratio, width = 10, height = 5)
+ggsave(file.path(paths$figures_dir, "decomposition_cases_ratio.png"),
+       fig_cases_ratio, width = 10, height = 5, dpi = 300)
+cat("Saved: figures/decomposition_cases_*.pdf/.png\n")
+
+# ==============================================================================
+# Word-ready HTML table: case rates by scenario and region
+# ==============================================================================
+
+region_name_map <- setNames(region_map$REGION_NAME, as.character(region_map$REGION6))
+
+scenario_order_table <- c(
+  "Null\n(all equal)",
+  "Household\nstructure only",
+  "Vaccination\ndisparity only",
+  "Obesity\ndisparity only",
+  "HH structure\n+ Obesity",
+  "HH + Vaccination\n(no obesity)",
+  "Vaccination\n+ Obesity",
+  "Full model\n(all factors)"
+)
+
+clean_scen <- function(x) gsub("\n", " ", x)
+THRESH <- 1e-6
+
+full_ref_tbl <- decomp_cases %>%
+  filter(grepl("Full model", scenario_8)) %>%
+  select(REGION6, full_case_diff = case_rate_diff)
+
+tbl <- decomp_cases %>%
+  left_join(full_ref_tbl, by = "REGION6") %>%
+  mutate(
+    Region      = region_name_map[as.character(REGION6)],
+    Scenario    = factor(clean_scen(as.character(scenario_8)),
+                         levels = clean_scen(scenario_order_table)),
+    diff_clean  = ifelse(abs(case_rate_diff) < THRESH, 0, case_rate_diff),
+    pct_clean   = ifelse(abs(case_rate_diff) < THRESH, 0,
+                         case_rate_diff / full_case_diff * 100),
+    AR_A        = sprintf("%.1f%%", case_rate_A  * 100),
+    AR_C        = sprintf("%.1f%%", case_rate_C  * 100),
+    AR_diff     = sprintf("%.1f%%", diff_clean   * 100),
+    Pct_full    = sprintf("%.0f%%", pct_clean)
+  ) %>%
+  arrange(Scenario, REGION6) %>%
+  select(Scenario, Region, AR_A, AR_C, AR_diff, Pct_full)
+
+hs  <- "background-color:#2C4770;color:white;font-weight:bold;padding:6px 10px;text-align:center;border:1px solid #888;"
+cs  <- "padding:5px 10px;border:1px solid #ccc;text-align:center;"
+fc  <- "padding:5px 10px;border:1px solid #ccc;text-align:left;"
+sc  <- "padding:6px 10px;border:1px solid #ccc;text-align:left;vertical-align:middle;font-weight:bold;"
+
+rows_html <- ""
+row_alt   <- 0L
+for (scen in levels(tbl$Scenario)) {
+  scen_rows <- tbl[tbl$Scenario == scen, ]
+  n         <- nrow(scen_rows)
+  row_alt   <- row_alt + 1L
+  bg        <- if (row_alt %% 2L == 0L) "#EFF2F9" else "#FFFFFF"
+  for (i in seq_len(n)) {
+    row      <- scen_rows[i, ]
+    row_html <- "<tr>\n"
+    if (i == 1L)
+      row_html <- paste0(row_html, sprintf(
+        '  <td rowspan="%d" style="%sbackground-color:%s;width:185px;">%s</td>\n',
+        n, sc, bg, scen))
+    row_html <- paste0(row_html,
+      sprintf('  <td style="%sbackground-color:%s;">%s</td>\n', fc, bg, row$Region),
+      sprintf('  <td style="%sbackground-color:%s;">%s</td>\n', cs, bg, row$AR_A),
+      sprintf('  <td style="%sbackground-color:%s;">%s</td>\n', cs, bg, row$AR_C),
+      sprintf('  <td style="%sbackground-color:%s;">%s</td>\n', cs, bg, row$AR_diff),
+      sprintf('  <td style="%sbackground-color:%s;">%s</td>\n', cs, bg, row$Pct_full),
+      "</tr>\n")
+    rows_html <- paste0(rows_html, row_html)
+  }
+}
+
+html_table <- paste0(
+'<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<style>
+  body  { font-family: Calibri, Arial, sans-serif; font-size: 11pt; margin: 30px; }
+  table { border-collapse: collapse; width: 760px; }
+  caption { font-weight: bold; font-size: 12pt; text-align: left; margin-bottom: 8px; }
+  p.footnote { font-size: 9pt; color: #555; margin-top: 8px; width: 760px; }
+</style>
+</head>
+<body>
+<table>
+<caption>Symptomatic case rates by decomposition scenario and NAWS region</caption>
+<thead>
+<tr>
+  <th style="', hs, 'width:185px;">Scenario</th>
+  <th style="', hs, 'width:110px;">Region</th>
+  <th style="', hs, 'width:105px;">Symptomatic<br>Case Rate,<br>Ag Workers</th>
+  <th style="', hs, 'width:105px;">Symptomatic<br>Case Rate,<br>Community</th>
+  <th style="', hs, 'width:90px;">Difference</th>
+  <th style="', hs, 'width:115px;">% of Full-Model<br>Disparity</th>
+</tr>
+</thead>
+<tbody>
+', rows_html, '
+</tbody>
+</table>
+<p class="footnote">
+Case rates are symptomatic fractions (infections &times; p<sub>symp</sub>) of the regional population.
+&ldquo;% of Full-Model Disparity&rdquo; is the ag worker &minus; community difference
+as a percentage of the Full Model (all factors) difference within each region.
+Scenarios with &ldquo;no obesity&rdquo; apply a common p<sub>symp</sub> to both subpopulations;
+all others apply subpopulation-specific p<sub>symp</sub>.
+</p>
+</body>
+</html>')
+
+out_path <- file.path(paths$output_dir, "decomposition_table.html")
+writeLines(html_table, out_path)
+cat("Saved: output/decomposition_table.html\n")

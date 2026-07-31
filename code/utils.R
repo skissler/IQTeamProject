@@ -391,3 +391,38 @@ rtsin <- function(t) {
   out <- 0.2 * sin(2 * pi * t / 180) + 1
   return(out)
 }
+
+
+# ==============================================================================
+# 7. COMORBIDITY HELPERS
+# ==============================================================================
+
+#' Compute population-specific symptomatic fraction from obesity prevalence
+#'
+#' Back-solves for the non-obese baseline symptomatic probability p0 using the
+#' community population as an anchor (obs_C_anchor, p_symp_C_anchor = 0.5), then
+#' derives p_symp for a target population with obesity prevalence `obs`.
+#'
+#' Model: p_symp = obs * p1 + (1 - obs) * p0
+#'   where p1 = or_obesity * p0 / (1 + (or_obesity - 1) * p0)
+#'
+#' Anchoring condition: community (obs_C_anchor) must yield p_symp_C_anchor = 0.50.
+#' p0 is recovered from the quadratic:
+#'   (1 - obs_C) * (OR - 1) * p0^2 + [(obs_C - p)(OR - 1) + 1] * p0 - p = 0
+#'
+#' @param obs Obesity prevalence in the target population
+#' @param or_obesity OR of obesity -> symptomatic disease (conditional on infection)
+#' @param obs_C_anchor Community obesity prevalence (anchor; default from comorbidity_pars)
+#' @param p_symp_C_anchor Overall community symptomatic fraction (anchor; default 0.5)
+#' @return Symptomatic fraction for the target population
+compute_p_symp <- function(obs, or_obesity,
+                            obs_C_anchor    = comorbidity_pars$obs_C,
+                            p_symp_C_anchor = 0.50) {
+  if (abs(or_obesity - 1) < 1e-10) return(p_symp_C_anchor)
+  a  <- (1 - obs_C_anchor) * (or_obesity - 1)
+  b  <- (obs_C_anchor - p_symp_C_anchor) * (or_obesity - 1) + 1
+  cc <- -p_symp_C_anchor
+  p0 <- (-b + sqrt(b^2 - 4 * a * cc)) / (2 * a)
+  p1 <- or_obesity * p0 / (1 + (or_obesity - 1) * p0)
+  obs * p1 + (1 - obs) * p0
+}

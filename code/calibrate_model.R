@@ -250,7 +250,7 @@ find_bounds_from_history <- function(eval_history, target_final_size,
 
 # Base parameters for calibration, derived from default_pars in config.R
 # Beta will be set during calibration; eps=0 for single-population calibration
-# SAR, fold_diff, tau, and tau_boost are overridden per-grid-row below
+# SAR, fold_diff, gamma, tau, and tau_boost are overridden per-grid-row below
 base_pars <- list(
   gamma = default_pars$gamma,
   sar_uncrowded = default_pars$sar_uncrowded,

@@ -11,9 +11,9 @@
 #   4. Calculate workforce availability (1 - symptomatic proportion)
 #   5. Estimate production losses for epidemics peaking on each day of year
 #
-# Note: This code assumes p_symp = 1 (all infections are symptomatic).
-# Because production loss scales linearly with p_symp, you can obtain
-# results for any p_symp by multiplying the output losses by p_symp.
+# Note: Crop losses are computed using p_symp_A (baseline comorbidity-adjusted
+# symptomatic fraction, derived from obs_A and or_symp_obesity in config.R).
+# Applied inside get_impact() as wf = 1 - symp * p_symp_A.
 #
 # Inputs:
 #   - data/movements_lettuce.csv     - Weekly lettuce shipments
@@ -34,38 +34,7 @@ if (!exists("paths")) {
   source('code/setup.R')
 }
 
-# ==============================================================================
-# Comorbidity Helper
-# ==============================================================================
-
-#' Compute population-specific symptomatic fraction from obesity prevalence
-#'
-#' Back-solves for the non-obese baseline symptomatic probability p0 using the
-#' community population as an anchor (obs_C_anchor, p_symp_C_anchor = 0.5), then
-#' derives p_symp for a target population with obesity prevalence `obs`.
-#'
-#' Model: p_symp = obs * p1 + (1-obs) * p0
-#'   where p1 = or_obesity * p0 / (1 + (or_obesity - 1) * p0)
-#'
-#' @param obs Obesity prevalence in the target population
-#' @param or_obesity OR of obesity -> symptomatic disease (conditional on infection)
-#' @param obs_C_anchor Community obesity prevalence (anchor; default from comorbidity_pars)
-#' @param p_symp_C_anchor Overall community symptomatic fraction (anchor; default 0.5)
-#' @return Symptomatic fraction for the target population
-compute_p_symp <- function(obs, or_obesity,
-                           obs_C_anchor    = comorbidity_pars$obs_C,
-                           p_symp_C_anchor = 0.50) {
-  if (abs(or_obesity - 1) < 1e-10) return(p_symp_C_anchor)
-
-  # Quadratic: (1-obs_C)*(OR-1)*p0^2 + [(obs_C-p)*(OR-1)+1]*p0 - p = 0
-  a <- (1 - obs_C_anchor) * (or_obesity - 1)
-  b <- (obs_C_anchor - p_symp_C_anchor) * (or_obesity - 1) + 1
-  cc <- -p_symp_C_anchor
-  p0 <- (-b + sqrt(b^2 - 4 * a * cc)) / (2 * a)
-
-  p1 <- or_obesity * p0 / (1 + (or_obesity - 1) * p0)   # obese symptomatic prob
-  obs * p1 + (1 - obs) * p0
-}
+# compute_p_symp() is defined in utils.R (loaded via setup.R above)
 
 # ==============================================================================
 # 1. Load and Process Crop Movement Data
@@ -498,7 +467,7 @@ impact_month_breaks <- cumsum(c(1, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30))
 impact_month_labels <- c("Jan", "", "", "Apr", "", "",
                          "Jul", "", "", "Oct", "", "")
 
-# Figure: Production loss by epidemic peak timing (p_symp = 1)
+# Figure: Production loss by epidemic peak timing (baseline p_symp_A)
 fig_impact <- impact_df_combined %>%
   ggplot(aes(x = peakday, y = pct_loss, col = commodity)) +
   geom_line(linewidth = 0.8, alpha = 0.8) +
@@ -512,7 +481,7 @@ fig_impact <- impact_df_combined %>%
     color = "Commodity",
     title = "Estimated Production Loss by Epidemic Timing",
     subtitle = paste0("Based on baseline epidemic (R0 = ", default_pars$r0,
-                      ") in California, p_symp = 1")
+                      ") in California, p_symp_A = ", round(p_symp_A, 3))
   ) +
   theme_classic(base_size = 14) +
   theme(legend.position = "bottom")
@@ -523,31 +492,6 @@ ggsave(file.path(paths$figures_dir, "crop_impact_by_peakday.png"),
        fig_impact, width = 10, height = 5, dpi = 300)
 cat("  Saved: crop_impact_by_peakday.pdf/.png\n")
 
-# Figure: Production loss scaled by p_symp = 0.5
-fig_impact_psymp <- impact_df_combined %>%
-  mutate(pct_loss_scaled = pct_loss * 0.5) %>%
-  ggplot(aes(x = peakday, y = pct_loss_scaled, col = commodity)) +
-  geom_line(linewidth = 0.8, alpha = 0.8) +
-  scale_color_manual(values = crop_colors) +
-  scale_x_continuous(breaks = impact_month_breaks, labels = impact_month_labels,
-                     minor_breaks = NULL) +
-  expand_limits(y = 0) +
-  labs(
-    x = "Epidemic Peak Timing",
-    y = "Production Loss (%)",
-    color = "Commodity",
-    title = "Estimated Production Loss by Epidemic Timing",
-    subtitle = bquote("Based on baseline epidemic (R0 = " * .(default_pars$r0) *
-                      ") in California, " * p[symp] ~ "= 0.5")
-  ) +
-  theme_classic(base_size = 14) +
-  theme(legend.position = "bottom")
-
-ggsave(file.path(paths$figures_dir, "crop_impact_by_peakday_psymp05.pdf"),
-       fig_impact_psymp, width = 10, height = 5)
-ggsave(file.path(paths$figures_dir, "crop_impact_by_peakday_psymp05.png"),
-       fig_impact_psymp, width = 10, height = 5, dpi = 300)
-cat("  Saved: crop_impact_by_peakday_psymp05.pdf/.png\n")
 
 # ==============================================================================
 # 7. Save Summary Output
@@ -652,14 +596,14 @@ panel_b <- ggplot() +
   theme(axis.text.x = element_blank(),
         plot.title = element_text(face = "bold"))
 
-# Panel (d): Symptomatic infections with shading (p_symp = 0.5)
+# Panel (c): Symptomatic infections with shading (baseline p_symp_A)
 panel_d <- epi_mapped %>%
   ggplot(aes(x = calendar_day, y = symp_adj)) +
   geom_area(fill = "#377EB8", alpha = 0.2) +
   geom_line(color = "#377EB8", linewidth = 0.8) +
   expand_limits(y = 0) +
   labs(x = NULL, y = "Proportion\nSymptomatic",
-       title = bquote("(c) Symptomatic agricultural workers (" * p[symp] ~ "= 0.5)")) +
+       title = bquote("(c) Symptomatic agricultural workers (" * p[symp] == .(round(p_symp_A, 3)) * ")")) +
   theme_classic(base_size = 14) +
   theme(axis.text.x = element_blank(),
         plot.title = element_text(face = "bold"))
@@ -724,7 +668,7 @@ cat("Generating combined schematic figure...\n")
 # Scaling factor to map epidemic proportions onto the crop lbs axis
 max_lbs <- max(avg_movements_daily$lbs / 1e6)
 max_epi <- max(epi_mapped$I_indiv, epi_mapped_C$I_indiv, na.rm = TRUE)
-epi_scale <- max_lbs / max_epi * 0.5  # scale so epidemic peak is ~90% of crop max
+epi_scale <- max_lbs / max_epi * 0.5  # scale so epidemic peak is ~50% of crop max
 
 # Month axis breaks and labels (day 1 = Jan 1)
 month_breaks <- cumsum(c(1, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30))  # day 1 of each month
@@ -793,6 +737,90 @@ ggsave(file.path(paths$figures_dir, "crop_schematic_combined.pdf"),
 ggsave(file.path(paths$figures_dir, "crop_schematic_combined.png"),
        fig_schematic_combined, width = 10, height = 6, dpi = 300)
 cat("  Saved: crop_schematic_combined.pdf/.png\n")
+
+# ==============================================================================
+# 9b. Combined Schematic: Proportion of Annual Harvest (y-axis)
+# ==============================================================================
+# Same as crop_schematic_combined but y-axis shows each commodity's daily harvest
+# as a proportion of its annual total, matching crop_movements_validated.pdf.
+
+cat("Generating combined schematic (proportion y-axis)...\n")
+
+# Normalize daily movements to proportion of annual total per commodity
+annual_lbs <- avg_movements_daily %>%
+  group_by(commodity) %>%
+  summarise(total_lbs = sum(lbs), .groups = "drop")
+
+avg_movements_daily_prop <- avg_movements_daily %>%
+  left_join(annual_lbs, by = "commodity") %>%
+  mutate(prop = lbs / total_lbs)
+
+crop_adjusted_prop <- crop_adjusted %>%
+  left_join(annual_lbs, by = "commodity") %>%
+  mutate(prop_orig = lbs / total_lbs,
+         prop_adj  = lbs_adj / total_lbs)
+
+ribbon_data_prop <- crop_adjusted_prop %>%
+  select(commodity, day, prop_orig, prop_adj)
+
+max_prop_sch <- max(avg_movements_daily_prop$prop, na.rm = TRUE)
+epi_scale_prop <- max_prop_sch / max_epi * 0.5
+
+fig_schematic_combined_prop <- ggplot() +
+  geom_area(data = epi_mapped,
+            aes(x = calendar_day, y = symp_adj * epi_scale_prop),
+            fill = "#377EB8", alpha = 0.15) +
+  geom_ribbon(data = ribbon_data_prop,
+              aes(x = day, ymin = prop_adj, ymax = prop_orig, fill = commodity),
+              alpha = 0.15) +
+  geom_line(data = avg_movements_daily_prop,
+            aes(x = day, y = prop, color = commodity),
+            linewidth = 0.7, alpha = 0.8) +
+  geom_line(data = crop_adjusted_prop,
+            aes(x = day, y = prop_adj, color = commodity),
+            linewidth = 0.7, alpha = 0.8, linetype = "dashed") +
+  geom_line(data = epi_mapped,
+            aes(x = calendar_day, y = I_indiv * epi_scale_prop),
+            color = "#377EB8", linewidth = 0.9, alpha = 0.8) +
+  geom_line(data = epi_mapped_C,
+            aes(x = calendar_day, y = I_indiv * epi_scale_prop),
+            color = "#E41A1C", linewidth = 0.9, alpha = 0.8) +
+  geom_line(data = epi_mapped,
+            aes(x = calendar_day, y = symp_adj * epi_scale_prop),
+            color = "#377EB8", linewidth = 0.6, alpha = 0.5, linetype = "dotted") +
+  scale_y_continuous(
+    name = "Daily Harvest (Proportion of Annual Total)",
+    expand = expansion(mult = c(0, 0.05)),
+    sec.axis = sec_axis(~ . / epi_scale_prop, name = "Proportion Infected / Symptomatic")
+  ) +
+  scale_x_continuous(breaks = month_breaks, labels = month_labels,
+                     minor_breaks = NULL) +
+  scale_color_manual(values = crop_colors) +
+  scale_fill_manual(values = crop_colors, guide = "none") +
+  expand_limits(y = 0) +
+  labs(
+    x = NULL,
+    color = "Commodity",
+    title = "Crop Production Losses from Epidemic-Driven Workforce Reduction",
+    subtitle = paste0("Solid = baseline harvest; Dashed = adjusted for illness. ",
+                      "Epidemic peak day ", worst_peakday_straw,
+                      ", R0 = ", default_pars$r0,
+                      ", p_symp = ", p_symp)
+  ) +
+  theme_classic(base_size = 14) +
+  theme(
+    legend.position = "bottom",
+    plot.title = element_text(face = "bold"),
+    plot.subtitle = element_text(color = "grey40"),
+    axis.title.y.right = element_text(color = "grey40"),
+    axis.text.y.right = element_text(color = "grey40")
+  )
+
+ggsave(file.path(paths$figures_dir, "crop_schematic_combined_prop.pdf"),
+       fig_schematic_combined_prop, width = 10, height = 6)
+ggsave(file.path(paths$figures_dir, "crop_schematic_combined_prop.png"),
+       fig_schematic_combined_prop, width = 10, height = 6, dpi = 300)
+cat("  Saved: crop_schematic_combined_prop.pdf/.png\n")
 
 # ==============================================================================
 # 10. Combined Schematic: Epidemic Peaking June 1st
@@ -898,8 +926,8 @@ cat("  Saved: crop_schematic_june1.pdf/.png\n")
 # 11. Crop Production Loss Comparison Across R0 Values
 # ==============================================================================
 # For each R0 value (1.2, 1.5, 2.0, 3.0), compute worst-case production losses
-# per crop at p_symp = 1, with dollar amounts based on USDA NASS 2024 values.
-# This supports discussion of how pathogen severity scales crop impact.
+# per crop, with dollar amounts based on USDA NASS 2024 values.
+# Two p_symp_A scenarios: baseline (comorbidity-adjusted) and 1.0 (all infections symptomatic).
 
 cat("Computing crop production losses across R0 values...\n")
 
@@ -913,8 +941,7 @@ r0_values <- c(1.2, 1.5, 2.0, 3.0)
 
 # Helper: day-of-year to month name
 day_to_month <- function(day) {
-  month_ends <- cumsum(c(31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31))
-  month.name[findInterval(day, c(0, month_ends[-12])) + 1]
+  format(as.Date(day - 1, origin = "2001-01-01"), "%B")
 }
 
 r0_impact_list <- lapply(r0_values, function(r0_val) {
@@ -954,52 +981,59 @@ r0_impact_list <- lapply(r0_values, function(r0_val) {
       .groups = "drop"
     )
 
-  # Calculate impact for each possible peak day (using baseline p_symp_A)
-  impact_all <- bind_rows(lapply(1:CALENDAR_DAYS, function(pd) {
-    out <- get_impact(pd, avg_movements_daily, epi_symp, p_symp_A = p_symp_A)
-    out$peakday <- pd
-    return(out)
+  # Calculate worst-case impact for each crop under two p_symp_A scenarios
+  p_symp_scenarios <- c(baseline = p_symp_A, all_symptomatic = 1.0)
+  worst_case <- bind_rows(lapply(names(p_symp_scenarios), function(scenario) {
+    psymp <- p_symp_scenarios[[scenario]]
+    impact_all <- bind_rows(lapply(1:CALENDAR_DAYS, function(pd) {
+      out <- get_impact(pd, avg_movements_daily, epi_symp, p_symp_A = psymp)
+      out$peakday <- pd
+      return(out)
+    }))
+    impact_all %>%
+      group_by(commodity) %>%
+      slice_max(pct_loss, n = 1, with_ties = FALSE) %>%
+      ungroup() %>%
+      mutate(r0 = r0_val, p_symp_A = psymp, p_symp_scenario = scenario) %>%
+      select(r0, p_symp_scenario, p_symp_A, commodity, worst_peakday = peakday, pct_loss)
   }))
-
-  # For each crop, find the worst-case peak day
-  worst_case <- impact_all %>%
-    group_by(commodity) %>%
-    slice_max(pct_loss, n = 1, with_ties = FALSE) %>%
-    ungroup() %>%
-    mutate(r0 = r0_val) %>%
-    select(r0, commodity, worst_peakday = peakday, pct_loss)
 
   return(worst_case)
 })
 
-# Combine results across R0 values
+# Combine results across R0 values and p_symp scenarios
 r0_impact_df <- bind_rows(r0_impact_list) %>%
   mutate(worst_peakday_month = sapply(worst_peakday, day_to_month)) %>%
   left_join(crop_values, by = "commodity") %>%
   mutate(dollar_loss_usd = annual_value_usd * pct_loss / 100) %>%
-  arrange(r0, commodity)
+  arrange(p_symp_scenario, r0, commodity)
 
 # Save CSV
 write_csv(r0_impact_df, file.path(paths$output_dir, "crop_impact_r0_comparison.csv"))
 cat("  Saved: crop_impact_r0_comparison.csv\n")
 
 # Print formatted summary
-cat("\n  Worst-case crop production losses by R0 (p_symp = 1):\n")
-cat("  ", strrep("-", 90), "\n")
-cat(sprintf("  %-5s %-20s %-12s %-10s %-18s %s\n",
-            "R0", "Crop", "Peak Month", "Loss (%)", "Annual Value", "Dollar Loss"))
-cat("  ", strrep("-", 90), "\n")
-for (i in seq_len(nrow(r0_impact_df))) {
-  row <- r0_impact_df[i, ]
-  cat(sprintf("  %-5s %-20s %-12s %-10.2f $%s  $%s\n",
-              format(row$r0, nsmall = 1),
-              row$commodity,
-              row$worst_peakday_month,
-              row$pct_loss,
-              format(row$annual_value_usd, big.mark = ","),
-              format(round(row$dollar_loss_usd), big.mark = ",")))
+for (scen in unique(r0_impact_df$p_symp_scenario)) {
+  scen_df <- r0_impact_df %>% filter(p_symp_scenario == scen)
+  psymp_val <- unique(scen_df$p_symp_A)
+  cat("\n  Worst-case crop production losses by R0 (p_symp_scenario =", scen,
+      ", p_symp_A =", round(psymp_val, 3), "):\n")
+  cat("  ", strrep("-", 90), "\n")
+  cat(sprintf("  %-5s %-20s %-12s %-10s %-18s %s\n",
+              "R0", "Crop", "Peak Month", "Loss (%)", "Annual Value", "Dollar Loss"))
+  cat("  ", strrep("-", 90), "\n")
+  for (i in seq_len(nrow(scen_df))) {
+    row <- scen_df[i, ]
+    cat(sprintf("  %-5s %-20s %-12s %-10.2f $%s  $%s\n",
+                format(row$r0, nsmall = 1),
+                row$commodity,
+                row$worst_peakday_month,
+                row$pct_loss,
+                format(row$annual_value_usd, big.mark = ","),
+                format(round(row$dollar_loss_usd), big.mark = ",")))
+  }
+  cat("  ", strrep("-", 90), "\n")
 }
-cat("  ", strrep("-", 90), "\n")
 
 # ==============================================================================
 # 12. Comorbidity Sensitivity: p_symp_A by (or_symp_obesity, obs_A)
@@ -1010,8 +1044,8 @@ cat("  ", strrep("-", 90), "\n")
 
 cat("\nComputing comorbidity sensitivity...\n")
 
-or_symp_obesity_values <- c(1, 1.5, 3)
-obs_A_sens_values      <- c(0.40, 0.50, 0.55, 0.60, 0.70)
+or_symp_obesity_values <- sensitivity_values$obesity_or
+obs_A_sens_values      <- sensitivity_values$obesity_obs_A
 
 # Build one-at-a-time grid: vary one parameter at a time
 comorbidity_grid <- bind_rows(

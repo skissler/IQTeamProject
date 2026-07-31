@@ -177,6 +177,23 @@ calculate_tau_boost <- function(sar_crowded, gamma, tau) {
   tau_crowded - tau
 }
 
+# Compute p_symp for a subpopulation given obesity prevalence and OR.
+# Anchored so that community (obs_C = 0.40) yields p_symp_C = 0.50.
+# Returns p_symp_C_anchor when OR = 1 (no effect of obesity).
+compute_p_symp <- function(obs, or_obesity,
+                            obs_C_anchor    = 0.40,
+                            p_symp_C_anchor = 0.50) {
+  if (abs(or_obesity - 1) < 1e-10) return(p_symp_C_anchor)
+  a  <- (1 - obs_C_anchor) * (or_obesity - 1)
+  b  <- (obs_C_anchor - p_symp_C_anchor) * (or_obesity - 1) + 1
+  cc <- -p_symp_C_anchor
+  disc <- b^2 - 4 * a * cc
+  if (disc < 0) stop("No real solution in compute_p_symp")
+  p0 <- (-b + sqrt(disc)) / (2 * a)
+  p1 <- or_obesity * p0 / (1 + (or_obesity - 1) * p0)
+  obs * p1 + (1 - obs) * p0
+}
+
 # ==============================================================================
 # Pre-generate Household State Table (once at startup)
 # ==============================================================================
@@ -185,7 +202,9 @@ household_states <- generate_household_state_table(n_min = 1, n_max = 7, crowdin
 n_states_global <- nrow(household_states)
 
 # ==============================================================================
-# Define the Epidemic Model (odin) — single beta, matches code/epimodels.R
+# Define the Epidemic Model (odin) — matches code/epimodels.R
+# Vaccination modeled as a leaky vaccine: force of infection scaled by
+# vax_mult_x = 1 - vax_eff * vax_cov_x (passed in from run_simulation).
 # ==============================================================================
 
 household_model_twopop_crowding <- odin::odin({
@@ -207,6 +226,8 @@ household_model_twopop_crowding <- odin::odin({
   eps <- user()
   pop_C <- user()
   pop_A <- user()
+  vax_mult_C <- user()
+  vax_mult_A <- user()
 
   dim(x) <- n_states
   dim(y) <- n_states
@@ -244,8 +265,8 @@ household_model_twopop_crowding <- odin::odin({
   m_AC <- eps * w_C
   m_AA <- (1 - eps) + eps * w_A
 
-  lambda_C <- beta * (m_CC * I_C + m_CA * I_A)
-  lambda_A <- beta * (m_AC * I_C + m_AA * I_A)
+  lambda_C <- beta * (m_CC * I_C + m_CA * I_A) * vax_mult_C
+  lambda_A <- beta * (m_AC * I_C + m_AA * I_A) * vax_mult_A
 
   deriv(H_C[]) <-
     gamma * (-y[i] * H_C[i] + if (rec_index[i] > 0) (y[i] + 1) * H_C[rec_index[i]] else 0) +
@@ -263,7 +284,8 @@ household_model_twopop_crowding <- odin::odin({
 # ==============================================================================
 
 run_simulation <- function(region, r0, eta, sar_crowded,
-                           crowding_fold_diff, gamma = 1/5, sim_days = 365) {
+                           crowding_fold_diff, gamma = 1/5, sim_days = 365,
+                           vax_eff = 0.60, vax_cov_C = 0.50, vax_cov_A = 0.40) {
 
   sar_uncrowded <- 0.20  # Fixed: changing without recalibration is invalid
   eps <- 1 - eta  # Convert eta (assortativity) to eps (mixing parameter)
@@ -271,6 +293,10 @@ run_simulation <- function(region, r0, eta, sar_crowded,
   tau <- calculate_tau(sar_uncrowded, gamma)
   tau_boost <- calculate_tau_boost(sar_crowded, gamma, tau)
   init_prev <- 0.001
+
+  # Leaky vaccine: force of infection is multiplied by 1 - vax_eff * vax_cov
+  vax_mult_C <- 1 - vax_eff * vax_cov_C
+  vax_mult_A <- 1 - vax_eff * vax_cov_A
 
   # Region-specific community data (ACS)
   acs_region <- acs_regional %>% dplyr::filter(REGION6 == region)
@@ -328,7 +354,9 @@ run_simulation <- function(region, r0, eta, sar_crowded,
     beta = beta,
     eps = eps,
     pop_C = pop_C,
-    pop_A = pop_A
+    pop_A = pop_A,
+    vax_mult_C = vax_mult_C,
+    vax_mult_A = vax_mult_A
   )
 
   times <- seq(0, sim_days, by = 1)
@@ -483,9 +511,15 @@ ui <- fluidPage(
                   choices = c("3" = 1/3, "5" = 1/5, "10" = 1/10),
                   selected = 1/5),
 
-      sliderInput("eta", "Assortativity (η)",
-                  min = 0, max = 1, value = 0.67, step = 0.01),
-      helpText("1 = assortative (groups don't mix), 0 = proportional mixing"),
+      selectInput("eta", "Assortativity (η)",
+                  choices = c("0 (proportional mixing)" = 0,
+                              "1/4" = 0.25,
+                              "1/3" = 1/3,
+                              "1/2" = 0.5,
+                              "2/3 (baseline)" = 2/3,
+                              "3/4 (near-assortative)" = 0.75),
+                  selected = 2/3),
+      helpText("Higher values = more within-group mixing"),
 
       selectInput("sar_crowded", "SAR in Crowded Households",
                   choices = c("20%" = 0.2, "30%" = 0.3, "40%" = 0.4, "50%" = 0.5, "60%" = 0.6),
@@ -495,6 +529,41 @@ ui <- fluidPage(
                   choices = c("1" = 1, "2" = 2, "3" = 3),
                   selected = 2),
       helpText("How much more likely large (size 7+) households are to be crowded vs. small (size 2)"),
+
+      tags$hr(),
+      h4("Vaccination"),
+
+      selectInput("vax_eff", "Vaccine efficacy",
+                  choices = c("20%" = 0.2, "40%" = 0.4, "60% (baseline)" = 0.6, "80%" = 0.8),
+                  selected = 0.6),
+      helpText("Proportional reduction in force of infection for vaccinated individuals"),
+
+      selectInput("vax_cov_C", "Community vaccination coverage",
+                  choices = c("30%" = 0.3, "40%" = 0.4, "50% (baseline)" = 0.5, "60%" = 0.6),
+                  selected = 0.5),
+
+      selectInput("vax_cov_A", "Agricultural worker vaccination coverage",
+                  choices = c("20%" = 0.2, "40% (baseline)" = 0.4, "60%" = 0.6, "80%" = 0.8),
+                  selected = 0.4),
+
+      tags$hr(),
+      h4("Comorbidity (Obesity)"),
+
+      selectInput("obs_A", HTML("Agricultural worker obesity prevalence (obs<sub>A</sub>)"),
+                  choices = c("40%" = 0.40, "50%" = 0.50, "55% (baseline)" = 0.55,
+                              "60%" = 0.60, "70%" = 0.70),
+                  selected = 0.55),
+      helpText("Community obesity prevalence fixed at 0.40 (obs_C anchor)"),
+
+      selectInput("or_symp", HTML("Obesity OR for symptomatic disease"),
+                  choices = c("1.0 (no effect)" = 1.0, "1.5 (baseline)" = 1.5, "3.0" = 3.0),
+                  selected = 1.5),
+
+      tags$p(HTML(paste0(
+        "Derived: p<sub>symp,A</sub> = ",
+        textOutput("p_symp_display_sidebar", inline = TRUE),
+        " &nbsp; p<sub>symp,C</sub> = 0.500"
+      ))),
 
       tags$hr(),
       h4("Simulation Settings"),
@@ -533,8 +602,11 @@ ui <- fluidPage(
                    column(4,
                      sliderInput("peakday", "Epidemic peak day (symptomatic infections in the community, day of year)",
                                  min = 1, max = 364, value = 152, step = 1),
-                     sliderInput("p_symp", "Proportion Symptomatic",
-                                 min = 0.1, max = 1.0, value = 0.5, step = 0.05),
+                     tags$p(HTML(paste0(
+                       "Proportion symptomatic (p<sub>symp,A</sub>): ",
+                       "<strong>", textOutput("p_symp_display_crop", inline = TRUE), "</strong>"
+                     ))),
+                     helpText("Derived from obesity prevalence and OR inputs in the sidebar."),
                      tags$hr(),
                      h5("Commodities"),
                      selectizeInput("selected_commodities", "Select Commodities",
@@ -569,10 +641,20 @@ ui <- fluidPage(
 
 server <- function(input, output, session) {
 
-  # ---- Reactive: simulation results ----
+  # Fixed community symptomatic fraction (anchor used in compute_p_symp)
+  p_symp_C <- 0.50
+
+  # ---- Reactive: p_symp for agricultural workers (derived from comorbidity inputs) ----
+  p_symp_A <- reactive({
+    compute_p_symp(obs = as.numeric(input$obs_A), or_obesity = as.numeric(input$or_symp))
+  })
+
+  # ---- Reactive: simulation results (all regions) ----
   sim_results <- reactiveVal(NULL)
 
-  # ---- Reactive: symptomatic data (computed from sim results) ----
+  # ---- Reactive: symptomatic dynamics for California only (crop impact only) ----
+  # compute_symptomatic() uses a 3-day rolling window designed for workforce modeling.
+  # Epidemic curve plots use I_indiv * p_symp directly (matching plot_main_figures.R).
   symp_data <- reactiveVal(NULL)
 
   # ---- Reactive: movements data (filtered by selected commodities) ----
@@ -581,60 +663,70 @@ server <- function(input, output, session) {
     avg_movements_daily %>% dplyr::filter(commodity %in% input$selected_commodities)
   })
 
+  # Helper: run all regions and store results + California symp_data
+  run_all_regions <- function(r0, eta, sar_crowded, crowding_fold_diff, gamma,
+                               sim_days, vax_eff, vax_cov_C, vax_cov_A) {
+    results_list <- lapply(region_map$REGION6, function(reg) {
+      res <- run_simulation(
+        region = reg, r0 = r0, eta = eta,
+        sar_crowded = sar_crowded, crowding_fold_diff = crowding_fold_diff,
+        gamma = gamma, sim_days = sim_days,
+        vax_eff = vax_eff, vax_cov_C = vax_cov_C, vax_cov_A = vax_cov_A
+      )
+      res$REGION6 <- reg
+      res
+    })
+    result <- dplyr::bind_rows(results_list) %>%
+      dplyr::left_join(region_map, by = "REGION6") %>%
+      dplyr::mutate(REGION_NAME = factor(REGION_NAME, levels = region_order))
+    sim_results(result)
+
+    ca_result <- result %>%
+      dplyr::filter(REGION6 == 6) %>%
+      dplyr::select(t, subpop, S_indiv, I_indiv, R_indiv)
+    symp_data(compute_symptomatic(ca_result))
+  }
+
   # ---- Run simulation on button click ----
   observeEvent(input$run_sim, {
     withProgress(message = "Running simulation...", value = 0, {
       gamma <- as.numeric(input$infectious_period)
       regions <- region_map$REGION6
-      results_list <- lapply(seq_along(regions), function(i) {
-        reg <- regions[i]
-        reg_name <- region_map$REGION_NAME[region_map$REGION6 == reg]
-        incProgress(1 / length(regions), detail = paste0("Region: ", reg_name))
-        res <- run_simulation(
-          region = reg,
-          r0 = input$r0,
-          eta = input$eta,
-          sar_crowded = as.numeric(input$sar_crowded),
-          crowding_fold_diff = as.numeric(input$crowding_fold),
-          gamma = gamma,
-          sim_days = input$sim_days
-        )
-        res$REGION6 <- reg
-        res
-      })
-      result <- dplyr::bind_rows(results_list) %>%
-        dplyr::left_join(region_map, by = "REGION6") %>%
-        dplyr::mutate(REGION_NAME = factor(REGION_NAME, levels = region_order))
-      sim_results(result)
-
-      # Compute symptomatic dynamics for California only (crop impact)
-      ca_result <- result %>% dplyr::filter(REGION6 == 6) %>% dplyr::select(-REGION6, -REGION_NAME)
-      symp <- compute_symptomatic(ca_result)
-      symp_data(symp)
+      for (i in seq_along(regions)) {
+        incProgress(1 / length(regions),
+                    detail = paste0("Region: ", region_map$REGION_NAME[region_map$REGION6 == regions[i]]))
+      }
+      run_all_regions(
+        r0 = input$r0, eta = as.numeric(input$eta),
+        sar_crowded = as.numeric(input$sar_crowded),
+        crowding_fold_diff = as.numeric(input$crowding_fold),
+        gamma = gamma, sim_days = input$sim_days,
+        vax_eff = as.numeric(input$vax_eff),
+        vax_cov_C = as.numeric(input$vax_cov_C),
+        vax_cov_A = as.numeric(input$vax_cov_A)
+      )
     })
   })
 
-  # ---- Run initial simulation on app load ----
+  # ---- Run initial simulation on app load (baseline parameters) ----
   observe({
     if (is.null(sim_results())) {
-      results_list <- lapply(region_map$REGION6, function(reg) {
-        res <- run_simulation(
-          region = reg, r0 = "1.5", eta = 0.67,
-          sar_crowded = 0.40,
-          crowding_fold_diff = 2, gamma = 1/5, sim_days = 365
-        )
-        res$REGION6 <- reg
-        res
-      })
-      result <- dplyr::bind_rows(results_list) %>%
-        dplyr::left_join(region_map, by = "REGION6") %>%
-        dplyr::mutate(REGION_NAME = factor(REGION_NAME, levels = region_order))
-      sim_results(result)
-
-      ca_result <- result %>% dplyr::filter(REGION6 == 6) %>% dplyr::select(-REGION6, -REGION_NAME)
-      symp <- compute_symptomatic(ca_result)
-      symp_data(symp)
+      run_all_regions(
+        r0 = "1.5", eta = 2/3,
+        sar_crowded = 0.40, crowding_fold_diff = 2,
+        gamma = 1/5, sim_days = 365,
+        vax_eff = 0.60, vax_cov_C = 0.50, vax_cov_A = 0.40
+      )
     }
+  })
+
+  # ---- p_symp display outputs ----
+  output$p_symp_display_sidebar <- renderText({
+    sprintf("%.3f", p_symp_A())
+  })
+
+  output$p_symp_display_crop <- renderText({
+    sprintf("%.3f", p_symp_A())
   })
 
   # ===========================================================================
@@ -658,33 +750,45 @@ server <- function(input, output, session) {
 
   output$infection_plot <- renderPlot({
     req(sim_results())
-    df <- sim_results()
+    df <- sim_results() %>%
+      dplyr::mutate(
+        p_symp_sub     = dplyr::case_when(subpop == "A" ~ p_symp_A(), TRUE ~ p_symp_C),
+        symp_cases_pct = I_indiv * p_symp_sub * 100
+      )
 
     df %>%
-      ggplot(aes(x = t, y = I_indiv * 100, color = subpop)) +
+      ggplot(aes(x = t, y = symp_cases_pct, color = subpop)) +
       geom_line(linewidth = 1.2, alpha = 0.7) +
       facet_wrap(~REGION_NAME, nrow = 2) +
       scale_color_manual(values = pop_colors, labels = pop_labels) +
       sim_x_scale() +
       coord_cartesian(xlim = c(0, input$sim_days)) +
-      labs(title = "Infections Over Time",
-           x = "Days since epidemic onset", y = "Infected (%)", color = "Population") +
+      labs(title = "Symptomatic Cases Over Time",
+           x = "Days since epidemic onset",
+           y = "Symptomatic cases (% of population)",
+           color = "Population") +
       facet_theme
   })
 
   output$cumulative_plot <- renderPlot({
     req(sim_results())
-    df <- sim_results()
+    df <- sim_results() %>%
+      dplyr::mutate(
+        p_symp_sub   = dplyr::case_when(subpop == "A" ~ p_symp_A(), TRUE ~ p_symp_C),
+        cum_symp_pct = R_indiv * p_symp_sub * 100
+      )
 
     df %>%
-      ggplot(aes(x = t, y = R_indiv * 100, color = subpop)) +
+      ggplot(aes(x = t, y = cum_symp_pct, color = subpop)) +
       geom_line(linewidth = 1.2, alpha = 0.7) +
       facet_wrap(~REGION_NAME, nrow = 2) +
       scale_color_manual(values = pop_colors, labels = pop_labels) +
       sim_x_scale() +
       coord_cartesian(xlim = c(0, input$sim_days)) +
-      labs(title = "Cumulative Infections Over Time",
-           x = "Days since epidemic onset", y = "Cumulative Infected (%)", color = "Population") +
+      labs(title = "Cumulative Symptomatic Cases Over Time",
+           x = "Days since epidemic onset",
+           y = "Cumulative symptomatic cases (% of population)",
+           color = "Population") +
       facet_theme
   })
 
@@ -694,44 +798,56 @@ server <- function(input, output, session) {
 
   output$summary_table <- renderTable({
     req(sim_results())
-    df <- sim_results()
+    df <- sim_results() %>%
+      dplyr::mutate(
+        p_symp_sub = dplyr::case_when(subpop == "A" ~ p_symp_A(), TRUE ~ p_symp_C),
+        symp_cases  = I_indiv * p_symp_sub
+      )
 
     long <- df %>%
       dplyr::group_by(REGION_NAME, subpop) %>%
       dplyr::summarise(
-        peak = round(max(I_indiv) * 100, 2),
-        time_peak = t[which.max(I_indiv)],
-        final_size = round(dplyr::last(R_indiv) * 100, 2),
+        peak       = round(max(symp_cases) * 100, 2),
+        time_peak  = t[which.max(symp_cases)],
+        final_size = round(dplyr::last(R_indiv) * dplyr::first(p_symp_sub) * 100, 2),
         .groups = "drop"
       )
 
     ag <- long %>% dplyr::filter(subpop == "A") %>%
       dplyr::select(REGION_NAME,
-                    `Peak Prevalence,\nAgricultural Workers (%)` = peak,
+                    `Peak Symptomatic,\nAgricultural Workers (%)` = peak,
                     `Time to Peak,\nAgricultural Workers (days)` = time_peak,
-                    `Final Size,\nAgricultural Workers (%)` = final_size)
+                    `Cumulative Cases,\nAgricultural Workers (%)` = final_size)
 
     gen <- long %>% dplyr::filter(subpop == "C") %>%
       dplyr::select(REGION_NAME,
-                    `Peak Prevalence,\nCommunity (%)` = peak,
+                    `Peak Symptomatic,\nCommunity (%)` = peak,
                     `Time to Peak,\nCommunity (days)` = time_peak,
-                    `Final Size,\nCommunity (%)` = final_size)
+                    `Cumulative Cases,\nCommunity (%)` = final_size)
 
     dplyr::left_join(ag, gen, by = "REGION_NAME") %>%
       dplyr::select(Region = REGION_NAME,
-                    `Peak Prevalence,\nAgricultural Workers (%)`, `Peak Prevalence,\nCommunity (%)`,
-                    `Time to Peak,\nAgricultural Workers (days)`, `Time to Peak,\nCommunity (days)`,
-                    `Final Size,\nAgricultural Workers (%)`, `Final Size,\nCommunity (%)`)
-  }, striped = TRUE, hover = TRUE, bordered = TRUE, sanitize.colnames.function = function(x) gsub("\n", "<br/>", x))
+                    `Peak Symptomatic,\nAgricultural Workers (%)`,
+                    `Peak Symptomatic,\nCommunity (%)`,
+                    `Time to Peak,\nAgricultural Workers (days)`,
+                    `Time to Peak,\nCommunity (days)`,
+                    `Cumulative Cases,\nAgricultural Workers (%)`,
+                    `Cumulative Cases,\nCommunity (%)`)
+  }, striped = TRUE, hover = TRUE, bordered = TRUE,
+     sanitize.colnames.function = function(x) gsub("\n", "<br/>", x))
 
 
   output$prevalence_ratio_plot <- renderPlot({
     req(sim_results())
-    df <- sim_results()
+    df <- sim_results() %>%
+      dplyr::mutate(
+        p_symp_sub = dplyr::case_when(subpop == "A" ~ p_symp_A(), TRUE ~ p_symp_C),
+        symp_cases  = I_indiv * p_symp_sub
+      )
 
     rel_df <- df %>%
-      dplyr::select(t, subpop, I_indiv, REGION_NAME) %>%
-      tidyr::pivot_wider(id_cols = c(t, REGION_NAME), names_from = subpop, values_from = I_indiv) %>%
+      dplyr::select(t, subpop, symp_cases, REGION_NAME) %>%
+      tidyr::pivot_wider(id_cols = c(t, REGION_NAME), names_from = subpop, values_from = symp_cases) %>%
       dplyr::mutate(prevalence_ratio = A / C) %>%
       dplyr::filter(is.finite(prevalence_ratio), C > 0.0001)
 
@@ -742,8 +858,8 @@ server <- function(input, output, session) {
       facet_wrap(~REGION_NAME, nrow = 2) +
       sim_x_scale() +
       coord_cartesian(xlim = c(0, input$sim_days)) +
-      labs(title = "Prevalence Ratio (Agricultural Workers / General Population)",
-           x = "Days since epidemic onset", y = "Prevalence Ratio") +
+      labs(title = "Symptomatic Case Ratio (Agricultural Workers / General Population)",
+           x = "Days since epidemic onset", y = "Symptomatic Case Ratio") +
       facet_theme +
       theme(legend.position = "none")
   })
@@ -757,9 +873,10 @@ server <- function(input, output, session) {
     req(symp_data(), movements_data())
     edf <- symp_data()
     mvd <- movements_data()
+    psymp <- p_symp_A()
 
     dplyr::bind_rows(lapply(1:CALENDAR_DAYS, function(pd) {
-      out <- get_impact_for_app(pd, input$p_symp, mvd, edf)
+      out <- get_impact_for_app(pd, psymp, mvd, edf)
       out$peakday <- pd
       out
     }))
@@ -768,7 +885,8 @@ server <- function(input, output, session) {
   output$crop_impact_plot <- renderPlot({
     req(impact_all_peakdays(), symp_data(), movements_data())
     idf <- impact_all_peakdays()
-    sch <- get_schematic_data(input$peakday, input$p_symp, movements_data(), symp_data())
+    psymp <- p_symp_A()
+    sch <- get_schematic_data(input$peakday, psymp, movements_data(), symp_data())
 
     # Shared x-axis config
     month_breaks <- cumsum(c(1, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30))
@@ -798,7 +916,8 @@ server <- function(input, output, session) {
       expand_limits(y = 0) +
       labs(x = NULL, y = "Production Loss (%)",
            color = "Commodity",
-           title = paste0("Production Loss by Peak Day (Proportion symptomatic = ", input$p_symp, ")")) +
+           title = paste0("Production Loss by Peak Day (p_symp,A = ",
+                          round(psymp, 3), ")")) +
       theme_classic(base_size = 12) +
       theme(legend.position = "bottom", plot.title = element_text(face = "bold"))
 
@@ -821,8 +940,8 @@ server <- function(input, output, session) {
       scale_color_manual(values = symp_colors) +
       expand_limits(y = 0) +
       scale_x_continuous(breaks = month_breaks, labels = month_labels, minor_breaks = NULL) +
-      labs(x = NULL, y = "Percent of population", color = NULL,
-           title = paste0("Symptomatic infections")) +
+      labs(x = NULL, y = "Symptomatic cases\n(% of population)", color = NULL,
+           title = "Work-limiting symptomatic cases") +
       theme_classic(base_size = 12) +
       theme(plot.title = element_text(face = "bold"),
             legend.position = "bottom")
@@ -856,7 +975,7 @@ server <- function(input, output, session) {
 
   output$impact_table <- renderTable({
     req(symp_data(), movements_data())
-    impact <- get_impact_for_app(input$peakday, input$p_symp, movements_data(), symp_data())
+    impact <- get_impact_for_app(input$peakday, p_symp_A(), movements_data(), symp_data())
     impact %>%
       dplyr::mutate(
         `Total Production (Million lbs)` = round(lbs_total / 1e6, 1),

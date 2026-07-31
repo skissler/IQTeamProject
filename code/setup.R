@@ -53,6 +53,10 @@ if (nchar(census_key) > 0) {
 source('code/utils.R')
 source('code/epimodels.R')
 
+# Derived comorbidity parameters (require comorbidity_pars from config.R)
+p_symp_C <- compute_p_symp(comorbidity_pars$obs_C, comorbidity_pars$or_symp_obesity)
+p_symp_A <- compute_p_symp(comorbidity_pars$obs_A, comorbidity_pars$or_symp_obesity)
+
 # ==============================================================================
 # Optional: Validate Environment
 # ==============================================================================
