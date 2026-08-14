@@ -113,10 +113,23 @@ cat("\nStep 9: Running crop calendar productivity analysis...\n")
 source('code/crop_calendars.R')
 
 # ==============================================================================
-# 10. Main Publication Figures
+# 10. Supplementary Tables and Summary Reporting
+# ==============================================================================
+# Regenerate the formatted SI tables from the sensitivity and crop-impact CSVs,
+# and report the effective reproduction number (R_eff) under baseline
+# vaccination for each R0 scenario.
+
+cat("\nStep 10: Regenerating supplementary tables...\n")
+source('code/generate_si_tables.R')
+
+cat("\nStep 10b: Computing effective reproduction number (R_eff)...\n")
+source('code/compute_reff.R')
+
+# ==============================================================================
+# 11. Main Publication Figures
 # ==============================================================================
 
-cat("\nStep 10: Generating main publication figures...\n")
+cat("\nStep 11: Generating main publication figures...\n")
 source('code/plot_main_figures.R')
 
 # ==============================================================================

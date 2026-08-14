@@ -54,7 +54,7 @@ default_pars <- list(
 
   # Basic reproduction number (R0)
   # beta is calibrated directly by calibrate_model.R for each target R0
-  r0 = 1.5,                     # Baseline R0 value
+  r0 = 2.0,                     # Baseline R0 value (severe pandemic scenario)
 
   # Household secondary attack rates (SAR)
   # Primary parameters: SAR values for uncrowded and crowded households
@@ -126,7 +126,7 @@ sim_settings <- list(
 # This is the single source of truth — parameters.R reads from here.
 
 sensitivity_values <- list(
-  r0      = c(1.2, 1.5, 2.0, 3.0),
+  r0      = c(1.5, 2.0, 3.0),               # baseline = 2.0
   eps     = c(1/4, 1/3, 1/2, 2/3, 3/4, 1),
   sar     = c(0.20, 0.30, 0.40, 0.50, 0.60),
   fold    = c(1, 2, 3),

@@ -3,7 +3,7 @@
 # ==============================================================================
 # This script loads all regional simulation outputs and creates comparative
 # summaries and visualizations across the sensitivity dimensions:
-#   1. R0 values: 1.2, 1.5 (baseline), 2.0, 3.0
+#   1. R0 values: 1.5, 2.0 (baseline), 3.0
 #   2. Assortativity (eta = 1-eps): 0, 1/4, 1/3, 1/2, 2/3 (baseline), 3/4
 #   3. SAR in crowded households: 20%, 30%, 40% (baseline), 50%, 60%
 #   4. Crowding fold difference: 1, 2 (baseline), 3

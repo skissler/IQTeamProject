@@ -394,7 +394,7 @@ run_calibration_sim <- function(pars, nat_data) {
 # One-at-a-time design: at most one of SAR/fold_diff differs from baseline.
 # eps does not affect calibration (eps=0 for single-population model).
 
-r0_targets <- c(1.2, 1.5, 2.0, 3.0)
+r0_targets <- c(1.5, 2.0, 3.0)
 sar_crowded_values <- c(0.20, 0.30, 0.40, 0.50, 0.60)
 fold_diff_values <- c(1, 2, 3)
 gamma_values <- c(1/3, 1/5, 1/10)

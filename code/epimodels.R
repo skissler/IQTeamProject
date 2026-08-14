@@ -41,8 +41,12 @@ source('code/utils.R')
 #'
 #' Where:
 #' - Recovery: gamma * [(y+1)*H(x,y+1,z-1) - y*H(x,y,z)]
-#' - Within-HH: (tau + tau_boost*crowded) * [(x+1)(y-1)*H(x+1,y-1,z) - xy*H(x,y,z)]
+#' - Within-HH: vax_mult * (tau + tau_boost*crowded) * [(x+1)(y-1)*H(x+1,y-1,z) - xy*H(x,y,z)]
 #' - Between-HH: lambda * [(x+1)*H(x+1,y-1,z) - x*H(x,y,z)]
+#'
+#' Vaccination reduces susceptibility, so the group-specific multiplier
+#' vax_mult (= 1 - vax_eff * vax_cov) scales BOTH the within-household and
+#' between-household force of infection acting on susceptibles.
 #'
 #' @section Mixing Matrix:
 #' The mixing parameter epsilon (eps) controls assortativity:
@@ -57,9 +61,9 @@ source('code/utils.R')
 #'
 #' Where w_C = pop_C/(pop_C+pop_A) and w_A = pop_A/(pop_C+pop_A)
 #'
-#' Force of infection:
-#' - lambda_C = beta * (m_CC*I_C + m_CA*I_A)
-#' - lambda_A = beta * (m_AC*I_C + m_AA*I_A)
+#' Force of infection (between-household):
+#' - lambda_C = beta * vax_mult_C * (m_CC*I_C + m_CA*I_A)
+#' - lambda_A = beta * vax_mult_A * (m_AC*I_C + m_AA*I_A)
 #'
 #' @section Crowding Effect:
 #' Within-household transmission rate becomes:
@@ -254,7 +258,9 @@ household_model_twopop_crowding <- odin::odin({
       if (rec_index[i] > 0) (y[i] + 1) * H_C[rec_index[i]] else 0
     ) +
     # Within-household infection (with crowding boost)
-    (tau + tau_boost*crowded[i]) * (
+    # Vaccination reduces susceptibility, so vax_mult scales the within-HH
+    # force of infection on susceptibles just as it does the between-HH term.
+    vax_mult_C * (tau + tau_boost*crowded[i]) * (
       -x[i] * y[i] * H_C[i] +
       if (inf_index[i] > 0) (x[i] + 1) * (y[i] - 1) * H_C[inf_index[i]] else 0
     ) +
@@ -275,7 +281,9 @@ household_model_twopop_crowding <- odin::odin({
       if (rec_index[i] > 0) (y[i] + 1) * H_A[rec_index[i]] else 0
     ) +
     # Within-household infection (with crowding boost)
-    (tau + tau_boost*crowded[i]) * (
+    # Vaccination reduces susceptibility, so vax_mult scales the within-HH
+    # force of infection on susceptibles just as it does the between-HH term.
+    vax_mult_A * (tau + tau_boost*crowded[i]) * (
       -x[i] * y[i] * H_A[i] +
       if (inf_index[i] > 0) (x[i] + 1) * (y[i] - 1) * H_A[inf_index[i]] else 0
     ) +

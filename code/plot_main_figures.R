@@ -108,7 +108,7 @@ create_overlay_plot <- function(county_plot, regional_plot, adjust_method) {
       alpha = 1
     ) +
     facet_wrap(~region_label, ncol = 3) +
-    scale_x_continuous(limits = c(0, 360), breaks = seq(0, 360, 60)) +
+    scale_x_continuous(limits = c(0, 180), breaks = seq(0, 180, 30)) +
     scale_color_manual(
       values = pop_colors,
       labels = pop_labels,
@@ -162,7 +162,7 @@ create_cumulative_plot <- function(county_plot, regional_plot, adjust_method) {
       alpha = 1
     ) +
     facet_wrap(~region_label, ncol = 3) +
-    scale_x_continuous(limits = c(0, 360), breaks = seq(0, 360, 60)) +
+    scale_x_continuous(limits = c(0, 180), breaks = seq(0, 180, 30)) +
     scale_y_continuous(limits = c(0, NA)) +
     scale_color_manual(
       values = pop_colors,
@@ -235,7 +235,7 @@ create_relative_infection_plot <- function(county_plot, regional_plot, adjust_me
     ) +
     geom_hline(yintercept = 1, linetype = "dashed", color = "grey50", alpha = 0.5) +
     facet_wrap(~region_label, ncol = 3) +
-    scale_x_continuous(limits = c(0, 360), breaks = seq(0, 360, 60)) +
+    scale_x_continuous(limits = c(0, 180), breaks = seq(0, 180, 30)) +
     expand_limits(y = 0.5) +
     labs(
       x = "Time (days)",

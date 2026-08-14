@@ -505,7 +505,7 @@ ui <- fluidPage(
       h4("Transmission Parameters"),
 
       selectInput("r0", HTML("Basic Reproduction Number (R<sub>0</sub>)"),
-                  choices = c("1.2", "1.5", "2", "3"), selected = "1.5"),
+                  choices = c("1.5", "2", "3"), selected = "2"),
 
       selectInput("infectious_period", "Infectious Period (1/γ, days)",
                   choices = c("3" = 1/3, "5" = 1/5, "10" = 1/10),
@@ -712,7 +712,7 @@ server <- function(input, output, session) {
   observe({
     if (is.null(sim_results())) {
       run_all_regions(
-        r0 = "1.5", eta = 2/3,
+        r0 = "2", eta = 2/3,
         sar_crowded = 0.40, crowding_fold_diff = 2,
         gamma = 1/5, sim_days = 365,
         vax_eff = 0.60, vax_cov_C = 0.50, vax_cov_A = 0.40

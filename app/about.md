@@ -35,7 +35,7 @@ The model implements a deterministic household-structured SIR framework based on
 
 | Parameter | Description |
 |-----------|-------------|
-| **R&#8320;** | Basic reproduction number (1.2, 1.5, 2.0, or 3.0). Baseline R&#8320; = 1.5 reflects a moderate pandemic influenza scenario. |
+| **R&#8320;** | Basic reproduction number (1.5, 2.0, or 3.0). Baseline R&#8320; = 2.0 reflects a severe pandemic influenza scenario. |
 | **Infectious period (1/&gamma;)** | Duration of infectiousness in days (3, 5, or 10). Baseline is 5 days, consistent with influenza. |
 | **Assortativity (&eta;)** | Degree of preferential within-group mixing (0 to 1). Baseline &eta; = 2/3 reflects moderate within-group preference. |
 | **SAR (crowded)** | Secondary attack rate in crowded households (20%&ndash;60%). Baseline is 40%, approximately twice the uncrowded rate of 20%. |

@@ -19,7 +19,7 @@
 #   - data/movements_lettuce.csv     - Weekly lettuce shipments
 #   - data/movements_strawberries.csv - Weekly strawberry shipments
 #   - data/movements_oranges.csv     - Weekly orange shipments
-#   - output/regional_sim_r0_1.5.csv              - Baseline epidemic simulation
+#   - output/regional_sim_r0_2.csv                - Baseline epidemic simulation
 #
 # Outputs:
 #   - figures/crop_movements_raw.pdf      - Raw weekly movement data
@@ -271,6 +271,14 @@ impact_df_combined <- bind_rows(lapply(1:CALENDAR_DAYS, function(peakday) {
 
 cat("  Completed impact calculations for", CALENDAR_DAYS, "peak days\n")
 
+# Also compute the all-symptomatic (p_symp_A = 1) upper bound across all peak
+# days, used for the Supplementary "all infections symptomatic" figure (S20).
+impact_df_allsymp <- bind_rows(lapply(1:CALENDAR_DAYS, function(peakday) {
+  out <- get_impact(peakday, avg_movements_daily, epidf_with_symp, p_symp_A = 1)
+  out$peakday <- peakday
+  return(out)
+}))
+
 # ==============================================================================
 # 6. Generate Figures
 # ==============================================================================
@@ -491,6 +499,32 @@ ggsave(file.path(paths$figures_dir, "crop_impact_by_peakday.pdf"),
 ggsave(file.path(paths$figures_dir, "crop_impact_by_peakday.png"),
        fig_impact, width = 10, height = 5, dpi = 300)
 cat("  Saved: crop_impact_by_peakday.pdf/.png\n")
+
+# Figure: Production loss by epidemic peak timing, all infections symptomatic
+# (p_symp_A = 1 upper bound) -- Supplementary Figure S20.
+fig_impact_allsymp <- impact_df_allsymp %>%
+  ggplot(aes(x = peakday, y = pct_loss, col = commodity)) +
+  geom_line(linewidth = 0.8, alpha = 0.8) +
+  scale_color_manual(values = crop_colors) +
+  scale_x_continuous(breaks = impact_month_breaks, labels = impact_month_labels,
+                     minor_breaks = NULL) +
+  expand_limits(y = 0) +
+  labs(
+    x = "Epidemic Peak Timing",
+    y = "Production Loss (%)",
+    color = "Commodity",
+    title = "Estimated Production Loss by Epidemic Timing",
+    subtitle = paste0("Based on baseline epidemic (R0 = ", default_pars$r0,
+                      ") in California, all infections symptomatic (p_symp_A = 1)")
+  ) +
+  theme_classic(base_size = 14) +
+  theme(legend.position = "bottom")
+
+ggsave(file.path(paths$figures_dir, "crop_impact_by_peakday_allsymp.pdf"),
+       fig_impact_allsymp, width = 10, height = 5)
+ggsave(file.path(paths$figures_dir, "crop_impact_by_peakday_allsymp.png"),
+       fig_impact_allsymp, width = 10, height = 5, dpi = 300)
+cat("  Saved: crop_impact_by_peakday_allsymp.pdf/.png\n")
 
 
 # ==============================================================================
@@ -925,7 +959,7 @@ cat("  Saved: crop_schematic_june1.pdf/.png\n")
 # ==============================================================================
 # 11. Crop Production Loss Comparison Across R0 Values
 # ==============================================================================
-# For each R0 value (1.2, 1.5, 2.0, 3.0), compute worst-case production losses
+# For each R0 value (1.5, 2.0, 3.0), compute worst-case production losses
 # per crop, with dollar amounts based on USDA NASS 2024 values.
 # Two p_symp_A scenarios: baseline (comorbidity-adjusted) and 1.0 (all infections symptomatic).
 
@@ -937,7 +971,7 @@ crop_values <- tibble(
   annual_value_usd = c(3456522000, 1245105000, 852507000)
 )
 
-r0_values <- c(1.2, 1.5, 2.0, 3.0)
+r0_values <- c(1.5, 2.0, 3.0)
 
 # Helper: day-of-year to month name
 day_to_month <- function(day) {

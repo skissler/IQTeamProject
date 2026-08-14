@@ -426,3 +426,35 @@ compute_p_symp <- function(obs, or_obesity,
   p1 <- or_obesity * p0 / (1 + (or_obesity - 1) * p0)
   obs * p1 + (1 - obs) * p0
 }
+
+
+# ==============================================================================
+# 8. REPRODUCTION NUMBER HELPERS
+# ==============================================================================
+
+#' Effective reproduction number from an outbreak's final size
+#'
+#' Inverts the SIR final-size relation R_inf = 1 - exp(-R * R_inf) to recover the
+#' reproduction number R implied by an observed cumulative infection attack rate.
+#' This is the same operational definition used to calibrate R0 in
+#' `calibrate_model.R` (there, applied to an unvaccinated single population). When
+#' applied to a *vaccinated* population's final size, it yields the effective
+#' reproduction number R_eff under that population's vaccination coverage.
+#'
+#' \deqn{R_{eff} = -\ln(1 - R_\infty) / R_\infty}
+#'
+#' @param final_size Cumulative INFECTION attack rate R_inf (proportion infected
+#'   over the whole outbreak), in (0, 1). Use infection-based final size, not the
+#'   symptomatic-case rate.
+#' @return Effective reproduction number. Returns 0 for a final size of 0 (no
+#'   outbreak) and NA for values outside (0, 1).
+#' @examples
+#' compute_reff(0.534)  # community baseline final size -> ~1.43
+compute_reff <- function(final_size) {
+  out <- rep(NA_real_, length(final_size))
+  zero <- !is.na(final_size) & final_size == 0
+  ok   <- !is.na(final_size) & final_size > 0 & final_size < 1
+  out[zero] <- 0
+  out[ok]   <- -log(1 - final_size[ok]) / final_size[ok]
+  out
+}

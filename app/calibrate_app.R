@@ -334,7 +334,7 @@ run_calibration_sim <- function(pars, nat_data) {
 # ==============================================================================
 
 sar_uncrowded <- 0.20
-r0_values        <- c(1.2, 1.5, 2.0, 3.0)
+r0_values        <- c(1.5, 2.0, 3.0)
 sar_crowded_vals <- c(0.20, 0.30, 0.40, 0.50, 0.60)
 fold_diff_vals   <- c(1, 2, 3)
 gamma_vals       <- c(1/3, 1/5, 1/10)

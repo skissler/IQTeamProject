@@ -12,7 +12,7 @@
 #   "null"     - Null model: all factors equal (community values for both A and C)
 #   "hh_only"  - Household structure differs; vaccination equal (community rate for both)
 #   "vax_only" - Vaccination differs; household structure equal (community dist. for both)
-#   "full"     - All factors differ (replicates the baseline r0_1.5 run)
+#   "full"     - All factors differ (replicates the baseline r0_2 run)
 #
 # Comorbidities are not in the epidemic model (they shift p_symp post-hoc only),
 # so their contribution to CROP LOSSES is reported analytically via p_symp_A.
@@ -38,9 +38,9 @@ cat("Decomposition Analysis\n")
 cat(rep("=", 60), "\n\n", sep = "")
 
 # ==============================================================================
-# Baseline parameter set (r0 = 1.5, all other defaults)
+# Baseline parameter set (r0 = 2.0, all other defaults)
 # ==============================================================================
-# Pull the r0_1.5 parset from pars_list to guarantee consistency with main runs
+# Pull the baseline r0 parset from pars_list to guarantee consistency with main runs
 
 baseline_parset_name <- paste0("r0_", default_pars$r0)
 baseline_pars <- pars_list[[which(sapply(pars_list, function(p) p$parset_name) == baseline_parset_name)]]
